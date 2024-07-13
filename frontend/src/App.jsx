@@ -9,7 +9,6 @@ const App = () => {
     <div className='bg-customYellow'>
       <Navbar/>
       <Home/>
-      
       <Footer/>
     </div>
     
