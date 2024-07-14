@@ -1,6 +1,6 @@
 import React from 'react'
 import Pic from '../assets/website/newPic.jpg'
-import Testimonials from '../components/PopularBooks/PopularBooks'
+import PopulerBooks from '../components/PopularBooks/PopularBooks'
 
 const Home = () => {
   return (
@@ -32,7 +32,7 @@ const Home = () => {
             
             <button>Our Books</button>
         </div>
-      <Testimonials/>
+      <PopulerBooks/>
     </div>
   )
 }
