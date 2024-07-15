@@ -1,9 +1,13 @@
 import React from 'react'
 import Pic from '../assets/website/newPic.jpg'
 import PopulerBooks from '../components/PopularBooks/PopularBooks'
+import Navbar from '../components/Navbar/Navbar'
+import Footer from '../components/Footer/Footer'
 
 const Home = () => {
   return (
+    <>
+    <Navbar/>
     <div className=''>
         <div className='w-full h-[60vh] bg-cover bg-center bg-fixed' 
           style={{
@@ -15,7 +19,7 @@ const Home = () => {
         <div className=''>
             <h1 className='text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900  my-6'>Welcome To NexLib</h1>
             
-              <div className='text-lg text-gray-700 max-w-6xl mx-auto text-justify px-6'>
+              <div className='text-lg text-gray-700 font-semibold max-w-6xl mx-auto text-justify px-6'>
                 <p>The Interactive Library Management System (ILMS) is a cutting-edge, 
                     all-inclusive system created to improve user experience and transform 
                     library administration. The goal is to create an application that can 
@@ -34,6 +38,8 @@ const Home = () => {
         </div>
       <PopulerBooks/>
     </div>
+    <Footer/>
+    </>
   )
 }
 
