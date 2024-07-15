@@ -8,27 +8,27 @@ const Menu = [
     {
         id : 1,
         name : "Home",
-        link :'/#'
+        link :'/'
     },
     {
         id : 2,
         name : "Users",
-        link :"/#users"
+        link :"/users"
     },
     {
         id :3,
         name : "Books",
-        link : "/#books"
+        link : "/books"
     },
     {
         id :4,
         name : "About",
-        link : "/#about"
+        link : "/about"
     },
     {
         id :5,
         name : "Help",
-        link : "/#help"
+        link : "/help"
     }
 ]
 
@@ -59,7 +59,7 @@ const Navbar = () => {
                     <ul className='hidden sm:flex items-center gap-4'>
                         {Menu.map((menu) =>(
                             <li key = {menu.id}>
-                                <a href={menu.link} className='inline-block text-xl py-4 textwhite/70 hover:text-white duration-200'>
+                                <a href={menu.link} className='inline-block text-xl py-4 textwhite/70  hover:text-white hover:scale-110 duration-200'>
                                     {menu.name}
                                 </a>
                             </li>
