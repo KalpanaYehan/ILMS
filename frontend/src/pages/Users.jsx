@@ -26,7 +26,7 @@ const Users = () => {
     
 
     <div className="relative mx-auto max-w-7xl z-10 grid grid-cols-1 gap-10 pt-14 sm:grid-cols-2 lg:grid-cols-3">
-      {/<div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">/}
+      {/*<div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">*/}
       <a href='/books/add' className='hover:text-white hover:scale-110 duration-200'>
                 <div
                   
@@ -50,7 +50,7 @@ const Users = () => {
                   </div>
                   
                 
-             {/</div>/}
+             {/*</div>*/}
       </div>
      </a>
      <a href='/books/remove' className='hover:text-white hover:scale-110 duration-200'>
@@ -76,7 +76,7 @@ const Users = () => {
                   </div>
                   
                 
-             {/</div>/}
+             {/*</div>*/}
       </div>
       </a>
       <a href='/books/search' className='hover:text-white hover:scale-110 duration-200'>
@@ -102,7 +102,7 @@ const Users = () => {
                   </div>
                   
                 
-             {/</div>/}
+             {/*</div>*/}
       </div>
       </a>
 
