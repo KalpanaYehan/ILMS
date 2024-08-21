@@ -1,76 +1,120 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
-import Books from '../assets/website/books.jpg'
-import { Link } from 'react-router-dom';
 
 const Users = () => {
-
-  const [userId, setUserId] = useState('');
-  const [userDetails, setUserDetails] = useState(null);
-  const [error, setError] = useState(null);
-
-  // Dummy user data
-  const users = [
-    { id: '1001U', name: 'Alice Johnson', email: 'alice@example.com', phoneNumber: '555-1234',password: '1234',nic: '1100' },
-    { id: '1002U', name: 'Bob Smith', email: 'bob@example.com', phoneNumber: '555-5678',password: '5678',nic: '1200' },
-    { id: '1003U', name: 'Charlie Brown', email: 'charlie@example.com', phoneNumber: '555-8765',password: '2468',nic: '1300' },
-  ];
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Clear previous user details and error messages
-    setUserDetails(null);
-    setError(null);
-
-    // Find the user based on userId
-    const user = users.find((user) => user.id === userId);
-
-    if (user) {
-      setUserDetails(user);
-    } else {
-      setError('User not found');
-    }
-  };
 
   return (
     <>
       <Navbar/>
-      <h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Search a User</h1>
-      <img src={Books} className='w-lg justify-center mx-auto'/>
-      <div className='min-h-screen flex justify-center bg-white'>
-      <div className="w-full max-w-xl">
-      <form onSubmit={handleSubmit}>
-        <div className="my-5 inline-block">
-          <label className="text-gray-700 text-lg font-semibold mx-2" htmlFor="userId">User ID:</label>
-          <input
-            type="text"
-            id="userId"
-            placeholder='Enter user ID'
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="shadow appearance-none border rounded py-2 px-3 mx-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <button type="submit" className="w-full justify-center mx-2 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get User Details</button>
-      </form>
-
-      {error && <div className="my-5 mx-2 block text-gray-700 text-md font-semibold mb-2">{error}</div>}
-
-      {userDetails && (
-        <div className="my-5 mx-2 block text-gray-700 text-md font-semibold mb-2">
-          <h2 className="font-semibold text-gray-900 text-2xl mb-2">User Details</h2>
-          <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Name:</strong> {userDetails.name}</p>
-          <p className="font-semibold text-gray-900 text-lg mb-1"><strong>NIC:</strong> {userDetails.nic}</p>
-          <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Phone Number:</strong> {userDetails.phoneNumber}</p>
-          <p className="font-semibold text-gray-900 text-lg mb-1"><strong>E-mail:</strong> {userDetails.email}</p>
-          
-        </div>
-      )}
+      <div className ='min-h-screen bg-customYellow'>
+      
+  <section
+    id="features"
+    className="relative block px-6 py-10 md:py-20 md:px-10 "
+  >
+    
+    <div className="relative mx-auto max-w-5xl text-center">
+      <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent  text-4xl sm:text-4xl ">
+        Manage Your Library
+      </span>
+      <h2 className="w-full text-gray-700 my-3 flex items-center justify-center font-medium text-xl tracking-wider ">
+        Effortlessly organize and maintain your collection with intuitive tools
+      </h2>
     </div>
+
+    
+
+    <div className="relative mx-auto max-w-7xl z-10 grid grid-cols-1 gap-10 pt-14 sm:grid-cols-2 lg:grid-cols-3">
+      {/<div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">/}
+      <a href='/books/add' className='hover:text-white hover:scale-110 duration-200'>
+                <div
+                  
+                  className="flex flex-col gap-4 shadow-lg py-4 px-0 mx-4 rounded-xl  bg-primary/20 relative"
+                >
+                  <div className="  mb-1">
+                    <img
+                      src='https://ucare.inhersight.com/336ace3d-f01b-403d-b9d4-ef455bee9ef4/-/format/auto/-/quality/lighter/-/progressive/yes/-/resize/800x/'
+                      alt=""
+                      className="rounded-xl w-[90%] h-70 mx-auto"
+                    />
+                  </div>
+                  {/* content section */}
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="space-y-3 px-3">
+                      <h1 className="text-2xl text-center font-bold text-black/80  font-cursive2">
+                        Add Book
+                      </h1>
+                      <p className="text-sm text-center text-gray-600">Quickly add new books to your library with all the essential details, ensuring your collection stays up-to-date.</p>
+                    </div>
+                  </div>
+                  
+                
+             {/</div>/}
       </div>
+     </a>
+     <a href='/books/remove' className='hover:text-white hover:scale-110 duration-200'>
+      <div
+                  
+                  className="flex flex-col gap-4 shadow-lg py-4 px-0 mx-4 rounded-xl  bg-primary/20 relative"
+                >
+                  <div className="  mb-1">
+                    <img
+                      src='https://cdn.absolutemgmt.com/wp-content/uploads/2022/09/Woman-Packing-Box.webp'
+                      alt=""
+                      className="rounded-xl w-[90%] h-70 mx-auto"
+                    />
+                  </div>
+                  {/* content section */}
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="space-y-3 px-3">
+                      <h1 className="text-2xl text-center font-bold text-black/80  font-cursive2">
+                        Remove Book
+                      </h1>
+                      <p className="text-sm text-center text-gray-600">Easily remove books from your library to keep your collection organized and relevant.</p>
+                    </div>
+                  </div>
+                  
+                
+             {/</div>/}
+      </div>
+      </a>
+      <a href='/books/search' className='hover:text-white hover:scale-110 duration-200'>
+      <div
+                  
+                  className="flex flex-col gap-4 shadow-lg py-4 px-0 mx-4 rounded-xl  bg-primary/20 relative"
+                >
+                  <div className="  mb-1">
+                    <img
+                      src='https://www.usedbooksearch.net/wp-content/uploads/2020/10/used-book-search-online.png'
+                      alt=""
+                      className="rounded-xl w-[90%] h-70 mx-auto"
+                    />
+                  </div>
+                  {/* content section */}
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="space-y-3 px-3">
+                      <h1 className="text-2xl text-center font-bold text-black/80  font-cursive2">
+                        Search Book
+                      </h1>
+                      <p className="text-sm text-center text-gray-600">Quickly find any book in your collection with our efficient search feature.</p>
+                    </div>
+                  </div>
+                  
+                
+             {/</div>/}
+      </div>
+      </a>
+
+
+
+    </div>
+  </section>
+
+</div>
+
+
+         
       <Footer/>
     </>
   )
