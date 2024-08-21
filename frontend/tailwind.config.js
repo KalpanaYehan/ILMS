@@ -12,6 +12,8 @@ export default {
         brandDark: "#270c03",
         dark: "#1e1e1e",
         light: "#f5f5f5",
+        customYellow: '#FFF5E1',
+        
       },
     },
   },
