@@ -85,12 +85,14 @@ const Login = () => {
               </div>
   
               <div>
+               <Link to={(formData.userId == 'user' && formData.password == 'user') ? "/home" : "/"}>
                 <button
                   type="submit"
                   className="mt-10 flex w-full justify-center rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  <Link to={(formData.userId == 'user' && formData.password == 'user') ? "/home" : "/"}>Sign in</Link>
+                  Sign in
                 </button>
+               </Link>
               </div>
             </form>
   
