@@ -7,7 +7,7 @@ const About = () => {
     <>
       <Navbar/>
       <div className='min-h-screen bg-customYellow'>
-      
+      About
       </div>
       <Footer/>
     </>
