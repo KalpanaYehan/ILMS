@@ -8,7 +8,7 @@ const Menu = [
     {
         id : 1,
         name : "Home",
-        link :'/'
+        link :'/home'
     },
     {
         id : 2,
@@ -76,7 +76,7 @@ const Navbar = () => {
                             <a href="/profile" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                 Profile
                             </a>
-                            <a href="/logout" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
+                            <a href="/" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                 Logout
                             </a>
                             
