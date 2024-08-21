@@ -1,6 +1,6 @@
 import { useState } from "react" 
-import Logo from "../assets/website/newLogo.jpg"
-import User from "../assets/website/user.jpg"
+import Logo from "../../assets/website/newLogo.jpg"
+import User from "../../assets/website/user.jpg"
 import React from "react"
 
 
@@ -8,32 +8,27 @@ const Menu = [
     {
         id : 1,
         name : "Home",
-        link :'/#'
+        link :'/home'
     },
     {
         id : 2,
-        name : "Dashboard",
-        link :"/#dashboard"
+        name : "Users",
+        link :"/users"
     },
     {
-        id : 3,
-        name : "Users",
-        link :"/#users"
+        id :3,
+        name : "Books",
+        link : "/books"
     },
     {
         id :4,
-        name : "Books",
-        link : "/#books"
+        name : "About",
+        link : "/about"
     },
     {
         id :5,
-        name : "About",
-        link : "/#about"
-    },
-    {
-        id :6,
         name : "Help",
-        link : "/#help"
+        link : "/help"
     }
 ]
 
@@ -44,13 +39,13 @@ const Navbar = () => {
     setDropDownOpen(!dropDownOpen)
   }
   return (
-    <div className='bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 text-white'>
+    <div className='bg-gradient-to-r from-secondary/70 to-secondary/20 bg-gray-900 text-white'>
         <div className='container py-2'>
             <div className='flex justify-between items-center pr-10 pl-10'>
                 {/* Logo section */}
                 <div data-aos = 'fade-down' data-aos-once = 'true'>
                     <a href='#' className='font-bold text-2xl sm:text-3xl flex justify-center items-center gap-2 tracking-wider'>
-                        <img src={Logo} alt="logo" className='w-14'/>
+                        <img src={Logo} alt="logo" className='w-14 rounded-lg'/>
                         NexLib
                     </a>
                 </div>
@@ -64,7 +59,7 @@ const Navbar = () => {
                     <ul className='hidden sm:flex items-center gap-4'>
                         {Menu.map((menu) =>(
                             <li key = {menu.id}>
-                                <a href={menu.link} className='inline-block text-xl py-4 textwhite/70 hover:text-white duration-200'>
+                                <a href={menu.link} className='inline-block text-xl py-4 textwhite/70  hover:text-white hover:scale-110 duration-200'>
                                     {menu.name}
                                 </a>
                             </li>
@@ -81,9 +76,10 @@ const Navbar = () => {
                             <a href="/profile" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                 Profile
                             </a>
-                            <a href="/logout" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
+                            <a href="/" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                 Logout
                             </a>
+                            
                             </div>
                         )}
                     </div>

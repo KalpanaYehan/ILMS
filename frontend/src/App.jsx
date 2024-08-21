@@ -1,11 +1,12 @@
 import React from 'react'
-import Navbar from './components/Navbar'
+import Login from './pages/Login'
+import ReturnBook from './pages/ReturnBook'
 
 const App = () => {
   return (
-    <div className='bg-red-400'>
-      <Navbar/>
-    </div>
+    <>
+    <Login/>
+    </>
   )
 }
 
