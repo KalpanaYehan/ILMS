@@ -8,11 +8,15 @@ import BookSearch from './pages/BookSearch'
 import Users from './pages/Users'
 import About from './pages/About'
 import Help from './pages/Help'
+import GiveBook from './pages/GiveBook'
+import SearchUser from './pages/SearchUser'
+import ReturnBook from './pages/ReturnBook'
 
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+
 
 const router = createBrowserRouter([
   {
@@ -43,6 +47,18 @@ const router = createBrowserRouter([
     path: "/help",
     element: <Help/>,
   },
+  {
+    path: "/users/search",
+    element: <SearchUser/>,
+  },
+  {
+    path: "/users/issue",
+    element: <GiveBook/>,
+  },
+  {
+    path: "/users/return",
+    element: <ReturnBook/>,
+  }
 ]);
 
 

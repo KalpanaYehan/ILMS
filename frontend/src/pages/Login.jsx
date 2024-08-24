@@ -4,6 +4,12 @@ import { Link } from 'react-router-dom';
 
 const Login = () => {
 
+  const users = [
+    { id: '1001U', name: 'Alice Johnson', email: 'alice@example.com', phoneNumber: '555-1234',password: '1234',nic: '1100' },
+    { id: '1002U', name: 'Bob Smith', email: 'bob@example.com', phoneNumber: '555-5678',password: '5678',nic: '1200' },
+    { id: '1003U', name: 'Charlie Brown', email: 'charlie@example.com', phoneNumber: '555-8765',password: '2468',nic: '1300' },
+  ];
+
   const [formData, setFormData] = useState({
     userId: '',
     password: '',
@@ -89,7 +95,7 @@ const Login = () => {
                   type="submit"
                   className="mt-10 flex w-full justify-center rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  <Link to={(formData.userId == 'user' && formData.password == 'user') ? "/home" : "/"}>Sign in</Link>
+                  <Link to={(formData.userId === 'user' && formData.password === '1234') ? "/home" : "/"}>Sign in</Link>
                 </button>
               </div>
             </form>
