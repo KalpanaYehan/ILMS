@@ -3,11 +3,13 @@ import Pic from '../assets/website/newPic.jpg'
 import PopulerBooks from '../components/PopularBooks/PopularBooks'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
+import ChatBot from '../components/ChatBot/ChatBot.jsx'
 
 const Home = () => {
   return (
     <>
     <Navbar/>
+    <ChatBot/>
     <div className=''>
         <div className='w-full h-[60vh] bg-cover bg-center bg-fixed' 
           style={{
