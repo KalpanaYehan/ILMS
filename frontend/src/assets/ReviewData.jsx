@@ -29,7 +29,7 @@ export const reviews = [
       image:
         'https://plus.unsplash.com/premium_photo-1671823917954-dc943c1bd9df?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       name: 'Emily Davis',
-      text: "This book is a masterpiece of storytelling. The author's prose is lyrical and evocative, drawing you effortlessly into the lives of the characters. Themes of love, loss, and redemption are delicately woven together, leaving a profound impact. A deeply moving and unforgettable read that lingers in your thoughts long after you turn the final page."
+      text: "This book is a masterpiece of storytelling. The author's prose is lyrical and evocative, drawing you effortlessly into the lives of the characters. Themes of love, loss, and redemption are delicately woven together, leaving a profound impact."
 
 
 

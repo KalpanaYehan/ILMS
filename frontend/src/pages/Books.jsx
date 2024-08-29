@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 
-const Users = () => {
-
+const Books = () => {
   return (
     <>
       <Navbar/>
@@ -120,4 +119,6 @@ const Users = () => {
   )
 }
 
-export default Users
+export default Books
+
+

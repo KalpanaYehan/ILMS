@@ -5,12 +5,25 @@ import Footer from "../components/Footer/Footer";
 import { Posts } from "../assets/Content";
 import { Rating } from "@material-tailwind/react";
 import Review from "../assets/Review";
+import { useState } from "react";
+import {
+  TERipple,
+  TEModal,
+  TEModalDialog,
+  TEModalContent,
+  TEModalHeader,
+  TEModalBody,
+  TEModalFooter,
+} from "tw-elements-react";
 
 function ReadonlyRating({ value }) {
   return <Rating value={value} readonly />;
 }
 
 function BookDetails() {
+  const [showModal, setShowModal] = useState(false);
+  const [image, setImage] = useState([]);
+
   const { id } = useParams();
   const book = Posts.find((post) => post.id.toString() === id);
 
@@ -21,90 +34,120 @@ function BookDetails() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-customYellow">
+      <div className="min-h-screen mt-10 bg-white">
         <div className="container flex px-4 py-10 mx-auto">
-          <div className="w-[30%]">
-            <img
-              src={book.img}
-              alt={book.title}
-              className="object-contain w-full h-48 rounded-lg shadow-lg"
-            />
-          </div>
-          <div className="w-[60%] ml-6 flex flex-col justify-between">
-            <div>
-              <h1 className="text-4xl font-bold">{book.title}</h1>
-              <h2 className="mt-2 text-2xl text-gray-700">{book.author}</h2>
-              <div className="mt-2">
-                <ReadonlyRating value={book.rating} />
-              </div>
-              <div className="mt-2">
-                {book.availability === "true" ? (
-                  <span className="px-4 py-2 text-white bg-green-600 rounded-full">
-                    Available
-                  </span>
-                ) : (
-                  <span className="px-4 py-2 text-white bg-red-600 rounded-full">
-                    Not available
-                  </span>
-                )}
+          <div className="grid justify-center w-full grid-cols-3 gap-4 mx-10">
+            <div className="grid justify-end w-full">
+              <img
+                src={book.img}
+                alt={book.title}
+                style={{ maxWidth: "300px" }}
+                className="object-contain w-full"
+              />
+            </div>
+            <div className="flex flex-col justify-between col-span-2 mt-5 ml-10">
+              <div>
+                <h1 className="mb-10 text-5xl font-bold">{book.title}</h1>
+                <div className="flex items-center gap-2 align-middle">
+                  <h2 className="m-0 text-2xl font-bold ">Author :</h2>{" "}
+                  <h3 className="m-0 text-xl text-gray-700"> {book.author}</h3>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2 align-middle">
+                  <h2 className="m-0 text-2xl font-bold ">Category :</h2>{" "}
+                  <h3 className="m-0 text-xl text-gray-700">
+                    {" "}
+                    {book.category}
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2 align-middle">
+                  <h2 className="m-0 text-2xl font-bold ">Publish Date :</h2>{" "}
+                  <h3 className="m-0 text-xl text-gray-700">
+                    {" "}
+                    {book.publishDate}
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2 align-middle">
+                  <h2 className="m-0 text-2xl font-bold ">ISBN :</h2>{" "}
+                  <h3 className="m-0 text-xl text-gray-700"> {book.isbn}</h3>
+                </div>
+
+                <div className="my-4">
+                  <ReadonlyRating value={book.rating} />
+                </div>
+
+                <div className="flex items-center gap-2 mt-2 mb-6">
+                  <p className="m-0 text-md gray-700 text-">
+                    {" "}
+                    {book.description}
+                  </p>
+                </div>
+
+                <div className="mt-2">
+                  {book.availability === "true" ? (
+                    <span className="px-4 py-2 text-white bg-green-600 rounded-full">
+                      Available
+                    </span>
+                  ) : (
+                    <span className="px-4 py-2 text-white bg-red-600 rounded-full">
+                      Not available
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col px-16 py-2 mx-16 mb-10 border border-gray-300 shadow-md rounded-3xl bg-primary/20">
-          <h1 className="text-3xl font-bold">Preview</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Nunc
-            congue nisi vitae suscipit tellus mauris. At erat pellentesque
-            adipiscing commodo elit at imperdiet dui. Erat imperdiet sed euismod
-            nisi porta lorem mollis. Senectus et netus et malesuada fames ac
-            turpis egestas. Et egestas quis ipsum suspendisse ultrices gravida
-            dictum fusce ut. Dictum varius duis at consectetur. Ultrices
-            tincidunt arcu non sodales neque sodales. Eu tincidunt tortor
-            aliquam nulla facilisi. Pharetra magna ac placerat vestibulum lectus
-            mauris ultrices. Erat pellentesque adipiscing commodo elit at
-            imperdiet.
-          </p>
-          <p>
-            Montes nascetur ridiculus mus mauris vitae. Eget nunc lobortis
-            mattis aliquam faucibus purus in massa tempor. Id diam vel quam
-            elementum pulvinar etiam. Adipiscing enim eu turpis egestas pretium
-            aenean pharetra magna. Accumsan lacus vel facilisis volutpat est
-            velit egestas. Vitae purus faucibus ornare suspendisse sed nisi.
-            Porta nibh venenatis cras sed felis eget velit. Porta non pulvinar
-            neque laoreet suspendisse. Ultrices eros in cursus turpis massa
-            tincidunt dui. Accumsan in nisl nisi scelerisque eu ultrices. In hac
-            habitasse platea dictumst. Nascetur ridiculus mus mauris vitae
-            ultricies leo integer. Faucibus interdum posuere lorem ipsum dolor
-            sit amet consectetur. Imperdiet massa tincidunt nunc pulvinar sapien
-            et. Odio aenean sed adipiscing diam donec. Cursus sit amet dictum
-            sit.
-          </p>
-          <p className="mb-2">
-            Turpis egestas sed tempus urna. Aliquet lectus proin nibh nisl
-            condimentum. Suspendisse ultrices gravida dictum fusce ut. Id ornare
-            arcu odio ut sem. Eu feugiat pretium nibh ipsum consequat. Proin sed
-            libero enim sed faucibus turpis in. Sapien pellentesque habitant
-            morbi tristique. Interdum velit laoreet id donec. Amet consectetur
-            adipiscing elit duis tristique sollicitudin nibh. Quis viverra nibh
-            cras pulvinar mattis nunc sed. Quisque non tellus orci ac auctor.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Nunc
-            congue nisi vitae suscipit tellus mauris. At erat pellentesque
-            adipiscing commodo elit at imperdiet dui. Erat imperdiet sed euismod
-            nisi porta lorem mollis. Senectus et netus et malesuada fames ac
-            turpis egestas. Et egestas quis ipsum suspendisse ultrices gravida
-            dictum fusce ut. Dictum varius duis at consectetur. Ultrices
-            tincidunt arcu non sodales neque sodales. Eu tincidunt tortor
-            aliquam nulla facilisi. Pharetra magna ac placerat vestibulum lectus
-            mauris ultrices. Erat pellentesque adipiscing commodo elit at
-            imperdiet.
-          </p>
-        </div>
+        {/* image galary model  */}
 
-        <Review />
+        <ModalDialogScrollable
+          showModal={showModal}
+          setShowModal={setShowModal}
+          image={image}
+        />
+
+        {book.subImages && book.subImages.length > 0 ? (
+          <div className="container flex justify-center py-8">
+            <div className="w-4/5">
+              <div
+                style={{ backgroundColor: "#ededede6" }}
+                className="grid justify-center grid-cols-5 gap-5 px-5 py-10 rounded-lg shadow"
+              >
+                {book.subImages.map((image, index) => (
+                  <div key={index}>
+                    <img
+                      onClick={() => {
+                        setShowModal(true);
+                        setImage([image]);
+                      }}
+                      src={image}
+                      alt=""
+                      className="object-cover transition-transform duration-300 transform cursor-pointer w-96 hover:scale-110"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="grid justify-center mt-4">
+                <button
+                  className="px-10 py-2 mt-2 ml-auto text-white transition-transform duration-300 bg-blue-600 rounded-full hover:bg-blue-700 hover:scale-105"
+                  onClick={() => {
+                    setShowModal(true);
+                    setImage(book.subImages);
+                  }}
+                >
+                  Read Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="container">
+          <Review />
+        </div>
       </div>
 
       <Footer />
@@ -113,3 +156,26 @@ function BookDetails() {
 }
 
 export default BookDetails;
+
+function ModalDialogScrollable({ showModal, setShowModal, image }) {
+  return (
+    <div>
+      {/* <!-- Modal --> */}
+      <div>
+        <TEModal show={showModal} setShow={setShowModal} scrollable>
+          <TEModalDialog>
+            <TEModalContent>
+              {/* <!--Modal body--> */}
+              <TEModalBody>
+                {image &&
+                  image.map((img, index) => {
+                    return <img className="my-3 shadow" src={img}></img>;
+                  })}
+              </TEModalBody>
+            </TEModalContent>
+          </TEModalDialog>
+        </TEModal>
+      </div>
+    </div>
+  );
+}

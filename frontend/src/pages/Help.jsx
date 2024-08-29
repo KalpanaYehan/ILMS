@@ -7,7 +7,7 @@ const Help = () => {
     <>
       <Navbar/>
       <div className='min-h-screen bg-customYellow'>
-      
+      Help
       </div>
       <Footer/>
     </>

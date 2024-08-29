@@ -3,11 +3,13 @@ import Pic from '../assets/website/newPic.jpg'
 import PopulerBooks from '../components/PopularBooks/PopularBooks'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
+import ChatBot from '../components/ChatBot/ChatBot.jsx'
 
 const Home = () => {
   return (
     <>
     <Navbar/>
+    <ChatBot/>
     <div className=''>
         <div className='w-full h-[60vh] bg-cover bg-center bg-fixed' 
           style={{
@@ -17,9 +19,9 @@ const Home = () => {
         >
       </div>
         <div className=''>
-            <h1 className='my-6 text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900'>Welcome To NexLib</h1>
+            <h1 className='text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900  my-6'>Welcome To NexLib</h1>
             
-              <div className='max-w-6xl px-6 mx-auto text-lg font-semibold text-justify text-gray-700'>
+              <div className='text-lg text-gray-700 font-semibold max-w-6xl mx-auto text-justify px-6'>
                 <p>The Interactive Library Management System (ILMS) is a cutting-edge, 
                     all-inclusive system created to improve user experience and transform 
                     library administration. The goal is to create an application that can 
@@ -34,7 +36,7 @@ const Home = () => {
                 </p>
               </div>
             
-            {/* <button>Our Books</button> */}
+            <button>Our Books</button>
         </div>
       <PopulerBooks/>
     </div>
