@@ -11,6 +11,8 @@ import Help from './pages/Help'
 import GiveBook from './pages/GiveBook'
 import SearchUser from './pages/SearchUser'
 import ReturnBook from './pages/ReturnBook'
+import Profile from './pages/Profile.jsx'
+import Books from './pages/Books.jsx'
 
 import {
   createBrowserRouter,
@@ -37,7 +39,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/books",
-    element: <BookSearch/>,
+    element: <Books/>,
   },
   {
     path: "/about",
@@ -58,6 +60,10 @@ const router = createBrowserRouter([
   {
     path: "/users/return",
     element: <ReturnBook/>,
+  },
+  {
+    path: "/profile",
+    element: <Profile/>,
   }
 ]);
 

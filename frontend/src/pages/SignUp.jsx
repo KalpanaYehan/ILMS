@@ -45,8 +45,8 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white ">
-      <div className="w-full max-w-md">
-      <h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Welcome to NexLib</h1>
+      <div className="w-full max-w-xl">
+      <h1 className='bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4x text-center mt-3 mb-4'>Welcome to NexLib</h1>
         <h2 className="font-semibold text-gray-900 text-center">Create Account</h2>
         <img
               alt="NexLib Logo"
@@ -54,8 +54,8 @@ const SignUp = () => {
               className="mx-auto h-40 w-auto"
             />
         <form >
-          <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
+          <div className="mb-4 flex items-center justify-between">
+            <label className="block text-gray-700 text-sm font-semibold w-1/4" htmlFor="name">
               Name
             </label>
             <input
@@ -68,8 +68,8 @@ const SignUp = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="nic">
+          <div className="mb-4 flex items-center justify-between">
+            <label className="block text-gray-700 text-sm font-semibold w-1/4" htmlFor="nic">
               NIC
             </label>
             <input
@@ -82,8 +82,8 @@ const SignUp = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="phoneNumber">
+          <div className="mb-4 flex items-center justify-between">
+            <label className="block text-gray-700 text-sm font-semibold w-1/4" htmlFor="phoneNumber">
               Phone Number
             </label>
             <input
@@ -96,8 +96,8 @@ const SignUp = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="email">
+          <div className="mb-4 flex items-center justify-between">
+            <label className="block text-gray-700 text-sm font-semibold w-1/4" htmlFor="email">
               E-mail
             </label>
             <input
@@ -110,8 +110,8 @@ const SignUp = () => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
+          <div className="mb-4 flex items-center justify-between">
+            <label className="block text-gray-700 text-sm font-semibold w-1/4" htmlFor="password">
               Password
             </label>
             <input
@@ -124,12 +124,14 @@ const SignUp = () => {
             />
           </div>
           <div className="mb-4 flex items-center">
-            <div className="text-gray-700 text-sm font-semibold mr-5">Sign up as</div>
-            <div>
+            <div className="text-gray-700 text-sm font-semibold w-1/4">
+            Sign up as
+            </div>
+            <div className='justify-start'>
             <button
               type="button"
               onClick={handleUserTypeToggle}
-              className={`px-4 py-2 rounded-xl mr-5 focus:outline-none ${formData.userType === 'member' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+              className={`px-4 py-2 rounded-xl focus:outline-none ${formData.userType === 'member' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'}`}
             >
               Member
             </button>

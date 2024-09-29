@@ -1,13 +1,18 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom';
 import Pic from '../assets/website/newPic.jpg'
 import PopulerBooks from '../components/PopularBooks/PopularBooks'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 
 const Home = () => {
+
+  const location = useLocation();
+  const { userType, userData } = location.state || {};
+  
   return (
     <>
-    <Navbar/>
+    <Navbar type={userType} data={userData}/>
     <div className=''>
         <div className='w-full h-[60vh] bg-cover bg-center bg-fixed' 
           style={{
@@ -17,7 +22,9 @@ const Home = () => {
         >
       </div>
         <div className=''>
-            <h1 className='text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900  my-6'>Welcome To NexLib</h1>
+            <h1 className='text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900  my-6'>
+            {userType === 'admin' ? `Welcome Admin, ${userData.firstName}` : `Welcome to NexLib, ${userData.firstName}`}
+            </h1>
             
               <div className='text-lg text-gray-700 font-semibold max-w-6xl mx-auto text-justify px-6'>
                 <p>The Interactive Library Management System (ILMS) is a cutting-edge, 
@@ -33,8 +40,6 @@ const Home = () => {
                     effective, and enjoyable library experience.
                 </p>
               </div>
-            
-            <button>Our Books</button>
         </div>
       <PopulerBooks/>
     </div>

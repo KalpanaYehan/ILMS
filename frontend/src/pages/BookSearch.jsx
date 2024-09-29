@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import bgPic from '../assets/website/bookSearch.jpg'
 import { Posts } from '../assets/Content';
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 
 function BookSearch() {
+
+  const location = useLocation();
+  const { userType, userData } = location.state || {};
   const [list, setList] = useState(Posts);
   const [query, setQuery] = useState('');
   const [sortField, setSortField] = useState('title');
@@ -45,7 +49,7 @@ function BookSearch() {
 
   return (
     <>
-      <Navbar/>
+      <Navbar type={userType} data={userData}/>
       <div className='mb-4'>
         <form className="flex flex-row gap-4 py-20 mb-6 mx-w-l m-auto  justify-center " style={{ backgroundImage: `url('https://img.freepik.com/free-photo/abundant-collection-antique-books-wooden-shelves-generated-by-ai_188544-29660.jpg')`}}>
           <div className="mb-4 w-[30%]">
