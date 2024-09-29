@@ -4,6 +4,7 @@ const cors = require("cors");
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const {verifyUser} = require('./middlewares/verifyUser.js');
 
 
 const app = express();
@@ -22,21 +23,21 @@ const db = mysql.createConnection({
     database: 'library_system'
 });
 
-const verifyUser = (req, res, next) => {
-    const token = req.cookies.token;
+// const verifyUser = (req, res, next) => {
+//     const token = req.cookies.token;
   
-    if (!token) {
-      return res.status(401).json({ message: "Token is not available" });
-    }
+//     if (!token) {
+//       return res.status(401).json({ message: "Token is not available" });
+//     }
   
-    jwt.verify(token, 'default-secret', (err, decoded) => {
-      if (err) {
-        return res.status(403).json({ message: "Token is invalid" });
-      }
-      req.user = decoded; // Optionally attach user data to the request object
-      next();
-    });
-  };
+//     jwt.verify(token, 'default-secret', (err, decoded) => {
+//       if (err) {
+//         return res.status(403).json({ message: "Token is invalid" });
+//       }
+//       req.user = decoded; // Optionally attach user data to the request object
+//       next();
+//     });
+//   };
   
 
 db.connect((err) => {
@@ -87,9 +88,15 @@ app.post('/login', (req, res) => {
                     return res.status(500).json({ message: "Error comparing passwords" });
                 }
                 if (isMatch) {
-                    const token = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '15s' });
-                    res.cookie("token", token);
-                    res.status(200).json({ message: "success" });
+                    const accesstoken= jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '15s' });
+                    const refreshtoken = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '1m' });
+                    res.cookie("accesstoken", accesstoken,{maxAge:15000});
+                    res.cookie("refreshtoken", refreshtoken,{maxAge:60000,secure:true,sameSite:'strict'})
+                    res.status(200).json({ 
+                        message: "success",
+                        accesstoken: accesstoken,
+                        user: { username: user.First_name, role: user.role, email: user.Email}
+                    });
                 } else {
                     res.status(401).json({ message: "The password is incorrect" });
                 }
@@ -402,7 +409,208 @@ app.delete('/deleteBook/:id', async (req, res) => {
     }
 });
 
+app.post('/addAuthor', async (req, res) => {
+    const { authorName ,county } = req.body;  // Assuming you get the author's name from the request body
 
+    const connection = await pool.promise().getConnection();
+
+    try {
+        // Begin transaction
+        await connection.beginTransaction();
+
+        // Step 1: Insert the author or update if it already exists
+        const [authorResult] = await connection.query(
+            'INSERT INTO author (Name,Country) VALUES (?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+            [authorName,county]
+        );
+        const authorId = authorResult.insertId || authorResult.Author_ID;
+
+        // Commit the transaction
+        await connection.commit();
+
+        // Respond with success
+        res.status(201).json({ message: "Author added successfully", authorId });
+
+    } catch (err) {
+        // Rollback the transaction in case of error
+        await connection.rollback();
+        console.error("Error adding author:", err.message);
+        res.status(500).json({ error: "Failed to add author" });
+    } finally {
+        // Release the connection
+        connection.release();
+    }
+});
+
+app.delete('/deleteAuthor/:id', async (req, res) => {
+    const { id } = req.params; // Author ID
+
+    const connection = await pool.promise().getConnection();
+
+    try {
+        // Begin transaction
+        await connection.beginTransaction();
+
+        // Step 1: Delete the record from the `author` table
+        const deleteAuthorSql = 'DELETE FROM author WHERE Author_ID = ?';
+        const [deleteResult] = await connection.query(deleteAuthorSql, [id]);
+
+        if (deleteResult.affectedRows === 0) {
+            // If no rows were affected, the author was not found
+            await connection.rollback();
+            return res.status(404).json({ message: "Author not found." });
+        }
+
+        // Commit the transaction
+        await connection.commit();
+
+        // Respond with success
+        res.status(200).json({ message: "Author deleted successfully." });
+
+    } catch (err) {
+        // Rollback the transaction in case of error
+        await connection.rollback();
+        console.error("Error deleting author:", err.message);
+        res.status(500).json({ error: "Failed to delete author." });
+    } finally {
+        // Release the connection
+        connection.release();
+    }
+});
+
+
+app.get('/getAuthors', async (req, res) => {
+    const connection = await pool.promise().getConnection();
+
+    try {
+        const sql = `
+            SELECT 
+                Author_ID,
+                Country,
+                Name
+            FROM author
+        `;
+
+        const [authors] = await connection.query(sql);
+
+        if (authors.length === 0) {
+            return res.status(404).json({ message: "No authors found." });
+        }
+
+        res.status(200).json(authors);
+
+    } catch (err) {
+        console.error("Error fetching authors:", err.message);
+        res.status(500).json({ error: "Failed to fetch authors." });
+    } finally {
+        connection.release();
+    }
+});
+
+app.post('/addPublisher', async (req, res) => {
+    const { publisherName,country } = req.body;  // Assuming you get the publisher's name from the request body
+
+    const connection = await pool.promise().getConnection();
+
+    try {
+        // Begin transaction
+        await connection.beginTransaction();
+
+        // Step 1: Insert the publisher or update if it already exists
+        const [publisherResult] = await connection.query(
+            'INSERT INTO publisher (Name,country) VALUES (?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+            [publisherName,country]
+        );
+        const publisherId = publisherResult.insertId || publisherResult.Publisher_ID;
+
+        // Commit the transaction
+        await connection.commit();
+
+        // Respond with success
+        res.status(201).json({ message: "Publisher added successfully", publisherId });
+
+    } catch (err) {
+        // Rollback the transaction in case of error
+        await connection.rollback();
+        console.error("Error adding publisher:", err.message);
+        res.status(500).json({ error: "Failed to add publisher" });
+    } finally {
+        // Release the connection
+        connection.release();
+    }
+});
+
+app.delete('/deletePublisher/:id', async (req, res) => {
+    const { id } = req.params; // Publisher ID
+
+    const connection = await pool.promise().getConnection();
+
+    try {
+        // Begin transaction
+        await connection.beginTransaction();
+
+        // Step 1: Delete the record from the `publisher` table
+        const deletePublisherSql = 'DELETE FROM publisher WHERE Publisher_ID = ?';
+        const [deleteResult] = await connection.query(deletePublisherSql, [id]);
+
+        if (deleteResult.affectedRows === 0) {
+            // If no rows were affected, the publisher was not found
+            await connection.rollback();
+            return res.status(404).json({ message: "Publisher not found." });
+        }
+
+        // Commit the transaction
+        await connection.commit();
+
+        // Respond with success
+        res.status(200).json({ message: "Publisher deleted successfully." });
+
+    } catch (err) {
+        // Rollback the transaction in case of error
+        await connection.rollback();
+        console.error("Error deleting publisher:", err.message);
+        res.status(500).json({ error: "Failed to delete publisher." });
+    } finally {
+        // Release the connection
+        connection.release();
+    }
+});
+
+app.get('/getPublishers', async (req, res) => {
+    const connection = await pool.promise().getConnection();
+
+    try {
+        const sql = `
+            SELECT 
+                Publisher_ID,
+                Country,
+                Name 
+            FROM publisher
+        `;
+
+        const [publishers] = await connection.query(sql);
+
+        if (publishers.length === 0) {
+            return res.status(404).json({ message: "No publishers found." });
+        }
+
+        res.status(200).json(publishers);
+
+    } catch (err) {
+        console.error("Error fetching publishers:", err.message);
+        res.status(500).json({ error: "Failed to fetch publishers." });
+    } finally {
+        connection.release();
+    }
+});
+
+app.post('/logout', (req, res) => {
+    // Clear HttpOnly cookies by setting them to expire in the past
+    res.cookie('refreshtoken', '', { expires: new Date(0), httpOnly: true, path: '/' });
+    // Send a response indicating successful logout
+    res.json({ message: 'Logged out successfully' });
+    // .status(200)
+  });
 
 
 app.listen(8081, () => {

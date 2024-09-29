@@ -98,11 +98,8 @@ const PopularBooks = () => {
         <div data-aos="zoom-in">
           <Slider {...settings}>
             {PopularBooksData.map((data) => (
-              <div className="my-6">
-                <div
-                  key={data.id}
-                  className="flex flex-col gap-4 shadow-lg py-8 px-6 mx-4 rounded-xl  bg-primary/20 relative"
-                >
+              <div key={data.id} className="my-6">
+                <div className="flex flex-col gap-4 shadow-lg py-8 px-6 mx-4 rounded-xl  bg-primary/20 relative">
                   <div className="  mb-4">
                     <img
                       src={data.img}

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
+import { Link } from 'react-router-dom';
 
 const Users = () => {
 
@@ -16,25 +17,25 @@ const Users = () => {
     
     <div className="relative mx-auto max-w-5xl text-center">
       <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent  text-4xl sm:text-4xl ">
-        Manage Your Library
+        Manage User Accounts
       </span>
       <h2 className="w-full text-gray-700 my-3 flex items-center justify-center font-medium text-xl tracking-wider ">
-        Effortlessly organize and maintain your collection with intuitive tools
       </h2>
     </div>
 
     
 
     <div className="relative mx-auto max-w-7xl z-10 grid grid-cols-1 gap-10 pt-14 sm:grid-cols-2 lg:grid-cols-3">
-      {/*<div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">*/}
-      <a href='/books/add' className='hover:text-white hover:scale-110 duration-200'>
+      
+      <Link to="/users/search" className='hover:text-white hover:scale-110 duration-200'>
+      
                 <div
                   
                   className="flex flex-col gap-4 shadow-lg py-4 px-0 mx-4 rounded-xl  bg-primary/20 relative"
                 >
                   <div className="  mb-1">
                     <img
-                      src='https://ucare.inhersight.com/336ace3d-f01b-403d-b9d4-ef455bee9ef4/-/format/auto/-/quality/lighter/-/progressive/yes/-/resize/800x/'
+                      src='https://media.istockphoto.com/id/1271072224/photo/hand-using-laptop-and-press-screen-to-search-browsing-on-the-internet-online.jpg?b=1&s=612x612&w=0&k=20&c=fD9joNxvw48aTCcmvbepRV_UzLy_PazXv78O6a-57qw='
                       alt=""
                       className="rounded-xl w-[90%] h-70 mx-auto"
                     />
@@ -43,24 +44,24 @@ const Users = () => {
                   <div className="flex flex-col items-center gap-4">
                     <div className="space-y-3 px-3">
                       <h1 className="text-2xl text-center font-bold text-black/80  font-cursive2">
-                        Add Book
+                        Search Users
                       </h1>
-                      <p className="text-sm text-center text-gray-600">Quickly add new books to your library with all the essential details, ensuring your collection stays up-to-date.</p>
+                      <p className="text-sm text-center text-gray-600">Allows to find and retrieve information about the library users</p>
                     </div>
                   </div>
                   
                 
-             {/*</div>*/}
+             
       </div>
-     </a>
-     <a href='/books/remove' className='hover:text-white hover:scale-110 duration-200'>
+     </Link>
+     <Link to="/users/issue" className='hover:text-white hover:scale-110 duration-200'>
       <div
                   
                   className="flex flex-col gap-4 shadow-lg py-4 px-0 mx-4 rounded-xl  bg-primary/20 relative"
                 >
                   <div className="  mb-1">
                     <img
-                      src='https://cdn.absolutemgmt.com/wp-content/uploads/2022/09/Woman-Packing-Box.webp'
+                      src='https://live.staticflickr.com/8078/8314929977_28fd740070_b.jpg'
                       alt=""
                       className="rounded-xl w-[90%] h-70 mx-auto"
                     />
@@ -69,24 +70,24 @@ const Users = () => {
                   <div className="flex flex-col items-center gap-4">
                     <div className="space-y-3 px-3">
                       <h1 className="text-2xl text-center font-bold text-black/80  font-cursive2">
-                        Remove Book
+                        Issue a Book
                       </h1>
-                      <p className="text-sm text-center text-gray-600">Easily remove books from your library to keep your collection organized and relevant.</p>
+                      <p className="text-sm text-center text-gray-600">Enables users to borrow a book, recording the transaction details</p>
                     </div>
                   </div>
                   
                 
-             {/*</div>*/}
+             
       </div>
-      </a>
-      <a href='/books/search' className='hover:text-white hover:scale-110 duration-200'>
+      </Link>
+      <Link to="/users/return" className='hover:text-white hover:scale-110 duration-200'>
       <div
                   
                   className="flex flex-col gap-4 shadow-lg py-4 px-0 mx-4 rounded-xl  bg-primary/20 relative"
                 >
                   <div className="  mb-1">
                     <img
-                      src='https://www.usedbooksearch.net/wp-content/uploads/2020/10/used-book-search-online.png'
+                      src='https://alliancefrancaise.lk/wp-content/uploads/2022/05/library.jpg'
                       alt=""
                       className="rounded-xl w-[90%] h-70 mx-auto"
                     />
@@ -95,29 +96,20 @@ const Users = () => {
                   <div className="flex flex-col items-center gap-4">
                     <div className="space-y-3 px-3">
                       <h1 className="text-2xl text-center font-bold text-black/80  font-cursive2">
-                        Search Book
+                        Return a Book
                       </h1>
-                      <p className="text-sm text-center text-gray-600">Quickly find any book in your collection with our efficient search feature.</p>
+                      <p className="text-sm text-center text-gray-600">Allows users to return a borrowed book to the library and updates the system</p>
                     </div>
-                  </div>
-                  
-                
-             {/*</div>*/}
+                  </div>  
       </div>
-      </a>
-
-
-
+      </Link>
     </div>
   </section>
 
 </div>
-
-
-         
       <Footer/>
     </>
   )
 }
 
-export default Users
+export default Users

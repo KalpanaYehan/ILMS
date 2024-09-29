@@ -1,7 +1,10 @@
-import { useState } from "react" 
+import { useState,useContext} from "react" 
+import { useNavigate } from "react-router-dom"
 import Logo from "../../assets/website/newLogo.jpg"
 import User from "../../assets/website/user.jpg"
 import React from "react"
+import axios from 'axios'
+import { AuthContext } from "../../context/AuthContext"
 
 
 const Menu = [
@@ -10,34 +13,53 @@ const Menu = [
         name : "Home",
         link :'/home'
     },
-    {
-        id : 2,
-        name : "Users",
-        link :"/users"
-    },
+    // {
+    //     id : 2,
+    //     name : "Users",
+    //     link :"/users"
+    // },
     {
         id :3,
         name : "Books",
         link : "/books"
     },
-    {
-        id :4,
-        name : "About",
-        link : "/about"
-    },
-    {
-        id :5,
-        name : "Help",
-        link : "/help"
-    }
+    // {
+    //     id :4,
+    //     name : "About",
+    //     link : "/about"
+    // },
+  
 ]
 
 const Navbar = () => {
 
+  const{user} =useContext(AuthContext)
+  const navigate = useNavigate();
   const[dropDownOpen,setDropDownOpen] =useState(false)
+  axios.defaults.withCredentials = true
+
   const toggleDropdown = ()=>{
     setDropDownOpen(!dropDownOpen)
   }
+
+  const handleLogout=()=>{
+    // Remove JWT token from cookies or localStorage
+    
+    axios
+        .post('http://localhost:8081/logout')
+        .then((res)=>{
+            if(res.data.message ==="Logged out successfully"){
+                document.cookie = 'accesstoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+                localStorage.removeItem('user')
+                // enqueueSnackbar('successfully logged out', { variant: 'success' });
+                navigate('/');
+            }
+        })
+        .catch((err)=>{
+            console.log(err)
+        }) 
+    }
+
   return (
     <div className='bg-gradient-to-r from-secondary/70 to-secondary/20 bg-gray-900 text-white'>
         <div className='container py-2'>
@@ -62,8 +84,24 @@ const Navbar = () => {
                                 <a href={menu.link} className='inline-block text-xl py-4 textwhite/70  hover:text-white hover:scale-110 duration-200'>
                                     {menu.name}
                                 </a>
-                            </li>
+                            </li> 
                         ))}
+                        {/* Conditionally render the "Users" link if the user is an admin */}
+                        {user && user.role === 'user' && (
+                            <li key="4">
+                                <a href="/about" className='inline-block text-xl py-4 text-white  hover:scale-110 duration-200'>
+                                    About
+                                </a>
+                            </li>
+                        )}
+                           {/* Conditionally render the "Users" link if the user is an admin */}
+                           {user && user.role === 'admin' && (
+                            <li key="2">
+                                <a href="/users" className='inline-block text-xl py-4 text-white  hover:scale-110 duration-200'>
+                                    Users
+                                </a>
+                            </li>
+                        )}
 
                     </ul>
                     <div className="relative">
@@ -76,9 +114,12 @@ const Navbar = () => {
                             <a href="/profile" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                 Profile
                             </a>
-                            <a href="/" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
+                            {/* <a href="/" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                 Logout
-                            </a>
+                            </a> */}
+                            <button className='block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200' onClick={handleLogout}>
+                                Logout
+                            </button>
                             
                             </div>
                         )}

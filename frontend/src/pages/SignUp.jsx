@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import Logo from "../assets/website/newLogo.jpg"
 import { Link } from 'react-router-dom';
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
 
   const [formData, setFormData] = useState({
-    name: '',
-    nic: '',
+    firstName: '',
+    lastName: '',
     phoneNumber: '',
     email: '',
     password: '',
     userType: 'member',
   });
+
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,12 +27,19 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
+    axios.post("http://localhost:8081/register", formData)
+       .then(result => {
+         console.log(result);
+         navigate('/');
+       })
+       .catch(err => console.log(err));
+
+
     console.log(formData)
     window.alert("Account created")
     setFormData({
-      name: '',
-      nic: '',
+      firstName: '',
+      lastName: '',
       phoneNumber: '',
       email: '',
       password: '',
@@ -55,29 +66,29 @@ const SignUp = () => {
             />
         <form >
           <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
-              Name
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="fname">
+              First Name
             </label>
             <input
               type="text"
-              name="name"
-              id="name"
-              placeholder='Enter Your Name'
-              value={formData.name}
+              name="firstName"
+              id="fname"
+              placeholder='Enter Your First Name'
+              value={formData.firstName}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="nic">
-              NIC
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="sname">
+              Last Name
             </label>
             <input
               type="text"
-              name="nic"
-              id="nic"
-              placeholder='12345678V'
-              value={formData.nic}
+              name="lastName"
+              id="sname"
+              placeholder='Enter Your Second Name'
+              value={formData.lastName}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />

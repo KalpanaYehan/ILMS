@@ -1,14 +1,20 @@
-import { React, useState } from 'react'
+import { React, useState,useContext} from 'react'
 import Logo from "../assets/website/newLogo.jpg"
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
 
   const [formData, setFormData] = useState({
-    userId: '',
+    userEmail: '',
     password: '',
   });
-
+  
+  const navigate = useNavigate()
+  const{setUser} = useContext(AuthContext)
+  axios.defaults.withCredentials =true
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -19,7 +25,32 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
+    axios.post("http://localhost:8081/login", { userEmail:formData.userEmail, password:formData.password })
+       .then(result => {
+         console.log(result);
+         if (result.data.message === 'success') {
+          const { accesstoken:token, user } = result.data;
+                
+          // Store the token and update the user context
+          localStorage.setItem('user', JSON.stringify(user));
+          setUser(user);
+          alert("logged in successfully")
+          // Redirect to the cars page
+           navigate('/home');
+         }else {
+          alert(result.data.message)
+        }
+       })
+       .catch(err => {
+        // Check if the error response exists and handle accordingly
+        if (err.response && err.response.data) {
+          alert(`Error: ${err.response.data.message}`);
+        } else {
+          alert('An unexpected error occurred.');
+        }
+        console.log(err); // For debugging
+      });
+    
   };
 
   return (
@@ -41,15 +72,15 @@ const Login = () => {
           <div className="mt-10 mx-auto w-full max-w-sm">
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label htmlFor="userId" className="block text-sm font-medium leading-6 text-gray-900">
-                  User ID
+                <label htmlFor="userEmail" className="block text-sm font-medium leading-6 text-gray-900">
+                  User Email
                 </label>
                 <div className="mt-2">
                   <input
-                    id="userId"
-                    name="userId"
+                    id="userEmail"
+                    name="userEmail"
                     type="text"
-                    value={formData.userId}
+                    value={formData.userEmail}
                     onChange={handleChange}
                     required
                     className="indent-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
@@ -62,12 +93,6 @@ const Login = () => {
                   <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                     Password
                   </label>
-
-                  {/*<div className="text-sm">
-                    <a href="#" className='text-yellow-950'>
-                      Forgot password?
-                    </a>
-                  </div>*/}
 
                 </div>
                 <div className="mt-2">
@@ -85,14 +110,14 @@ const Login = () => {
               </div>
   
               <div>
-               <Link to={(formData.userId == 'user' && formData.password == 'user') ? "/home" : "/"}>
+               
                 <button
                   type="submit"
                   className="mt-10 flex w-full justify-center rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Sign in
                 </button>
-               </Link>
+             
               </div>
             </form>
   
