@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
-import Books from '../assets/website/books.jpg';
+import axios from 'axios'
 
 function SearchUser() {
     const location = useLocation();
@@ -11,13 +11,16 @@ function SearchUser() {
   const [userDetails, setUserDetails] = useState(null);
   const [error, setError] = useState(null);
   const userDetailsRef = useRef(null); // Create a reference
+  const [user, setUser] = useState(null);
 
   // Dummy user data
+  {/*}
   const users = [
     { id: '1001U', firstName: 'Emily', lastName: 'Johnson', email: 'emily.johnson@example.com', phoneNumber: '555-1234',password: '1234',nic: '1100', img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' },
     { id: '1002U', firstName: 'John', lastName: 'Smith', email: 'john.smith@example.com', phoneNumber: '555-5678',password: '5678',nic: '1200', img: 'https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=2189' },
     { id: '1003U', firstName: 'Michael', lastName: 'Brown', email: 'michael.brown@example.com', phoneNumber: '555-8765',password: '2468',nic: '1300', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUs73Mz3FqhV8uy2F5TGw_jGvFdzGirConJA&s' },
   ];
+*/}
 
   const handleSubmit = (e) => {
       e.preventDefault();
@@ -27,10 +30,24 @@ function SearchUser() {
       setError(null);
 
       // Find the user based on userId
-      const user = users.find((user) => user.id === userId);
+      //const user = users.find((user) => user.id === userId);
+
+      axios.get('http://localhost:8081/user/' + userId)
+        .then(res => setUser(res.data[0])    
+        )
+        .catch(err => console.log(err));
 
       if (user) {
-          setUserDetails(user);
+          setUserDetails({ 
+            id: user.Member_ID, 
+            firstName: user.First_Name, 
+            lastName: user.Last_Name, 
+            email: user.Email, 
+            phoneNumber: user.Contact_No,
+            password: user.Password,
+            nic: '1100', 
+            img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' 
+        });
           setTimeout(() => {
               userDetailsRef.current?.scrollIntoView({ behavior: 'smooth' }); // Scroll to user details
           }, 100);
