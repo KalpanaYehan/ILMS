@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
+import axios from 'axios'
 
 function GiveBook() {
 
@@ -22,9 +23,21 @@ function GiveBook() {
         date: ''
     });
 
+    const [user, setUser] = useState({});
+    const [book, setBook] = useState({});
+
+    const Admin_ID = userData.id;
+
+    let currentDate = new Date();
+    let year = currentDate.getFullYear();
+    let month = String(currentDate.getMonth() + 1).padStart(2, '0');  // Months are 0-indexed
+    let day = String(currentDate.getDate()).padStart(2, '0');
+    const Issued_Date = `${year}-${month}-${day}`;
+
     // Create a reference for the details section
     const detailsRef = useRef(null);
 
+    {/*
     const users = [
         { id: '1001U', firstName: 'Emily', lastName: 'Johnson', email: 'emily.johnson@example.com', phoneNumber: '555-1234', password: '1234', nic: '1100', img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' },
         { id: '1002U', firstName: 'John', lastName: 'Smith', email: 'john.smith@example.com', phoneNumber: '555-5678', password: '5678', nic: '1200', img: 'https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=2189' },
@@ -62,6 +75,8 @@ function GiveBook() {
         },
     ];
 
+    */}
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -69,17 +84,46 @@ function GiveBook() {
         setBookDetails(null);
         setError(null);
 
-        const user = users.find((user) => user.id === userId);
-        const book = books.find((book) => book.id === bookId);
+        //const user = users.find((user) => user.id === userId);
+        //const book = books.find((book) => book.id === bookId);
 
+        axios.get('http://localhost:8081/user/' + userId)
+        .then(res => setUser(res.data[0])    
+        )
+        .catch(err => console.log(err));
+
+
+        axios.get('http://localhost:8081/book/' + bookId)
+        .then(res => {
+            setBook(res.data[0])
+            console.log(res.data[0])} 
+        )
+        .catch(err => console.log(err));
+
+        
         if (user) {
-            setUserDetails(user);
+            setUserDetails({ 
+                id: user.Member_ID, 
+                firstName: user.First_Name, 
+                lastName: user.Last_Name, 
+                email: user.Email, 
+                phoneNumber: user.Contact_No,
+                password: user.Password,
+                nic: '1100', 
+                img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' 
+            });
         } else {
             setError('User not found');
         }
 
         if (book) {
-            setBookDetails(book);
+            setBookDetails({
+                id: book.Title_ID,
+                title: book.Title_name,
+                author: book.Name,
+                img: "https://images-na.ssl-images-amazon.com/images/I/61%2B3z1o4oUL.jpg",
+                availability: book.Status,
+            });
         } else {
             setError('Book not found');
         }
@@ -92,6 +136,17 @@ function GiveBook() {
 
     const handleClick = (e) => {
         e.preventDefault();
+
+        axios.post('http://localhost:8081/issue', {Admin_ID, userId, bookId, Issued_Date})
+        .then((res) => {
+            console.log(res);
+            window.alert(res.data.Message);
+        })
+        .catch((err) => console.log(err));
+
+        
+
+        {/*
         setFormData({
             userId,
             bookId,
@@ -99,6 +154,7 @@ function GiveBook() {
         });
         console.log(formData);
         window.alert("Added to waiting list");
+        */}
     };
 
     return (
@@ -175,7 +231,7 @@ function GiveBook() {
                             </div>
                         )}
 
-{(bookDetails && userDetails && bookDetails.availability === "true") && (
+{(bookDetails && userDetails && bookDetails.availability === 1) && (
     <button type="submit" onClick={handleClick} className="w-full justify-center mx-2 my-5 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         Add to waiting list
     </button>

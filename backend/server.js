@@ -34,6 +34,32 @@ app.get('/user/:id', (req, res) => {
     })
 })
 
+app.get('/book/:id', (req, res) => {
+    const sql = "SELECT * FROM `book title` INNER JOIN author ON `book title`.Author_ID = author.Author_ID WHERE `book title`.Title_ID = ?";
+    const id = req.params.id;
+    
+    db.query(sql, [id], (err, result) => {
+        if(err) return res.json({Message: "Error inside server"});
+        return res.json(result);
+    })
+})
+
+app.post('/issue', (req, res) => {
+    console.log(req.body) //test
+    const data = req.body;
+    const sql = "INSERT INTO issuebook (`Admin_ID`, `Member_ID`, `Book_ID`, `Issued_Date`) VALUES (?, ?, ?, ?)";
+
+    db.query(sql, [data.Admin_ID, data.userId, data.bookId, data.Issued_Date], (err, result) => {
+
+        //console.log(req.body)
+        //console.log(Admin_ID, userId, bookId, Issued_Date) 
+
+        if(err) return res.json({Message: "Error inserting data into database"});
+        return res.json({ Message: "Book issued", data: result });
+    })
+})
+
+
 app.listen(8081, () => {
     console.log("Listening")
 })
