@@ -94,9 +94,7 @@ function GiveBook() {
 
 
         axios.get('http://localhost:8081/book/' + bookId)
-        .then(res => {
-            setBook(res.data[0])
-            console.log(res.data[0])} 
+        .then(res => setBook(res.data[0]) 
         )
         .catch(err => console.log(err));
 

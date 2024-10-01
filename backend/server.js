@@ -44,18 +44,36 @@ app.get('/book/:id', (req, res) => {
     })
 })
 
+app.post('/return', (req, res) => {
+    //console.log(req.body)
+    const sql = "SELECT * FROM `issuebook` WHERE Member_ID = ? AND Book_ID = ? AND `Returned_Date` IS NULL";
+    const userId = req.body.userId;
+    const bookId = req.body.bookId;
+    
+    db.query(sql, [userId, bookId], (err, result) => {
+        if(err) return res.json({Message: "Error inside server"});
+        return res.json(result);
+    })
+})
+
 app.post('/issue', (req, res) => {
-    console.log(req.body) //test
-    const data = req.body;
+    const { Admin_ID, userId, bookId, Issued_Date } = req.body;
     const sql = "INSERT INTO issuebook (`Admin_ID`, `Member_ID`, `Book_ID`, `Issued_Date`) VALUES (?, ?, ?, ?)";
 
-    db.query(sql, [data.Admin_ID, data.userId, data.bookId, data.Issued_Date], (err, result) => {
-
-        //console.log(req.body)
-        //console.log(Admin_ID, userId, bookId, Issued_Date) 
-
+    db.query(sql, [Admin_ID, userId, bookId, Issued_Date], (err, result) => {
         if(err) return res.json({Message: "Error inserting data into database"});
         return res.json({ Message: "Book issued", data: result });
+    })
+})
+
+app.post('/returnbook', (req, res) => {
+    const { id, date } = req.body;
+    //console.log(id, date)
+    const sql = "UPDATE issuebook SET `Returned_Date` = ? WHERE `Issue_ID` = ? AND `Returned_Date` IS NULL";
+
+    db.query(sql, [date, id], (err, result) => {
+        if(err) return res.json({Message: "Error inserting data into database"}); 
+        return res.json({ Message: "Book returned", data: result });
     })
 })
 

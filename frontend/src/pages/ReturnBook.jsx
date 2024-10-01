@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
+import axios from 'axios'
 import { Link } from 'react-router-dom';
 
 function ReturnBook() {
@@ -19,49 +20,19 @@ function ReturnBook() {
   // Reference for the details section
   const detailsRef = useRef(null);
 
-  const users = [
-    { id: '1001U', firstName: 'Emily', lastName: 'Johnson', email: 'emily.johnson@example.com', phoneNumber: '555-1234',password: '1234',nic: '1100', img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' },
-    { id: '1002U', firstName: 'John', lastName: 'Smith', email: 'john.smith@example.com', phoneNumber: '555-5678',password: '5678',nic: '1200', img: 'https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=2189' },
-    { id: '1003U', firstName: 'Michael', lastName: 'Brown', email: 'michael.brown@example.com', phoneNumber: '555-8765',password: '2468',nic: '1300', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUs73Mz3FqhV8uy2F5TGw_jGvFdzGirConJA&s' },
-  ];
+  const [user, setUser] = useState({});
+  const [book, setBook] = useState({});
+  const [record, setRecord] = useState({});
+  const [fine, setFine] = useState(0);
 
-  const books = [
-    {
-      id: '1001B',
-      title: "Harry Potter",
-      author: "J K Rowling",
-      img: 'https://m.media-amazon.com/images/I/81q77Q39nEL._AC_UF1000,1000_QL80_.jpg',
-      availability: "false"
-    },
-    {
-      id: '1002B',
-      title: "Men and Dreams",
-      author: "Kochery C Shibu",
-      img: "https://i.pinimg.com/736x/00/aa/87/00aa8776fb28fb2b2914d9d427a711ec.jpg",
-      availability: "true"
-    },
-    {
-      id: '1003B',
-      title: "Charlottes Web",
-      author: "E B white",
-      img: "https://images-na.ssl-images-amazon.com/images/I/61%2B3z1o4oUL.jpg",
-      availability:"true"
-    },
-    {
-      id: '1004B',
-      title: "The Lord of the Rings",
-      author: "J R R Tolkien",
-      img: "https://i0.wp.com/quicksilvertranslate.com/wp-content/uploads/top-books-learn-english-2.jpg",
-      availability:"false"
-    },
-  ];
+  let currentDate = new Date();
+  let year = currentDate.getFullYear();
+  let month = String(currentDate.getMonth() + 1).padStart(2, '0');  // Months are 0-indexed
+  let day = String(currentDate.getDate()).padStart(2, '0');
+  const date = `${year}-${month}-${day}`;
 
-  const waitingList = [
-    { id: '1001R', bookId: "1001B", date: '2024-8-21', userId: "1001U" },
-    { id: '1002R', bookId: "1002B", date: '2024-8-21', userId: "1002U" },
-    { id: '1003R', bookId: "1003B", date: '2024-8-22', userId: "1003U" },
-  ];
-
+  const Admin_ID = userData.id;
+  
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -70,85 +41,169 @@ function ReturnBook() {
     setRecordDetails(null);
     setError(null);
 
-    const user = users.find((user) => user.id === userId);
-    const book = books.find((book) => book.id === bookId);
-    const record = waitingList.find((record) => record.userId === userId && record.bookId === bookId);
+    //const user = users.find((user) => user.id === userId);
+    //const book = books.find((book) => book.id === bookId);
+    //const record = waitingList.find((record) => record.userId === userId && record.bookId === bookId);
 
-    if (user) {
-      setUserDetails(user);
-    } else {
-      setError('User not found');
-    }
+    axios.post('http://localhost:8081/return', {userId, bookId})
+    .then(res => {
+      setRecord(res.data[0])
+      if (record) {
+        const Returned_Date = new Date(date);  // Convert string date to Date object
+        const Issued_Date = new Date(record.Issued_Date);  // Convert issued date to Date object
 
-    if (book) {
-      setBookDetails(book);
-    } else {
-      setError('Book not found');
-    }
+  // Calculate the difference in time (in milliseconds)
+  const timeDifference = Returned_Date - Issued_Date;
 
-    if (record) {
-      setRecordDetails(record);
-    } else {
-      setError('Record not found');
-    }
+  // Convert the time difference from milliseconds to days
+  const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+  // Calculate fine if there's a delay
+  const calculatedFine = daysDifference - 14 > 0 ? (daysDifference -14) * 5 : 0;
+
+  setFine(calculatedFine);
+
+        
+
+              setRecordDetails({ 
+                id: record.Issue_ID, 
+                bookId: record.Book_ID, 
+                date: record.Issued_Date, 
+                userId: record.Member_ID ,
+                fine: fine
+              });
+              
+            } else {
+              setError('Record not found');
+            }
+            //console.log(res.data[0])
+            } 
+        )
+        .catch(err => console.log(err));
+
+        axios.get('http://localhost:8081/user/' + userId)
+        .then(res => {
+          setUser(res.data[0])
+          if (user) {
+            setUserDetails({ 
+              id: user.Member_ID, 
+              firstName: user.First_Name, 
+              lastName: user.Last_Name, 
+              email: user.Email, 
+              phoneNumber: user.Contact_No,
+              password: user.Password,
+              nic: '1100', 
+              img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' 
+          });
+          } else {
+            setError('User not found');
+          }
+          //console.log(res.data[0])
+        }  
+        )
+        .catch(err => console.log(err));
+
+
+        axios.get('http://localhost:8081/book/' + bookId)
+        .then(res => {
+          setBook(res.data[0])
+          if (book) {
+            setBookDetails({
+              id: book.Title_ID,
+              title: book.Title_name,
+              author: book.Name,
+              img: "https://images-na.ssl-images-amazon.com/images/I/61%2B3z1o4oUL.jpg",
+              availability: book.Status,
+          });
+          } else {
+            setError('Book not found');
+          }
+          //console.log(res.data[0])
+        } 
+        )
+        .catch(err => console.log(err));
+
 
     // Scroll to details section if all details are found
-    if (user && book && record ) {
+    if (user && book && record) {
+
       detailsRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const handleClick = (e) => {
     e.preventDefault();
-    console.log({
-      userId,
-      bookId,
-      date: new Date(recordDetails.date),
-      returnDate: new Date()
-    });
-    window.alert("Book returned");
+
+    const id = record.Issue_ID;
+
+
+
+    //console.log(id, date)
+
+    axios.post('http://localhost:8081/returnbook/', {id, date})
+        .then(res => {
+            window.alert(res.data.Message);
+            } 
+        )
+        .catch(err => console.log(err));
   };
 
   // Card components within the ReturnBook component
-  const UserCard = ({ user }) => (
+  const UserCard = ({userDetails}) => {
+    if (!userDetails) return null; // Ensure userDetails is not null
+    return (
     <div className="flex shadow-md rounded-lg p-4 my-4 bg-white">
       <div className="flex-shrink-0">
-        <img className="h-24 w-24 rounded-full" src={user.img} alt={user.name} />
+        <img className="h-24 w-24 rounded-full" src={userDetails.img} alt={userDetails.firstName + userDetails.lastName} />
       </div>
       <div className="ml-4">
         <h2 className="text-xl font-bold text-gray-900 mb-2">User Details</h2>
-        <p className="text-gray-700"><strong>First Name:</strong> {user.firstName}</p>
-        <p className="text-gray-700"><strong>Last Name:</strong> {user.lastName}</p>
-        <p className="text-gray-700"><strong>NIC:</strong> {user.nic}</p>
-        <p className="text-gray-700"><strong>Phone Number:</strong> {user.phoneNumber}</p>
-        <p className="text-gray-700"><strong>E-mail:</strong> {user.email}</p>
+        <p className="text-gray-700"><strong>First Name:</strong> {userDetails.firstName}</p>
+        <p className="text-gray-700"><strong>Last Name:</strong> {userDetails.lastName}</p>
+        <p className="text-gray-700"><strong>NIC:</strong> {userDetails.nic}</p>
+        <p className="text-gray-700"><strong>Phone Number:</strong> {userDetails.phoneNumber}</p>
+        <p className="text-gray-700"><strong>E-mail:</strong> {userDetails.email}</p>
       </div>
     </div>
-  );
+  )};
 
-  const BookCard = ({ book }) => (
+  const BookCard = ({bookDetails}) => {
+    if (!bookDetails) return null; // Ensure bookDetails is not null
+    return (
     <div className="flex shadow-md rounded-lg p-4 my-4 bg-white">
       <div className="flex-shrink-0">
-        <img className="h-24 w-24 rounded-lg" src={book.img} alt={book.title} />
+        <img className="h-24 w-24 rounded-lg" src={bookDetails.img} alt={bookDetails.title} />
       </div>
       <div className="ml-4">
         <h2 className="text-xl font-bold text-gray-900 mb-2">Book Details</h2>
-        <p className="text-gray-700"><strong>Title:</strong> {book.title}</p>
-        <p className="text-gray-700"><strong>Author:</strong> {book.author}</p>
+        <p className="text-gray-700"><strong>Title:</strong> {bookDetails.title}</p>
+        <p className="text-gray-700"><strong>Author:</strong> {bookDetails.author}</p>
       </div>
     </div>
-  );
+  )};
 
-  const RecordCard = ({ record }) => (
-    <div className="flex shadow-md rounded-lg p-4 my-4 bg-white">
-      <div className="ml-4">
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Record Details</h2>
-        <p className="text-gray-700"><strong>Record ID:</strong> {record.id}</p>
-        <p className="text-gray-700"><strong>Date:</strong> {record.date}</p>
+  const RecordCard = ({recordDetails}) => {
+    if (!recordDetails) return null; // Ensure recordDetails is not null
+  
+    // Function to handle date formatting safely
+    const formatDate = (date) => {
+      if (!date) return 'N/A'; // Return 'N/A' if date is null or undefined
+      const issuedDate = new Date(date);
+      return isNaN(issuedDate) ? 'Invalid Date' : issuedDate.toISOString().slice(0, 10);
+    };
+  
+    return (
+      <div className="flex shadow-md rounded-lg p-4 my-4 bg-white">
+        <div className="ml-4">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Record Details</h2>
+          <p className="text-gray-700"><strong>Record ID:</strong> {recordDetails.id}</p>
+          <p className="text-gray-700"><strong>Issued Date:</strong> {formatDate(recordDetails.date)}</p>
+          <p className="text-gray-700"><strong>Fine:</strong> {recordDetails.fine} Rupees</p>
+        </div>
       </div>
-    </div>
-  );
-
+    );
+  };
+  
   return (
     <>
       <Navbar type={userType} data={userData}/>
@@ -192,9 +247,9 @@ function ReturnBook() {
 
           {recordDetails && (
             <div ref={detailsRef}>
-              <RecordCard record={recordDetails} />
-              <UserCard user={userDetails} />
-              <BookCard book={bookDetails} />
+              <RecordCard recordDetails={recordDetails} />
+              <UserCard userDetails={userDetails} />
+              <BookCard bookDetails={bookDetails} />
               <button type="submit" onClick={handleClick} className="w-full justify-center mx-2 my-5 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Return Book</button>
             </div>
           )}
