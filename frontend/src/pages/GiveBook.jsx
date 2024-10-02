@@ -107,8 +107,8 @@ function GiveBook() {
                 email: user.Email, 
                 phoneNumber: user.Contact_No,
                 password: user.Password,
-                nic: '1100', 
-                img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' 
+                nic: user.nic, 
+                img: user.img
             });
         } else {
             setError('User not found');
@@ -119,7 +119,7 @@ function GiveBook() {
                 id: book.Title_ID,
                 title: book.Title_name,
                 author: book.Name,
-                img: "https://images-na.ssl-images-amazon.com/images/I/61%2B3z1o4oUL.jpg",
+                img: book.img,
                 availability: book.Status,
             });
         } else {

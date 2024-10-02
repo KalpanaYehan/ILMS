@@ -33,7 +33,8 @@ function ReturnBook() {
 
   const Admin_ID = userData.id;
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     setUserDetails(null);
@@ -45,7 +46,7 @@ function ReturnBook() {
     //const book = books.find((book) => book.id === bookId);
     //const record = waitingList.find((record) => record.userId === userId && record.bookId === bookId);
 
-    axios.post('http://localhost:8081/return', {userId, bookId})
+    await axios.post('http://localhost:8081/return', {userId, bookId})
     .then(res => {
       setRecord(res.data[0])
       if (record) {
@@ -81,7 +82,7 @@ function ReturnBook() {
         )
         .catch(err => console.log(err));
 
-        axios.get('http://localhost:8081/user/' + userId)
+        await axios.get('http://localhost:8081/user/' + userId)
         .then(res => {
           setUser(res.data[0])
           if (user) {
@@ -92,8 +93,8 @@ function ReturnBook() {
               email: user.Email, 
               phoneNumber: user.Contact_No,
               password: user.Password,
-              nic: '1100', 
-              img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' 
+              nic: user.nic, 
+              img: user.img 
           });
           } else {
             setError('User not found');
@@ -104,7 +105,7 @@ function ReturnBook() {
         .catch(err => console.log(err));
 
 
-        axios.get('http://localhost:8081/book/' + bookId)
+        await axios.get('http://localhost:8081/book/' + bookId)
         .then(res => {
           setBook(res.data[0])
           if (book) {
@@ -112,7 +113,7 @@ function ReturnBook() {
               id: book.Title_ID,
               title: book.Title_name,
               author: book.Name,
-              img: "https://images-na.ssl-images-amazon.com/images/I/61%2B3z1o4oUL.jpg",
+              img: book.img,
               availability: book.Status,
           });
           } else {
@@ -131,7 +132,7 @@ function ReturnBook() {
     }
   };
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
 
     const id = record.Issue_ID;
@@ -140,7 +141,7 @@ function ReturnBook() {
 
     //console.log(id, date)
 
-    axios.post('http://localhost:8081/returnbook/', {id, date})
+    await axios.post('http://localhost:8081/returnbook/', {id, date})
         .then(res => {
             window.alert(res.data.Message);
             } 

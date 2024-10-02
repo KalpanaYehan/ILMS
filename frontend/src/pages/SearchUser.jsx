@@ -45,8 +45,8 @@ function SearchUser() {
             email: user.Email, 
             phoneNumber: user.Contact_No,
             password: user.Password,
-            nic: '1100', 
-            img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' 
+            nic: user.nic, 
+            img: user.img 
         });
           setTimeout(() => {
               userDetailsRef.current?.scrollIntoView({ behavior: 'smooth' }); // Scroll to user details
