@@ -10,7 +10,7 @@ const {verifyUser} = require('./middlewares/verifyUser.js');
 const app = express();
 app.use(cors({origin:"http://localhost:5173",
   credentials:true,
-  methods:["GET","POST","DELETE"]}
+  methods:["GET","POST","DELETE","PUT"]}
 
 ))
 app.use(express.json());
@@ -346,7 +346,8 @@ app.get('/getBooks', async (req, res) => {
             SELECT 
                 a.Title_name,
                 b.Name AS Author,
-                a.Title_ID
+                a.Title_ID,
+                a.Img_url
             FROM book_title a
             JOIN author b ON b.Author_ID = a.Author_ID
         `;
@@ -362,6 +363,99 @@ app.get('/getBooks', async (req, res) => {
     } catch (err) {
         console.error("Error fetching books:", err.message);
         res.status(500).json({ error: "Failed to fetch books." });
+    } finally {
+        connection.release();
+    }
+});
+
+app.get('/getBook/:id', async (req, res) => {
+    const { id } = req.params; // Extract the Title_ID from the route parameters
+    const connection = await pool.promise().getConnection();
+
+    try {
+        const sql = `
+           SELECT 
+                a.Title_name,
+                b.Name AS Author,
+                c.Category_name,
+                d.Name AS Publisher_name,
+                a.ISBN_Number,
+                a.NoOfPages,
+                a.No_of_copies,
+                a.Img_url
+
+            FROM 
+                book_title a
+            JOIN 
+                author b ON b.Author_ID = a.Author_ID
+            JOIN 
+                category c ON c.Category_ID = a.Category_ID -- Join with the category table
+            JOIN 
+                publisher d ON d.Publisher_ID = a.Publisher_ID -- Join with the publisher table
+            WHERE 
+                a.Title_ID = ?
+
+        `;
+
+        const [book] = await connection.query(sql, [id]);
+
+        if (book.length === 0) {
+            return res.status(404).json({ message: "Book not found." });
+        }
+
+        res.status(200).json(book[0]); // Return the single book object
+
+    } catch (err) {
+        console.error("Error fetching book:", err.message);
+        res.status(500).json({ error: "Failed to fetch book." });
+    } finally {
+        connection.release();
+    }
+});
+
+// Express route to edit a book
+app.put('/editBook/:id', async (req, res) => {
+    const connection = await pool.promise().getConnection();
+    const { id } = req.params; // Title_ID
+    const {
+        bookName,   // New book title
+        author,    // New author ID
+        category,  // New category ID
+        isbn, // New publisher ID
+        publisher,
+        pages,
+        copies      // New image URL
+    } = req.body;    // Assume these details come from the frontend
+
+    try {
+        // SQL query to update book details
+        const sql = `
+            UPDATE book_title
+            SET 
+                Title_name = ?, 
+                Author_ID = (SELECT Author_ID FROM author WHERE Name = ?), 
+                Category_ID = (SELECT Category_ID FROM category WHERE Category_name = ?), 
+                Publisher_ID = (SELECT Publisher_ID FROM publisher WHERE Name = ?),
+                ISBN_Number = ?,
+                NoOfPages = ?,
+                No_of_copies = ?
+            WHERE 
+                Title_ID = ?
+        `;
+
+        const values = [bookName, author, category, publisher, isbn, pages,copies,id];
+
+        const [result] = await connection.query(sql, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Book not found." });
+        }
+
+        res.status(200).json({ message: "Book updated successfully." });
+
+    } catch (err) {
+        console.error("Error updating book:", err.message);
+        res.status(500).json({ error: "Failed to update book." });
     } finally {
         connection.release();
     }
@@ -485,6 +579,7 @@ app.get('/getAuthors', async (req, res) => {
     try {
         const sql = `
             SELECT 
+                Img_url,
                 Author_ID,
                 Country,
                 Name
@@ -506,6 +601,46 @@ app.get('/getAuthors', async (req, res) => {
         connection.release();
     }
 });
+
+// Express route to edit an author
+app.put('/editAuthor/:id', async (req, res) => {
+    const connection = await pool.promise().getConnection();
+    const { id } = req.params; // Author_ID
+    const { author_name, country } = req.body; // New author name and country from frontend
+
+    try {
+        // SQL query to update author details
+        const sql = `
+            UPDATE author
+            SET 
+                Name = ?, 
+                Country = ?
+            WHERE 
+                Author_ID = ?
+        `;
+
+        const values = [author_name, country, id];
+
+        const [result] = await connection.query(sql, values);
+
+        // Check if any rows were affected
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Author not found." });
+        }
+
+        // If author updated successfully
+        res.status(200).json({ message: "Author updated successfully." });
+
+    } catch (err) {
+        // Handle any errors during the update process
+        console.error("Error updating author:", err.message);
+        res.status(500).json({ error: "Failed to update author." });
+    } finally {
+        // Release the connection back to the pool
+        connection.release();
+    }
+});
+
 
 app.post('/addPublisher', async (req, res) => {
     const { publisherName,country } = req.body;  // Assuming you get the publisher's name from the request body
