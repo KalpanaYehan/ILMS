@@ -110,7 +110,7 @@ function BookSearch() {
             {books.map((book) => (
               <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={book.Title_name}>
                 {/* <div className='w-[10%] mr-6'>
-                  <img src={`${post.img}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
+                  <img src={`${book.Img_url}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
                 </div> */}
                 <div className='w-[70%]'>
                   <h2 className="text-2xl font-bold">{book.Title_name}</h2>

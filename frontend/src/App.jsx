@@ -15,6 +15,10 @@ import GiveBook from './pages/GiveBook'
 import Publishers from './pages/Publishers'
 import Authors from './pages/Authors'
 import { AuthProvider } from './context/AuthContext'
+import UpdateBook from './pages/UpdateBook'
+import UpdateAuthor from './pages/UpdateAuthor'
+import UpdatePublisher from './pages/UpdatePublisher'
+import BookDetails from './pages/BookDetails'
 
 
 
@@ -33,10 +37,14 @@ const App = () => {
           <Route path='/about' element={<About/>}></Route>
           <Route path='/books' element={<Books/>}></Route>
           <Route path='/books/add' element={<AddBook/>}></Route>
+          <Route path='/books/details/:id' element={<BookDetails/>}></Route>
+          <Route path='/books/edit/:id' element={<UpdateBook/>}></Route>
           <Route path='/books/books' element={<RemoveBook/>}></Route>
           <Route path='/books/search' element={<BookSearch/>}></Route>
           <Route path='/books/Publishers' element={<Publishers/>}></Route>
+          <Route path='/books/Publishers/edit/:id' element={<UpdatePublisher/>}></Route>
           <Route path='/books/Authors' element={<Authors/>}></Route>
+          <Route path='/books/Authors/edit/:id' element={<UpdateAuthor/>}></Route>
           <Route path='/help' element={<AddBook/>}></Route>
         </Routes>
       </AuthProvider>

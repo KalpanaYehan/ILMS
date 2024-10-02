@@ -1,9 +1,11 @@
 import React, { useState,useEffect } from 'react';
 // import { Posts } from '../assets/Content';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
-import DeleteModal from '../components/models/DeleteModal';
+import PublisherDeleteModal from '../components/models/PublisherDeleteModal';
+// import DeleteModal from '../components/models/DeleteModal';
 //import Trash from './icons/trash.jpg'
 
 function Publishers() {
@@ -149,9 +151,12 @@ function Publishers() {
                     more details
                   </button> */}
                 </div>
-                <div className='flex items-center'>
+                <div className='flex items-center gap-2'>
+                  <Link to= {`/books/Publishers/edit/${publisher.Publisher_ID}`}  className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+                    Update
+                  </Link>
                   <button onClick={()=>handleDeleteClick(publisher.Publisher_ID)} className="mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
-                  Delete
+                    Delete
                   </button>
                 </div>
               </div>
@@ -161,9 +166,12 @@ function Publishers() {
         </div>
       </div>
 
-      <DeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedPublisherId} refreshBooks={refreshPublishers}>
+      {/* <DeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedPublisherId} refreshBooks={refreshPublishers}>
       
-      </DeleteModal>
+      </DeleteModal> */}
+      <PublisherDeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedPublisherId} refreshBooks={refreshPublishers}>
+      
+      </PublisherDeleteModal>
       <Footer/>
     </>
   );

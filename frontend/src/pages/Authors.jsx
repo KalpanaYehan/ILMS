@@ -1,9 +1,11 @@
 import React, { useState,useEffect } from 'react';
 import { Posts } from '../assets/Content';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 import DeleteModal from '../components/models/DeleteModal';
+import AuthorDeleteModel from '../components/models/AuthorDeleteModal';
 //import Trash from './icons/trash.jpg'
 
 function Authors() {
@@ -131,13 +133,16 @@ function Authors() {
             {authors.map((author) => (
               <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={author.Name}>
                 <div className='w-[10%] mr-6'>
-                  {/* <img src={`${.img}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/> */}
+                  <img src={`${author.Img_url}`} alt="pic" className="rounded-full w-20 h-20  mx-auto my-auto"/>
                 </div>
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{author.Name}</h2>
                   <p className="text-gray-700 text-xl">{author.Country}</p>
                 </div>
-                <div className='flex items-center'>
+                <div className='flex items-center gap-2'>
+                  <Link to={`/books/Authors/edit/${author.Author_ID}`} className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+                    Update
+                  </Link>
                   <button onClick={()=>handleDeleteClick(author.Author_ID)} className="mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
                   Delete
                   </button>
@@ -149,8 +154,10 @@ function Authors() {
         </div>
       </div>
 
-      <DeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedAuthorId} refreshBooks={refreshAuthors}>
-      </DeleteModal>
+      {/* <DeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedAuthorId} refreshBooks={refreshAuthors}>
+      </DeleteModal> */}
+      <AuthorDeleteModel open={open} onclose={()=>setOpen(false)} bookId={selectedAuthorId} refreshBooks={refreshAuthors}>
+      </AuthorDeleteModel>
       <Footer/>
     </>
   );

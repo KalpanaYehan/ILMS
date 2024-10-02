@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 // import { Posts } from '../assets/Content';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 import DeleteModal from '../components/models/DeleteModal';
@@ -131,7 +132,7 @@ function RemoveBook() {
             {books.map((book) => (
               <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20 gap-2" key={book.Title_name}>
                 <div className='w-[10%] mr-6'>
-                  <img src={`${book.img}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
+                  <img src={`${book.Img_url}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
                 </div>
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{book.Title_name}</h2>
@@ -145,18 +146,18 @@ function RemoveBook() {
                       Not available
                     </button>
                   )}
-                  <button className="text-xs mt-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 hover:scale-105">
+                  <Link to={`/books/details/${book.Title_ID}`} className="text-xs mt-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 hover:scale-105">
                     more details
-                  </button>
+                  </Link>
                 </div>
                 <div className='flex items-center'>
-                  <button className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
-                  Update
-                  </button>
+                  <Link to={`/books/edit/${book.Title_ID}`} className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+                    Update
+                  </Link>
                 </div>
                 <div className='flex items-center'>
                   <button onClick={()=>handleDeleteClick(book.Title_ID)} className="mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
-                  Delete
+                    Delete
                   </button>
                 </div>
               </div>

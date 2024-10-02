@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
@@ -6,6 +7,7 @@ import axios from 'axios'
 
 const AddBook = () => {
 
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     bookName: '',
     author: '',
@@ -55,7 +57,7 @@ const AddBook = () => {
         if (res.data.message === 'success') {
           // setLoading(false); // Stop loading
           // enqueueSnackbar('Book added successfully', { variant: 'success' });
-          navigate('/books'); // Navigate to the books list page
+          navigate('/books/books'); // Navigate to the books list page
         } else if (res.data.message === 'unsuccess') {
           // setLoading(false); // Stop loading
           // enqueueSnackbar('Failed to add book. Please log in.', { variant: 'error' });
