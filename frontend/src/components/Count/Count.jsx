@@ -6,12 +6,12 @@ const Count = () => {
     {
       id: 1,
       label: "Books Available",
-      count: 300,
+      count: 400,
     },
     {
       id: 2,
       label: "Registered Members",
-      count: 100,
+      count: 50,
     },
   ];
 

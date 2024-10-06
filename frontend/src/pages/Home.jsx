@@ -9,7 +9,6 @@ const Home = () => {
   return (
     <>
     <Navbar/>
-    <ChatBot/>
     <div className=''>
         <div className='w-full h-[60vh] bg-cover bg-center bg-fixed' 
           style={{
@@ -19,9 +18,9 @@ const Home = () => {
         >
       </div>
         <div className=''>
-            <h1 className='text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900  my-6'>Welcome To NexLib</h1>
+            <h1 className='my-6 text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900'>Welcome To NexLib</h1>
             
-              <div className='text-lg text-gray-700 font-semibold max-w-6xl mx-auto text-justify px-6'>
+              <div className='max-w-6xl px-6 mx-auto text-lg font-semibold text-justify text-gray-700'>
                 <p>The Interactive Library Management System (ILMS) is a cutting-edge, 
                     all-inclusive system created to improve user experience and transform 
                     library administration. The goal is to create an application that can 
@@ -36,7 +35,7 @@ const Home = () => {
                 </p>
               </div>
             
-            <button>Our Books</button>
+           
         </div>
       <PopulerBooks/>
     </div>

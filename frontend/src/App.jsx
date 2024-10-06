@@ -7,16 +7,16 @@ import About from './pages/About'
 import AddBook from './pages/AddBook'
 
 import Books from './pages/Books'
-import Help from './pages/Help'
 import Login from './pages/Login'
 import SearchUser from './pages/SearchUser'
 import Users from './pages/Users'
 import SignUp from './pages/SignUp'
 import BookDetails from './pages/BookDetails';
-
+//import Visualization from './pages/Visualization'
+import Profile from './pages/Profile'
 const App = () => {
   return (
-    <div className='bg-white'>
+    <div className=''>
       <Routes>
         <Route path='/' element={<Login/>}></Route>
         <Route path='/signup' element={<SignUp/>}></Route>
@@ -27,7 +27,9 @@ const App = () => {
         <Route path='/books/add' element={<AddBook/>}></Route>
         <Route path='/books/remove' element={<RemoveBook/>}></Route>
         <Route path='books/search' element={<BookSearch/>}></Route>
-        <Route path='/help' element={<AddBook/>}></Route>
+        {/* <Route path='/help' element={<Visualization/>}></Route> */}
+        <Route path='/Profile'element={<Profile/>}></Route>
+        
         <Route path='/details/:id' element={<BookDetails />} />
       </Routes>
     </div>

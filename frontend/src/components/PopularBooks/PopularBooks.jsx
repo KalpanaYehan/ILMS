@@ -8,10 +8,10 @@ const PopularBooksData = [
     id: 1,
     name: "Harry Potter",
     author: "J K Rowling",
-    img : 'https://m.media-amazon.com/images/I/81q77Q39nEL._AC_UF1000,1000_QL80_.jpg'
+    img: 'https://m.media-amazon.com/images/I/81q77Q39nEL._AC_UF1000,1000_QL80_.jpg'
   },
   {
-    id: 2,    
+    id: 2,
     name: "Men and Dreams",
     author: "Kochery C Shibu",
     img: "https://i.pinimg.com/736x/00/aa/87/00aa8776fb28fb2b2914d9d427a711ec.jpg",
@@ -98,19 +98,19 @@ const PopularBooks = () => {
         <div data-aos="zoom-in">
           <Slider {...settings}>
             {PopularBooksData.map((data) => (
-              <div key={data.id} className="my-6">
+              <div key={data.id} className="my-6 ">
                 <div
-                  className="relative flex flex-col gap-4 px-6 py-8 mx-4 shadow-lg rounded-xl bg-primary/20"
+                  className="relative flex flex-col h-full gap-4 px-6 py-8 mx-4 shadow-lg rounded-xl bg-primary/20"
                 >
-                  <div className="mb-4 ">
+                  <div className="flex-grow mb-4">
                     <img
                       src={data.img}
                       alt=""
-                      className="rounded-sm w-[90%] h-70 mx-auto"
+                      className="rounded-sm w-[90%] h-[250px] object-cover mx-auto"
                     />
                   </div>
                   {/* content section */}
-                  <div className="flex flex-col items-center gap-4">
+                  <div className="flex flex-col items-center flex-grow gap-4">
                     <div className="space-y-3">
                       <h1 className="text-xl font-bold text-black/80 font-cursive2">
                         {data.name}
