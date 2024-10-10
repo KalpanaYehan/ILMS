@@ -1,12 +1,12 @@
-import React from 'react'
-import Login from './pages/Login'
+import React from "react";
+import Login from "./pages/Login";
 
 const App = () => {
   return (
     <>
-    <Login/>
+      <Login />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
