@@ -88,14 +88,14 @@ app.post('/login', (req, res) => {
                     return res.status(500).json({ message: "Error comparing passwords" });
                 }
                 if (isMatch) {
-                    const accesstoken= jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '15s' });
-                    const refreshtoken = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '1m' });
-                    res.cookie("accesstoken", accesstoken,{maxAge:15000});
-                    res.cookie("refreshtoken", refreshtoken,{maxAge:60000,secure:true,sameSite:'strict'})
+                    const accesstoken= jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '15m' });
+                    const refreshtoken = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '1d' });
+                    res.cookie("accesstoken", accesstoken,{maxAge:900000});
+                    res.cookie("refreshtoken", refreshtoken,{maxAge:86400000,secure:true,sameSite:'strict'})
                     res.status(200).json({ 
                         message: "success",
                         accesstoken: accesstoken,
-                        user: { username: user.First_name, role: user.role, email: user.Email}
+                        user: { userId:user.Admin_ID, username: user.First_name, role: user.role, email: user.Email}
                     });
                 } else {
                     res.status(401).json({ message: "The password is incorrect" });
@@ -382,7 +382,8 @@ app.get('/getBook/:id', async (req, res) => {
                 a.ISBN_Number,
                 a.NoOfPages,
                 a.No_of_copies,
-                a.Img_url
+                a.Img_url,
+                a.Status
 
             FROM 
                 book_title a
@@ -746,6 +747,125 @@ app.post('/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
     // .status(200)
   });
+
+
+
+
+
+
+  //sageeth's backend
+// import express from 'express'
+// import mysql from 'mysql2'
+// import cors from 'cors'
+
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+
+// const db = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "ILMS",
+//     database: "library_system"
+// })
+
+// // Check MySQL connection
+// {/*
+// db.connect((err) => {
+//     if (err) {
+//         console.error('Error connecting to the database:', err);
+//         return;
+//     }
+//     console.log('Connected to MySQL database');
+// });
+// */}
+
+app.get('/user/:id', async(req, res) => {
+    const connection = await pool.promise().getConnection();
+    try{
+        const sql = "SELECT * FROM admin WHERE Admin_ID = ? AND role = 'user'";
+        const id = req.params.id;
+        const [user] = await connection.query(sql,[id]);
+    
+    if (user.length === 0) {
+        return res.status(404).json({ message: "No publishers found." });
+    }
+
+    res.status(200).json(user[0]);
+
+    } catch (err) {
+        console.error("Error fetching user:", err.message);
+        res.status(500).json({ error: "Failed to fetch user." });
+    } finally {
+        connection.release();
+    }
+    
+})
+
+// app.get('/book/:id', (req, res) => {
+//     const sql = "SELECT * FROM book title INNER JOIN author ON book title.Author_ID = author.Author_ID WHERE book title.Title_ID = ?";
+//     const id = req.params.id;
+    
+//     db.query(sql, [id], (err, result) => {
+//         if(err) return res.json({Message: "Error inside server"});
+//         return res.json(result);
+//     })
+// })
+
+app.get('/issueDetails', async(req, res) => {
+    const connection = await pool.promise().getConnection();
+    try{
+        const sql = "SELECT * FROM issuebook WHERE Member_ID = ? AND Book_ID = ? AND Returned_Date IS NULL";
+        const customerId = req.query.customerId;
+        const bookId = req.query.bookId;
+        const [result] = await connection.query(sql,[customerId, bookId])
+        res.json(result[0])
+    }catch (err) {
+        console.error("Error fetching issued books:", err.message);
+        res.status(500).json({ error: "Failed to fetch issued books."});
+    } finally {
+        connection.release();
+    }
+})
+
+
+app.post('/issue', async(req, res) => {
+    const connection = await pool.promise().getConnection();
+    try{
+        const { Admin_ID, customerId, bookId, Issued_Date } = req.body;
+        const sql = "INSERT INTO issuebook (Admin_ID, Member_ID, Book_ID, Issued_Date) VALUES (?, ?, ?, ?)";
+        const [result] = await connection.query(sql,[Admin_ID, customerId, bookId, Issued_Date])
+        res.json({ Message: "Book issued", data: result })
+    } catch (err) {
+        console.error("Error fetching user:", err.message);
+        res.status(500).json({ error: "Failed to fetch user."});
+    } finally {
+        connection.release();
+    }
+    
+})
+
+app.post('/returnbook', async(req, res) => {
+    const connection = await pool.promise().getConnection();
+    try{
+        const { id, date,fine } = req.body;
+        const sql = "UPDATE issuebook SET Returned_Date = ?,Fine = ? WHERE Issue_ID = ? AND Returned_Date IS NULL";
+        const [result] = await connection.query(sql,[date,fine,id])
+        res.json({ Message: "Book returned", data: result })
+    }catch (err) {
+        console.error("Error returning book", err.message);
+        res.status(500).json({ error: "Failed to return book"});
+    } finally {
+        connection.release();
+    }
+
+})
+
+
+
+
+
+
 
 
 app.listen(8081, () => {

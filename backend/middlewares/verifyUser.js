@@ -23,8 +23,8 @@ const renewToken = (req,res)=>{
             if(err){ res.json("Token is wrong")
 
             }else{
-                const accesstoken = jwt.sign({ Email: decoded.Email, role: decoded.role },"default-secret", { expiresIn: '15s' });
-                res.cookie("accesstoken", accesstoken,{maxAge:15000});
+                const accesstoken = jwt.sign({ Email: decoded.Email, role: decoded.role },"default-secret", { expiresIn: '15m' });
+                res.cookie("accesstoken", accesstoken,{maxAge:900000});
                 exist=true
             }
         })

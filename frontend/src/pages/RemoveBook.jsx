@@ -1,10 +1,11 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useContext } from 'react';
 // import { Posts } from '../assets/Content';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 import DeleteModal from '../components/models/DeleteModal';
+import { AuthContext } from '../context/AuthContext';
 //import Trash from './icons/trash.jpg'
 
 function RemoveBook() {
@@ -16,6 +17,7 @@ function RemoveBook() {
   const [result, setResult] = useState();
   const [open,setOpen] = useState(false)
   const [selectedBookId, setSelectedBookId] = useState(null);
+  const{user} =useContext(AuthContext);
 
   useEffect(()=>{
     // setLoading(true)
@@ -121,11 +123,13 @@ function RemoveBook() {
               <option value="descending">Descending</option>
             </select>
           </div>
+          {user && user.role === 'admin' && (
           <div className='flex items-center'>
               <a href='/books/add' className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
                   Add New
               </a>
           </div>
+          )}
         </form>
         <div className="mx-auto px-[15%] min-h-24">
           <div className="grid grid-cols-1 gap-4">
@@ -142,14 +146,16 @@ function RemoveBook() {
                       Available
                     </button>
                     ) : (
-                    <button className="text-xs mt-2 px-4 py-1 bg-red-600 text-white rounded-full">
-                      Not available
+                    <button className="text-xs mt-2 px-4 py-1 bg-green-600 text-white rounded-full">
+                      Available
                     </button>
                   )}
                   <Link to={`/books/details/${book.Title_ID}`} className="text-xs mt-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 hover:scale-105">
                     more details
                   </Link>
                 </div>
+                {user && user.role === 'admin' && (
+                <>
                 <div className='flex items-center'>
                   <Link to={`/books/edit/${book.Title_ID}`} className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
                     Update
@@ -160,6 +166,8 @@ function RemoveBook() {
                     Delete
                   </button>
                 </div>
+                </>
+                )}
               </div>
             ))}
             {books.length === 0 && <h2 className="text-center text-red-600">Empty List!</h2>}
