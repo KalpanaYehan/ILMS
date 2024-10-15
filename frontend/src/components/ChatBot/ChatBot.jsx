@@ -15,11 +15,11 @@ const ChatBot = () => {
 
     return (
         <div style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-            <button className='text-white bg-primary px-3 py-2 font-semibold rounded-lg shadow-md'
+            <button className='font-semibold rounded-lg shadow-md'
                 onClick={handleChatBubbleClick}
                
             >
-                Ask me
+                <img src="https://img.freepik.com/free-vector/chatbot-chat-message-vectorart_78370-4104.jpg" alt="chatbot" className='rounded-full w-16 h-16'/>
             </button>
             {chatBubbleVisible && (
                 <iframe

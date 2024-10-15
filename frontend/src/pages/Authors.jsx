@@ -12,7 +12,7 @@ function Authors() {
   const [posts, setPost] = useState([]);
   const [authors,setAuthor] = useState([])
   const [query, setQuery] = useState('');
-  const [sortField, setSortField] = useState('title');
+  const [sortField, setSortField] = useState('Name');
   const [sortBy, setSortBy] = useState('ascending');
   const [result, setResult] = useState();
   const [open,setOpen] = useState(false)
@@ -53,36 +53,50 @@ function Authors() {
   };
 
   const handleChange = (e) => {
-    const results = Posts.filter((post) => {
+    const results = posts.filter((post) => {
       if (e.target.value === "") return posts;
-      return post["title"].toLowerCase().includes(e.target.value.toLowerCase());
+      return post[sortField].toLowerCase().includes(e.target.value.toLowerCase());
     });
 
     setResult(results);
     setQuery(e.target.value);
-    // setList(sortFun(results, sortBy, sortField));
+    setAuthor(sortFun(results, sortBy, sortField));
   };
 
-//   const changeSortField = (field) => {
-//     setSortField(field);
-//     setQuery(query);
-//     setList(!result ? sortFun(posts, sortBy, field) : sortFun(result, sortBy, field));
-//   };
+  const changeSortField = (field) => {
+    setSortField(field);
+    const sortedAuthors = !result ? sortFun(posts, sortBy, field) : sortFun(result, sortBy, field);
+    setAuthor(sortedAuthors);
+  };
+  
+  const changeSortType = (type) => {
+    setSortBy(type);
+    const sortedAuthors = !result ? sortFun(posts, type, sortField) : sortFun(result, type, sortField);
+    setAuthor(sortedAuthors);
+  };
+  
 
-//   const changeSortType = (type) => {
-//     setSortBy(type);
-//     setQuery(query);
-//     setList(!result ? sortFun(posts, type, sortField) : sortFun(result, type, sortField));
-//   };
-
-//   const sortFun = (result, sortby, sortfield) => {
-//     if (sortby === 'ascending') {
-//       result.sort((a, b) => (a[sortfield] < b[sortfield] ? -1 : 1));
-//     } else if (sortby === 'descending') {
-//       result.sort((a, b) => (a[sortfield] < b[sortfield] ? 1 : -1));
-//     }
-//     return result;
-//   };
+  const sortFun = (Authors, sortby, sortfield) => {
+    const sortedAuthors = [...Authors]; // Create a copy of the books array
+  
+    if (sortby === 'ascending') {
+      sortedAuthors.sort((a, b) => {
+        if (typeof a[sortfield] === 'string' && typeof b[sortfield] === 'string') {
+          return a[sortfield].localeCompare(b[sortfield]); // Lexicographical comparison for strings
+        }
+        return a[sortfield] < b[sortfield] ? -1 : 1; // Comparison for numbers or other types
+      });
+    } else if (sortby === 'descending') {
+      sortedAuthors.sort((a, b) => {
+        if (typeof a[sortfield] === 'string' && typeof b[sortfield] === 'string') {
+          return b[sortfield].localeCompare(a[sortfield]); // Reverse lexicographical comparison for strings
+        }
+        return a[sortfield] < b[sortfield] ? 1 : -1; // Reverse comparison for numbers or other types
+      });
+    }
+    
+    return sortedAuthors;
+  };
 
   return (
     <>
@@ -107,8 +121,8 @@ function Authors() {
               onChange={(e) => changeSortField(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
-              <option value="title">Title</option>
-              <option value="author">Author</option>
+              <option value="Name">Name</option>
+              <option value="Country">Country</option>
             </select>
           </div>
           <div className="mb-4">
@@ -123,9 +137,9 @@ function Authors() {
             </select>
           </div>
           <div className='flex items-center'>
-            <button className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+            <a href = '/books/Authors/add' className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
                 Add New
-            </button>
+            </a>
           </div>
         </form>
         <div className="mx-auto px-[15%] min-h-24">
@@ -140,10 +154,10 @@ function Authors() {
                   <p className="text-gray-700 text-xl">{author.Country}</p>
                 </div>
                 <div className='flex items-center gap-2'>
-                  <Link to={`/books/Authors/edit/${author.Author_ID}`} className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+                  <Link to={`/books/Authors/edit/${author.Author_ID}`} className="text-xs mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
                     Update
                   </Link>
-                  <button onClick={()=>handleDeleteClick(author.Author_ID)} className="mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
+                  <button onClick={()=>handleDeleteClick(author.Author_ID)} className="text-xs mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
                   Delete
                   </button>
                 </div>

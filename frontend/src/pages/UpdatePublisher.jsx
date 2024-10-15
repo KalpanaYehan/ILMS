@@ -53,18 +53,18 @@ const UpdatePublisher = () => {
         if (res.data.message === 'successfully updated') {
           setLoading(false);
         //   enqueueSnackbar('Publisher updated successfully', { variant: 'success' });
-          navigate('/publishers'); // Navigate back to the list of publishers
+          navigate('/books/publishers'); // Navigate back to the list of publishers
         } else if (res.data.message === 'publisher not found') {
           setLoading(false);
         //   enqueueSnackbar('Publisher not found', { variant: 'error' });
-          navigate('/publishers');
+          navigate('/books/publishers');
         } else if (res.data.message === 'send all required fields') {
           setLoading(false);
         //   enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
         } else {
           setLoading(false);
         //   enqueueSnackbar('Update unsuccessful', { variant: 'error' });
-          navigate('/publishers');
+          navigate('/books/publishers');
         }
       })
       .catch((error) => {
@@ -94,6 +94,7 @@ const UpdatePublisher = () => {
                   value={formData.publisherName || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -107,6 +108,7 @@ const UpdatePublisher = () => {
                   value={formData.location || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
                 />
               </div>
 

@@ -39,7 +39,7 @@ function BookSearch() {
   const handleChange = (e) => {
     const results = posts.filter((post) => {
       if (e.target.value === "") return posts;
-      return post["Title_name"].toLowerCase().includes(e.target.value.toLowerCase());
+      return post[sortField].toLowerCase().includes(e.target.value.toLowerCase());
     });
 
     setResult(results);

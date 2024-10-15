@@ -16,6 +16,7 @@ const AddBook = () => {
     publisher: '',
     pages: '',
     copies: '',
+    Img_url: ''
   });
 
   const handleChange = (e) => {
@@ -45,13 +46,13 @@ const AddBook = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Collecting form data (assuming you have state variables for each field)
-    const { bookName, author, category, publisher, isbn, pages, copies } = formData;
+    const { bookName, author, category, publisher, isbn, pages, copies, Img_url } = formData;
   
     // setLoading(true); // Setting loading state while making the request
   
     // Make the API call to add a book
     axios
-      .post('http://localhost:8081/addBook', { bookName, author, category, publisher, isbn, pages, copies })
+      .post('http://localhost:8081/addBook', { bookName, author, category, publisher, isbn, pages, copies,Img_url })
       .then((res) => {
         // Handle different response cases
         if (res.data.message === 'success') {
@@ -83,7 +84,9 @@ const AddBook = () => {
         isbn:'',
         publisher: '',
         pages: '',
-        copies: '',})
+        copies: '',
+        Img_url:'',
+      })
   };
   
 
@@ -107,6 +110,7 @@ const AddBook = () => {
               value={formData.bookName}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -121,6 +125,7 @@ const AddBook = () => {
               value={formData.author}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -135,6 +140,7 @@ const AddBook = () => {
               value={formData.category}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -149,6 +155,7 @@ const AddBook = () => {
               value={formData.publisher}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -191,6 +198,21 @@ const AddBook = () => {
               value={formData.copies}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="Img_url">
+              Image URL
+            </label>
+            <input
+              type="text"
+              name="Img_url"
+              id="Img_url"
+              placeholder='Enter Image URL'
+              value={formData.Img_url}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
          

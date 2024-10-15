@@ -14,6 +14,7 @@ const UpdateBook = () => {
     publisher: '',
     pages: '',
     copies: '',
+    Img_url: '',
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const UpdateBook = () => {
           publisher: response.data.Publisher_name,
           pages: response.data.NoOfPages,
           copies: response.data.No_of_copies,
+          Img_url:response.data.Img_url
         });
         setLoading(false);
       })
@@ -104,6 +106,7 @@ const UpdateBook = () => {
                   value={formData.bookName || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -117,6 +120,7 @@ const UpdateBook = () => {
                   value={formData.author || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -130,6 +134,7 @@ const UpdateBook = () => {
                   value={formData.category || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -143,6 +148,7 @@ const UpdateBook = () => {
                   value={formData.publisher || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -182,12 +188,26 @@ const UpdateBook = () => {
                   value={formData.copies || ''}
                   onChange={handleChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="Img_url">
+                  Image URL
+                </label>
+                <input
+                  type="text"
+                  name="Img_url"
+                  placeholder="Enter Image URL"
+                  value={formData.Img_url || ''}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
               </div>
 
               <button
                 type="submit"
-                className="mt-6 w-full p-3 bg-yellow-500 text-white font-bold rounded-lg shadow-md hover:bg-yellow-600 transition-colors duration-300"
+                className="mb-5 flex w-full justify-center rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Update
               </button>

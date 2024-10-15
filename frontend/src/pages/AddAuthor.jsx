@@ -5,36 +5,13 @@ import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
 // import { useSnackbar } from 'notistack';
 
-const UpdateAuthor = () => {
+const AddAuthor = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     authorName: '',
     country: '',
     Img_url:''
   });
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { id } = useParams(); // Get the author ID from the route
-//   const { enqueueSnackbar } = useSnackbar();
-
-  // Fetch the author details on component mount
-  useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`http://localhost:8081/getAuthor/${id}`) // Assuming you have a GET endpoint for fetching an author by ID
-      .then((response) => {
-        setFormData({
-          authorName: response.data.Name,
-          country: response.data.Country,
-          Img_url:response.data.Img_url
-        });
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        // enqueueSnackbar('Error fetching author details', { variant: 'error' });
-        console.log(error);
-      });
-  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,38 +23,36 @@ const UpdateAuthor = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
     
     // Make the API call to update the author
     axios
-      .put(`http://localhost:8081/editAuthor/${id}`, formData) // Assuming a PUT endpoint for updating an author
+      .post(`http://localhost:8081/addAuthor`, formData) // Assuming a PUT endpoint for updating an author
       .then((res) => {
-        if (res.data.message === 'Author successfully updated') {
-          setLoading(false);
+        if (res.data.message === 'Author successfully added') {
           console.log(res.data.message)
         //   enqueueSnackbar('Author updated successfully', { variant: 'success' });
           navigate('/books/authors'); // Navigate back to the list of authors
-        } else if (res.data.message === 'author not found') {
-          setLoading(false);
-          console.log(res.data.message)
-        //   enqueueSnackbar('Author not found', { variant: 'error' });
-          navigate('/books/authors');
         } else if (res.data.message === 'send all required fields') {
-          setLoading(false);
           console.log(res.data.message)
         //   enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
         } else {
-          setLoading(false);
           console.log(res.data.message)
         //   enqueueSnackbar('Update unsuccessful', { variant: 'error' });
           navigate('/books/authors');
         }
       })
       .catch((error) => {
-        setLoading(false);
+        // setLoading(false);
         // enqueueSnackbar('Error updating author', { variant: 'error' });
         console.log(error);
       });
+      console.log(formData);
+      window.alert("Author Added");
+      setFormData({
+        authorName: '',
+        country: '',
+        Img_url:''
+      })
   };
 
   return (
@@ -85,9 +60,9 @@ const UpdateAuthor = () => {
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-customYellow">
         <div className="w-full max-w-md">
-          <h2 className="font-bold text-gray-900 text-center text-xl">Update Author</h2>
+          <h2 className="font-bold text-gray-900 text-center text-xl">Add Author</h2>
 
-          {loading ? <div>Loading...</div> : (
+         
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="authorName">
@@ -135,10 +110,10 @@ const UpdateAuthor = () => {
                 type="submit"
                 className="mt-6 w-full p-3 bg-yellow-500 text-white font-bold rounded-lg shadow-md hover:bg-yellow-600 transition-colors duration-300"
               >
-                Update
+                Add
               </button>
             </form>
-          )}
+          
         </div>
       </div>
       <Footer />
@@ -146,4 +121,4 @@ const UpdateAuthor = () => {
   );
 };
 
-export default UpdateAuthor;
+export default AddAuthor;

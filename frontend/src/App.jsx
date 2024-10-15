@@ -19,6 +19,8 @@ import UpdateBook from './pages/UpdateBook'
 import UpdateAuthor from './pages/UpdateAuthor'
 import UpdatePublisher from './pages/UpdatePublisher'
 import BookDetails from './pages/BookDetails'
+import AddAuthor from './pages/AddAuthor'
+import AddPublisher from './pages/AddPublisher'
 
 
 
@@ -42,8 +44,10 @@ const App = () => {
           <Route path='/books/books' element={<RemoveBook/>}></Route>
           <Route path='/books/search' element={<BookSearch/>}></Route>
           <Route path='/books/Publishers' element={<Publishers/>}></Route>
+          <Route path='/books/Publishers/add' element={<AddPublisher/>}></Route>
           <Route path='/books/Publishers/edit/:id' element={<UpdatePublisher/>}></Route>
           <Route path='/books/Authors' element={<Authors/>}></Route>
+          <Route path='/books/Authors/add' element={<AddAuthor/>}></Route>
           <Route path='/books/Authors/edit/:id' element={<UpdateAuthor/>}></Route>
           <Route path='/help' element={<AddBook/>}></Route>
         </Routes>

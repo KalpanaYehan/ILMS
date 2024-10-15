@@ -12,7 +12,7 @@ function Publishers() {
   const [posts, setPost] = useState([]);
   const [publishers,setPublisher] = useState([])
   const [query, setQuery] = useState('');
-  const [sortField, setSortField] = useState('title');
+  const [sortField, setSortField] = useState('Name');
   const [sortBy, setSortBy] = useState('ascending');
   const [result, setResult] = useState();
   const [open,setOpen] = useState(false)
@@ -42,7 +42,7 @@ function Publishers() {
 },[])
 
   const refreshPublishers = async () => {
-    const response = await axios.get("http://localhost:8081/getPublishers"); // Fetch the updated list of books
+    const response = await axios.get("http://localhost:8081/getPublishers"); // Fetch the updated list of publisher
     setPost(response.data)
     setPublisher(response.data)
   };
@@ -53,9 +53,9 @@ function Publishers() {
   };
 
   const handleChange = (e) => {
-    const results = Posts.filter((post) => {
+    const results = posts.filter((post) => {
       if (e.target.value === "") return posts;
-      return post["title"].toLowerCase().includes(e.target.value.toLowerCase());
+      return post[sortField].toLowerCase().includes(e.target.value.toLowerCase());
     });
 
     setResult(results);
@@ -63,26 +63,40 @@ function Publishers() {
     setPublisher(sortFun(results, sortBy, sortField));
   };
 
-//   const changeSortField = (field) => {
-//     setSortField(field);
-//     setQuery(query);
-//     setList(!result ? sortFun(posts, sortBy, field) : sortFun(result, sortBy, field));
-//   };
+  const changeSortField = (field) => {
+    setSortField(field);
+    const sortedpublisher = !result ? sortFun(posts, sortBy, field) : sortFun(result, sortBy, field);
+    setPublisher(sortedpublisher);
+  };
+  
+  const changeSortType = (type) => {
+    setSortBy(type);
+    const sortedpublisher = !result ? sortFun(posts, type, sortField) : sortFun(result, type, sortField);
+    setPublisher(sortedpublisher);
+  };
+  
 
-//   const changeSortType = (type) => {
-//     setSortBy(type);
-//     setQuery(query);
-//     setList(!result ? sortFun(posts, type, sortField) : sortFun(result, type, sortField));
-//   };
-
-//   const sortFun = (result, sortby, sortfield) => {
-//     if (sortby === 'ascending') {
-//       result.sort((a, b) => (a[sortfield] < b[sortfield] ? -1 : 1));
-//     } else if (sortby === 'descending') {
-//       result.sort((a, b) => (a[sortfield] < b[sortfield] ? 1 : -1));
-//     }
-//     return result;
-//   };
+  const sortFun = (publisher, sortby, sortfield) => {
+    const sortedpublisher = [...publisher]; // Create a copy of the publisher array
+  
+    if (sortby === 'ascending') {
+      sortedpublisher.sort((a, b) => {
+        if (typeof a[sortfield] === 'string' && typeof b[sortfield] === 'string') {
+          return a[sortfield].localeCompare(b[sortfield]); // Lexicographical comparison for strings
+        }
+        return a[sortfield] < b[sortfield] ? -1 : 1; // Comparison for numbers or other types
+      });
+    } else if (sortby === 'descending') {
+      sortedpublisher.sort((a, b) => {
+        if (typeof a[sortfield] === 'string' && typeof b[sortfield] === 'string') {
+          return b[sortfield].localeCompare(a[sortfield]); // Reverse lexicographical comparison for strings
+        }
+        return a[sortfield] < b[sortfield] ? 1 : -1; // Reverse comparison for numbers or other types
+      });
+    }
+    
+    return sortedpublisher;
+  };
 
   return (
     <>
@@ -107,8 +121,8 @@ function Publishers() {
               onChange={(e) => changeSortField(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
-              <option value="title">Title</option>
-              <option value="author">Author</option>
+              <option value="Name">Name</option>
+              <option value="Country">Country</option>
             </select>
           </div>
           <div className="mb-4">
@@ -123,9 +137,9 @@ function Publishers() {
             </select>
           </div>
           <div className='flex items-center'>
-            <button className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+            <a href='/books/Publishers/add'className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
                 Add New
-            </button>
+            </a>
           </div>
         </form>
         <div className="mx-auto px-[15%] min-h-24">
@@ -133,11 +147,11 @@ function Publishers() {
             {publishers.map((publisher) => (
               <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={publisher.Name}>
                 {/* <div className='w-[10%] mr-6'>
-                  <img src={`${book.img}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
+                  <img src={`$tPubsetPublisher.img}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
                 </div> */}
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{publisher.Name}</h2>
-                  <p className="text-gray-700 text-xl">{publisher.Country}</p>
+                  <p className="text-gray-700 text-xl">{publisher.Location}</p>
                   {/* {publishers.availability==="true"? (
                     <button className="text-xs mt-2 px-4 py-1 bg-green-600 text-white rounded-full">
                       Available
@@ -152,10 +166,10 @@ function Publishers() {
                   </button> */}
                 </div>
                 <div className='flex items-center gap-2'>
-                  <Link to= {`/books/Publishers/edit/${publisher.Publisher_ID}`}  className="mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
+                  <Link to= {`/books/Publishers/edit/${publisher.Publisher_ID}`}  className="text-xs mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">
                     Update
                   </Link>
-                  <button onClick={()=>handleDeleteClick(publisher.Publisher_ID)} className="mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
+                  <button onClick={()=>handleDeleteClick(publisher.Publisher_ID)} className="text-xs mt-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 hover:scale-105">
                     Delete
                   </button>
                 </div>
@@ -166,7 +180,7 @@ function Publishers() {
         </div>
       </div>
 
-      {/* <DeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedPublisherId} refreshBooks={refreshPublishers}>
+      {/* <DeleteModal open={open} onclose={()=>setOpen(false)}tPubsetPublisherId={selectedPublisherId} refreshpublisher={refreshPublishers}>
       
       </DeleteModal> */}
       <PublisherDeleteModal open={open} onclose={()=>setOpen(false)} bookId={selectedPublisherId} refreshBooks={refreshPublishers}>

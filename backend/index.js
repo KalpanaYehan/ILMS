@@ -5,6 +5,9 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const {verifyUser} = require('./middlewares/verifyUser.js');
+const authorsRout = require('./routes/authorsRout.js')
+const booksRout = require('./routes/booksRout.js')
+const publishersRout = require('./routes/publishersRout.js')
 
 
 const app = express();
@@ -55,7 +58,7 @@ app.post('/register', (req, res) => {
     bcrypt.hash(password, 5)
         .then((hash) => {
             
-            const sql = "INSERT INTO admin (First_name, Last_name, Email, Contact_No, Password) VALUES (?, ?, ?, ?, ?)";
+            const sql = "INSERT INTO member (First_name, Last_name, Email, Contact_No, Password) VALUES (?, ?, ?, ?, ?)";
             const values = [firstName, lastName, email, phoneNumber, hash];
 
             db.query(sql, values, (err, result) => {
@@ -76,7 +79,7 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
     const { userEmail, password } = req.body;
 
-    db.query('SELECT * FROM admin WHERE Email = ?', [userEmail], (error, results) => {
+    db.query('SELECT * FROM member WHERE Email = ?', [userEmail], (error, results) => {
         if (error) {
             return res.status(500).json({ message: "Internal server error" });
         }
@@ -95,7 +98,7 @@ app.post('/login', (req, res) => {
                     res.status(200).json({ 
                         message: "success",
                         accesstoken: accesstoken,
-                        user: { userId:user.Admin_ID, username: user.First_name, role: user.role, email: user.Email}
+                        user: { userId:user.Member_ID, username: user.First_name, role: user.Role, email: user.Email}
                     });
                 } else {
                     res.status(401).json({ message: "The password is incorrect" });
@@ -274,7 +277,7 @@ const pool = mysql.createPool({
 });
 
 app.post('/addBook', async (req, res) => {
-    const { bookName, author, category, publisher, isbn, pages, copies } = req.body;
+    const { bookName, author, category, publisher, isbn, pages, copies, Img_url } = req.body;
 
     const connection = await pool.promise().getConnection();
  
@@ -304,7 +307,7 @@ app.post('/addBook', async (req, res) => {
         const publisherId = publisherResult.insertId;
 
         // Step 4: Insert the book into the `book_title` table
-        const bookSql = 'INSERT INTO book_title (Category_ID, Author_ID, Publisher_ID, Title_name, No_of_copies, ISBN_Number, NoOfPages, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const bookSql = 'INSERT INTO book_title (Category_ID, Author_ID, Publisher_ID, Title_name, No_of_copies, ISBN_Number, NoOfPages, Status, Img_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const [bookResult] = await connection.query(bookSql, [
             categoryId,
             authorId,
@@ -314,6 +317,7 @@ app.post('/addBook', async (req, res) => {
             isbn,
             pages,
             1, // Status for available book
+            Img_url,
         ]);
         const titleId = bookResult.insertId;
 
@@ -425,7 +429,8 @@ app.put('/editBook/:id', async (req, res) => {
         isbn, // New publisher ID
         publisher,
         pages,
-        copies      // New image URL
+        copies,
+        Img_url      // New image URL
     } = req.body;    // Assume these details come from the frontend
 
     try {
@@ -439,12 +444,13 @@ app.put('/editBook/:id', async (req, res) => {
                 Publisher_ID = (SELECT Publisher_ID FROM publisher WHERE Name = ?),
                 ISBN_Number = ?,
                 NoOfPages = ?,
-                No_of_copies = ?
+                No_of_copies = ?,
+                Img_url = ?
             WHERE 
                 Title_ID = ?
         `;
 
-        const values = [bookName, author, category, publisher, isbn, pages,copies,id];
+        const values = [bookName, author, category, publisher, isbn, pages,copies,Img_url,id];
 
         const [result] = await connection.query(sql, values);
 
@@ -504,8 +510,12 @@ app.delete('/deleteBook/:id', async (req, res) => {
     }
 });
 
+//app.use('/books',booksRout)
+app.use('/authors',authorsRout)
+app.use('/publishers',publishersRout)
+
 app.post('/addAuthor', async (req, res) => {
-    const { authorName ,county } = req.body;  // Assuming you get the author's name from the request body
+    const { authorName ,country,Img_url } = req.body;  // Assuming you get the author's name from the request body
 
     const connection = await pool.promise().getConnection();
 
@@ -515,8 +525,8 @@ app.post('/addAuthor', async (req, res) => {
 
         // Step 1: Insert the author or update if it already exists
         const [authorResult] = await connection.query(
-            'INSERT INTO author (Name,Country) VALUES (?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
-            [authorName,county]
+            'INSERT INTO author (Name,Country,Img_url) VALUES (?,?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+            [authorName,country,Img_url]
         );
         const authorId = authorResult.insertId || authorResult.Author_ID;
 
@@ -603,11 +613,46 @@ app.get('/getAuthors', async (req, res) => {
     }
 });
 
+app.get('/getAuthor/:id', async (req, res) => {
+    const { id } = req.params; // Extract the Title_ID from the route parameters
+    const connection = await pool.promise().getConnection();
+
+    try {
+        const sql = `
+           SELECT 
+                Author_ID,
+                Name,
+                Country,
+                Img_url
+
+            FROM 
+                author
+            WHERE 
+                Author_ID = ?
+
+        `;
+
+        const [author] = await connection.query(sql, [id]);
+
+        if (author.length === 0) {
+            return res.status(404).json({ message: "Author not found." });
+        }
+
+        res.status(200).json(author[0]); // Return the single book object
+
+    } catch (err) {
+        console.error("Error fetching author:", err.message);
+        res.status(500).json({ error: "Failed to fetch author." });
+    } finally {
+        connection.release();
+    }
+});
+
 // Express route to edit an author
-app.put('/editAuthor/:id', async (req, res) => {
+app.put('/editAuthor/:id', async (req, res) => { 
     const connection = await pool.promise().getConnection();
     const { id } = req.params; // Author_ID
-    const { author_name, country } = req.body; // New author name and country from frontend
+    const { authorName, country,Img_url } = req.body; // New author name and country from frontend
 
     try {
         // SQL query to update author details
@@ -615,12 +660,13 @@ app.put('/editAuthor/:id', async (req, res) => {
             UPDATE author
             SET 
                 Name = ?, 
-                Country = ?
+                Country = ?,
+                Img_url = ?
             WHERE 
                 Author_ID = ?
         `;
 
-        const values = [author_name, country, id];
+        const values = [authorName, country,Img_url, id];
 
         const [result] = await connection.query(sql, values);
 
@@ -644,7 +690,7 @@ app.put('/editAuthor/:id', async (req, res) => {
 
 
 app.post('/addPublisher', async (req, res) => {
-    const { publisherName,country } = req.body;  // Assuming you get the publisher's name from the request body
+    const { publisherName,location } = req.body;  // Assuming you get the publisher's name from the request body
 
     const connection = await pool.promise().getConnection();
 
@@ -654,8 +700,8 @@ app.post('/addPublisher', async (req, res) => {
 
         // Step 1: Insert the publisher or update if it already exists
         const [publisherResult] = await connection.query(
-            'INSERT INTO publisher (Name,country) VALUES (?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
-            [publisherName,country]
+            'INSERT INTO publisher (Name,Location) VALUES (?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+            [publisherName,location]
         );
         const publisherId = publisherResult.insertId || publisherResult.Publisher_ID;
 
@@ -719,7 +765,7 @@ app.get('/getPublishers', async (req, res) => {
         const sql = `
             SELECT 
                 Publisher_ID,
-                Country,
+                Location,
                 Name 
             FROM publisher
         `;
@@ -739,6 +785,78 @@ app.get('/getPublishers', async (req, res) => {
         connection.release();
     }
 });
+
+app.get('/getPublisher/:id', async (req, res) => {
+    const { id } = req.params; // Extract the Title_ID from the route parameters
+    const connection = await pool.promise().getConnection();
+
+    try {
+        const sql = `
+           SELECT 
+                Publisher_ID,
+                Name,
+                Location
+            FROM 
+                publisher
+            WHERE 
+                Publisher_ID = ?
+
+        `;
+
+        const [publisher] = await connection.query(sql, [id]);
+
+        if (publisher.length === 0) {
+            return res.status(404).json({ message: "Publisher not found." });
+        }
+
+        res.status(200).json(publisher[0]); // Return the single book object
+
+    } catch (err) {
+        console.error("Error fetching publisher:", err.message);
+        res.status(500).json({ error: "Failed to fetch publisher." });
+    } finally {
+        connection.release();
+    }
+});
+
+app.put('/editPublisher/:id', async (req, res) => { 
+    const connection = await pool.promise().getConnection();
+    const { id } = req.params; // Publisher_ID
+    const { publisherName, location} = req.body; // New publisher details from frontend
+
+    try {
+        // SQL query to update publisher details
+        const sql = `
+            UPDATE publisher
+            SET 
+                Name = ?, 
+                Location = ?
+            WHERE 
+                Publisher_ID = ?
+        `;
+
+        const values = [publisherName, location, id];
+
+        const [result] = await connection.query(sql, values);
+
+        // Check if any rows were affected
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Publisher not found." });
+        }
+
+        // If publisher updated successfully
+        res.status(200).json({ message: "Publisher updated successfully." });
+
+    } catch (err) {
+        // Handle any errors during the update process
+        console.error("Error updating publisher:", err.message);
+        res.status(500).json({ error: "Failed to update publisher." });
+    } finally {
+        // Release the connection back to the pool
+        connection.release();
+    }
+});
+
 
 app.post('/logout', (req, res) => {
     // Clear HttpOnly cookies by setting them to expire in the past
@@ -862,10 +980,46 @@ app.post('/returnbook', async(req, res) => {
 })
 
 
+app.get('/popularBooks', async (req, res) => {
+    const connection = await pool.promise().getConnection();
+    
+    try {
+        const sql = `
+            SELECT 
+                bt.Title_name, 
+                bt.Title_ID,
+                bt.Img_url,
+                a.Name AS author,
+                COUNT(*) AS issue_count
+            FROM 
+                issuebook ib
+            JOIN 
+                book b ON ib.Book_ID = b.Book_ID
+            JOIN
+                book_title bt ON b.Title_ID = bt.Title_ID
+            JOIN
+                author a ON bt.Author_ID = a.Author_ID
+            WHERE 
+                ib.Issued_date >= CURDATE() - INTERVAL (WEEKDAY(CURDATE()) + 7) DAY
+                AND ib.Issued_date < CURDATE() - INTERVAL WEEKDAY(CURDATE()) DAY
+            GROUP BY 
+                bt.Title_ID, bt.Title_name, bt.Img_url, a.Name
+            ORDER BY 
+                issue_count DESC
+            LIMIT 5
+        `;
 
+        const [result] = await connection.query(sql);
+        
+        res.status(200).json(result);  // Send the result back to the frontend
 
-
-
+    } catch (err) {
+        console.error("Error fetching popular books:", err.message);
+        res.status(500).json({ error: "Failed to fetch popular books." });
+    } finally {
+        connection.release();
+    }
+});
 
 
 app.listen(8081, () => {
