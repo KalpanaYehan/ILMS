@@ -11,7 +11,7 @@ const About = () => {
     <>
       <Navbar />
       <div
-        className="w-full h-[60vh] bg-cover bg-center bg-fixed"
+        className="w-full h-[60vh] bg-cover bg-center bg-fixed "
         style={{
           backgroundImage: `url(${Pict})`,
           backgroundColor: "#f2f2f2",
@@ -51,3 +51,4 @@ const About = () => {
 };
 
 export default About;
+

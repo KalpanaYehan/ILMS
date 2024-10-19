@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     /* Footer container */
     <footer
-    className="text-center bg-zinc-50 text-surface/75 dark:bg-neutral-700 dark:text-white/75 lg:text-left bg-blue-gray-50">
+    className="text-center text-surface/75 dark:bg-neutral-700 dark:text-white/75 lg:text-left bg-zinc-200">
        {/*<div
         className="flex items-center justify-center p-6 border-b-2 border-neutral-200 dark:border-white/10 lg:justify-between">
           

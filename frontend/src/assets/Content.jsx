@@ -7,7 +7,7 @@ import bi6 from '../../public/BI6.jpg';
 
 export const Posts = [
   {
-    id: 1,
+    id: 2023,
     title: "Atomic Habits",
     author: "James Clear",
     img: "https://upload.wikimedia.org/wikipedia/commons/0/06/Atomic_habits.jpg",
@@ -20,7 +20,7 @@ export const Posts = [
     isbn: "978-0735211292"
   },
   {
-    id: 2,
+    id: 2000,
     title: "Men and Dreams",
     author: "Kochery C Shibu",
     img: "https://i.pinimg.com/736x/00/aa/87/00aa8776fb28fb2b2914d9d427a711ec.jpg",
@@ -33,7 +33,7 @@ export const Posts = [
     isbn: "978-9352063566"
   },
   {
-    id: 3,
+    id: 2001,
     title: "Charlotte's Web",
     author: "E B White",
     img: "https://images-na.ssl-images-amazon.com/images/I/61%2B3z1o4oUL.jpg",
@@ -46,7 +46,7 @@ export const Posts = [
     isbn: "978-0064400558"
   },
   {
-    id: 4,
+    id: 2002,
     title: "The Lord of the Rings",
     author: "J R R Tolkien",
     img: "https://i0.wp.com/quicksilvertranslate.com/wp-content/uploads/top-books-learn-english-2.jpg",
@@ -59,7 +59,7 @@ export const Posts = [
     isbn: "978-0544003415"
   },
   {
-    id: 5,
+    id: 2003,
     title: "The Magic",
     author: "Rhonda Byrne",
     img: "https://booksbhandara.com/wp-content/uploads/2023/03/the-magic.jpg",
@@ -72,7 +72,7 @@ export const Posts = [
     isbn: "978-1451673449"
   },
   {
-    id: 6,
+    id: 2004,
     title: "Solar Bones",
     author: "Mike McCormack",
     img: "https://s26162.pcdn.co/wp-content/uploads/2019/11/A1NfEjobJnL-691x1024.jpg",
@@ -85,7 +85,7 @@ export const Posts = [
     isbn: "978-1786891294"
   },
   {
-    id: 7,
+    id: 2005,
     title: "Harry Potter",
     author: "J K Rowling",
     img: 'https://m.media-amazon.com/images/I/81q77Q39nEL._AC_UF1000,1000_QL80_.jpg',

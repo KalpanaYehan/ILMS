@@ -1,289 +1,280 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList,
-  LineChart, Line, PieChart, Pie, Cell
-} from 'recharts';
 import Footer from '../components/Footer/Footer';
-
-const COLORS = [
-  '#0088FE', '#00C49F', '#FFBB28', '#FF8042', 
-  '#AA00FF', '#FF4081', '#7B68EE', '#32CD32', 
-  '#FFD700', '#FF6347', '#8A2BE2', '#FF1493', 
-  '#00FA9A', '#DC143C', '#FF4500', '#1E90FF', 
-  '#32CD32', '#FFD700', '#FF69B4', '#8A2BE2'
-];
+import User2 from "../assets/website/member1.jpg";
 
 const Profile = () => {
-  const [bookCategoriesData, setBookCategoriesData] = useState([]);
-  const [overdueBooksData, setOverdueBooksData] = useState([]);
-  const [bookAcquisitionData, setBookAcquisitionData] = useState([]);
-  const [totalBooks, setTotalBooks] = useState(0);
-  const [totalMembers, setTotalMembers] = useState(0);
+  const [userDetails, setUserDetails] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [borrowedBooks, setBorrowedBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
-  const [popularCategoriesData, setPopularCategoriesData] = useState([]);
-  const [selectedPeriod, setSelectedPeriod] = useState('year');
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [currentReview, setCurrentReview] = useState(null); // State to store the review being edited
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false); // State to manage delete confirmation popup
+  const navigate = useNavigate();  // Hook to navigate to other pages 
 
-  const CustomLegend  = {
-    display: 'flex',
-    margin: '0 auto',
-    marginTop: '20px',
-    marginBottom: '50px',
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      fetchUserDetails(user.userId);
+      fetchUserReviews(user.userId);
+      fetchBorrowedBooks(user.userId);
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const fetchUserDetails = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/user/${userId}`, { withCredentials: true });
+      setUserDetails(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+const storedUser = localStorage.getItem('user');
+const userID = storedUser ? JSON.parse(storedUser).userId: null;
+console.log(userID);
+
+  const fetchUserReviews = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/review/${userId}`, { withCredentials: true });
+      setReviews(response.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const fetchBorrowedBooks = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/borrowed/${userId}`, { withCredentials: true });
+      setBorrowedBooks(response.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await axios.delete(`http://localhost:8081/reviews/${reviewId}`, { withCredentials: true });
+      setShowDeletePopup(true); // Show delete confirmation popup
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleUpdateReview = (review) => {
+    setCurrentReview(review); // Set the review being edited
+    setRating(review.Rating);
+    setReviewText(review.Review_Text);
+    setShowReviewModal(true); // Show the review modal
+  };
+
+  const handleCloseReviewModal = () => {
+    setShowReviewModal(false);
+    setCurrentReview(null); // Clear the current review
+    setRating(0);
+    setReviewText('');
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    const data = {
+      //Title_ID: currentReview.Title_ID,
+      //Member_ID: userDetails.Member_ID,
+      Rating: rating,
+      Review_Text: reviewText,
+      Review_Date: new Date().toLocaleDateString('en-CA'), // Format the date as 'YYYY-MM-DD'
+    };
+
+    try {
+      if (currentReview) {
+        // Update existing review
+        await axios.put(`http://localhost:8081/reviews/${currentReview.Review_ID}`, data);
+        console.log("Review updated successfully");
+        
+      } else {
+        // Add new review
+        await axios.post(`http://localhost:8081/reviews`, data);
+        console.log("Review added successfully");
+      }
+      
+      fetchUserReviews(userID);
+      handleCloseReviewModal();
+    } catch (err) {
+      console.error("Error submitting review:", err.message);
+    }
   };
   
-  useEffect(() => {
-    axios.get('http://localhost:8081/categories/book-count')
-      .then(response => {
-        const formattedData = response.data.map(category => ({
-          name: category.CategoryName,
-          value: category.BookCount
-        }));
-        
-        setBookCategoriesData(formattedData);
-        setLoading(false);
-        console.log(formattedData);
-      })
-      .catch(error => {
-        setError(error.message);
-        setLoading(false);
-      });
 
-    axios.get('http://localhost:8081/overdue-books')
-      .then(response => {
-        setOverdueBooksData(response.data);
-      })
-      .catch(error => {
-        setError(error.message);
-      });
-
-    fetchBookAcquisitionData(selectedYear);
-    fetchTotalBooks();
-    fetchTotalMembers();
-    fetchPopularCategories(selectedPeriod);
-  }, [selectedYear, selectedPeriod]);
-
-  const fetchBookAcquisitionData = (year) => {
-    axios.get(`http://localhost:8081/book-acquisition?year=${year}`)
-      .then(response => {
-        const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
-        const data = response.data.reduce((acc, item) => {
-          acc[item.month - 1] = { month: new Date(0, item.month - 1).toLocaleString('default', { month: 'long' }), total: item.total };
-          return acc;
-        }, Array(12).fill({ total: 0 }));
-        const formattedData = data.map((item, index) => ({ month: months[index], total: item.total }));
-        setBookAcquisitionData(formattedData);
-      })
-      .catch(error => {
-        setError(error.message);
-      });
-  };
-
-  const fetchTotalBooks = () => {
-    axios.get('http://localhost:8081/total-books')
-      .then(response => {
-        setTotalBooks(response.data.totalBooks);
-      })
-      .catch(error => {
-        setError(error.message);
-      });
-  };
-
-  const fetchTotalMembers = () => {
-    axios.get('http://localhost:8081/total-members')
-      .then(response => {
-        setTotalMembers(response.data.totalMembers);
-      })
-      .catch(error => {
-        setError(error.message);
-      });
-  };
-
-  const fetchPopularCategories = (period) => {
-    axios.get(`http://localhost:8081/popular-categories/${period}`)
-      .then(response => {
-        setPopularCategoriesData(response.data);
-      })
-      .catch(error => {
-        setError(error.message);
-      });
-  };
-
-  const handleYearChange = (e) => {
-    setSelectedYear(e.target.value);
-  };
-
-  const handlePeriodChange = (e) => {
-    setSelectedPeriod(e.target.value);
+  const handleCloseDeletePopup = () => {
+    setShowDeletePopup(false);
+    fetchUserReviews(userID); // Refresh the reviews list
   };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const StatCard = ({ title, count, emoji, colors }) => (
-    <div className={`relative p-4 bg-gradient-to-r ${colors} rounded-lg shadow-lg`}>
-      <div className="absolute top-0 right-0 p-4 text-6xl text-gray-100 opacity-10">{emoji}</div>
-      <h3 className="mb-2 text-lg font-bold text-white">{title}</h3>
-      <p className="text-4xl font-extrabold text-white">{count}</p>
-    </div>
-  );
-
   return (
     <>
       <Navbar />
-      <div className="container p-4 mx-auto">
-        <h1 className="pb-5 mb-4 text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900 sm:text-4xl">Library Data Visualization</h1>
-
-        {/* Flexbox container for Bar Chart and Pie Chart */}
-        <div className="flex justify-between ">
-          <div className="w-full md:w-1/2">
-            <h2 className="pb-6 mb-2 text-2xl font-bold text-center ">Most Popular Book Categories </h2>
-            <div className="flex items-center mb-4">
-              <label className="mr-2">Select Period:</label>
-              <select value={selectedPeriod} onChange={handlePeriodChange} className="p-2 border border-gray-300 rounded">
-                <option value="year">Nearest Year</option>
-                <option value="month">Nearest Month</option>
-                <option value="week">Nearest Week</option>
-              </select>
-            </div>
-           
-            <BarChart
-              width={700}
-              height={450} // Increase the height to accommodate longer labels
-              data={popularCategoriesData}
-              margin={{
-                top: 5, right: 30, left: 20, bottom: 70, // Increase bottom margin to create space between legend and x-axis
-              }}
-              barSize={30} // Increase the gap between bars by reducing the bar size
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis   
-                dataKey="Category_name" 
-                tick={{  textAnchor: 'end', fontSize:12}} 
-                interval={0} 
-                tickFormatter={(value) => value.split(' ').join('\n')} // Split labels into multiple lines
-              
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend contentStyle={CustomLegend} />
-              
-              
-              <Bar dataKey="borrowCount" fill="#8884d8" >
-                {
-                  popularCategoriesData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))
-                }
-                <LabelList dataKey="borrowCount" position="insideBottom" offset={10} />
-              </Bar>
-            </BarChart>
+      <div className="min-h-screen bg-gray-100">
+        <div className="container p-4 mx-auto">
+        
+          <div className="flex p-6 mb-6 bg-white rounded-lg shadow-md">
+          <img src={User2} alt="user" className='duration-200 rounded-full cursor-pointer w-60 hover:scale-105' />
+          <div className='px-20 py-10 text-xl '>
+          
+            <p className="mb-2"><strong>Name:</strong> {userDetails.First_name} {userDetails.Last_name}</p>
+            <p className="mb-2"><strong>Email:</strong> {userDetails.Email}</p>
+            <p className="mb-2"><strong>Contact No:</strong> {userDetails.Contact_No}</p>
           </div>
-          <div className="w-full pl-20 md:w-1/2">
-            <h2 className="pb-5 pl-40 mb-2 text-2xl font-bold">Category distribution</h2>
-            <PieChart width={600} height={400}>
-              <Pie
-                data={bookCategoriesData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => percent > 0 ? `${name} ${(percent * 100).toFixed(0)}%` : ''}
-                outerRadius={150}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {bookCategoriesData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+            
           </div>
-        </div>
 
-        {/* Table for People Who Didn't Return Books */}
-        <div className="mb-8">
-          <h2 className="pb-5 mb-2 text-2xl font-semibold text-center">Overdue Books</h2>
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-deep-orange-50">
-                <th className="px-4 py-2 border-b">Name</th>
-                <th className="px-4 py-2 border-b">Book</th>
-                <th className="px-4 py-2 border-b">Category</th>
-                <th className="px-4 py-2 border-b">Issued Date</th>
-                <th className="px-4 py-2 border-b">Overdue Days</th>
-              </tr>
-            </thead>
-            <tbody>
-              {overdueBooksData.map((entry, index) => (
-                <tr key={index} className="hover:bg-deep-orange-100">
-                  <td className="px-4 py-2 text-center border-b">{`${entry.MemberFirstName} ${entry.MemberLastName}`}</td>
-                  <td className="px-4 py-2 text-center border-b">{entry.BookTitle}</td>
-                  <td className="px-4 py-2 text-center border-b">{entry.BookCategory}</td>
-                  <td className="px-4 py-2 text-center border-b">{formatDate(entry.IssuedDate)}</td>
-                  <td className="px-4 py-2 text-center border-b">{entry.OverdueDays}</td>
+          <div className="p-6 mb-6 bg-white rounded-lg shadow-md">
+            <h1 className="mb-4 text-2xl font-bold text-red-950">My Reviews</h1>
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left border-b">Book Title</th>
+                  <th className="px-4 py-2 text-left border-b">Review</th>
+                  <th className="px-4 py-2 text-left border-b">Review Date</th>
+                  <th className="px-4 py-2 text-left border-b">Rating</th>
+                  <th className="px-4 py-2 text-left border-b">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Line Chart for Book Acquisition Trends */}
-        <div className="flex flex-col items-center mb-8">
-          <h2 className="pb-5 mb-2 text-2xl font-semibold text-center">Library Borrowing Insights</h2>
-          <div className="flex items-center mb-4">
-            <label className="mr-2">Select Year:</label>
-            <select value={selectedYear} onChange={handleYearChange} className="p-2 border border-gray-300 rounded">
-              {/* Add options for the years you want to display */}
-              <option value={2024}>2024</option>
-              <option value={2023}>2023</option>
-              <option value={2022}>2022</option>
-              <option value={2021}>2021</option>
-              <option value={2020}>2020</option>
-              {/* Add more years as needed */}
-            </select>
+              </thead>
+              <tbody>
+                {reviews.map(review => (
+                  <tr key={review.Review_ID}>
+                    <td className="px-4 py-2 border-b">{review.Title_name}</td>
+                    <td className="px-4 py-2 border-b">{review.Review_Text}</td>
+                    <td className="px-4 py-2 border-b">{review.Review_Date}</td>
+                    <td className="px-4 py-2 border-b">{review.Rating}</td>
+                    <td className="flex px-4 py-2 border-b">
+                      <button
+                        onClick={() => handleDeleteReview(review.Review_ID)}
+                        className="px-3 py-1 mr-2 text-white bg-red-500 rounded"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => handleUpdateReview(review)}
+                        className="px-3 py-1 text-white bg-blue-500 rounded"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <LineChart
-            width={1100}
-            height={400}
-            data={bookAcquisitionData}
-            margin={{
-              top: 5, right: 30, left: 20, bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-            <XAxis dataKey="month" tick={{ fill: '#8A2BE2' }} />
-            <YAxis tick={{ fill: '#8A2BE2' }} />
-            <Tooltip content={({ payload }) => {
-              if (payload && payload.length) {
-                return (
-                  <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
-                    <p>{`Month: ${payload[0].payload.month}`}</p>
-                    <p>{`Borrowed Books: ${payload[0].value}`}</p>
-                  </div>
-                );
-              }
-              return null;
-            }} />
-            <Legend />
-            <Line type="monotone" dataKey="total" stroke="#DC143C" activeDot={{ r: 8 }} dot={{ fill: '#DC143C' }} />
-          </LineChart>
-          <div className="flex justify-center py-6 space-x-10">
-            <StatCard title="Total Books" count={totalBooks} emoji="📚" colors="from-blue-500 to-blue-400 " />
-            <StatCard title="Total Members" count={totalMembers} emoji="👥" colors="from-green-500 to-green-400" />
+
+          <div className="p-6 bg-white rounded-lg shadow-md">
+            <h1 className="mb-4 text-2xl font-bold text-red-950">My Borrowed Books</h1>
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left border-b">Book Title</th>
+                  <th className="px-4 py-2 text-left border-b">Author</th>
+                  <th className="px-4 py-2 text-left border-b">Issued Date</th>
+                  <th className="px-4 py-2 text-left border-b">Return Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {borrowedBooks.map(book => (
+                  <tr key={book.Book_ID}>
+                    <td className="px-4 py-2 border-b">{book.Title_name}</td>
+                    <td className="px-4 py-2 border-b">{book.Author}</td>
+                    <td className="px-4 py-2 border-b">{book.Issued_Date}</td>
+                    <td className="px-4 py-2 border-b">{book.Returned_Date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+
+      {showReviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold text-center">{currentReview ? 'Update Review' : 'Enter Review'}</h2>
+            <form onSubmit={handleSubmitReview}>
+              <div className="mb-4">
+                <label htmlFor="reviewText" className="block font-medium">Review:</label>
+                <textarea
+                  id="reviewText"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  rows="4"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="rating" className="block font-medium">Rating:</label>
+                <input
+                  type="number"
+                  id="rating"
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  min="0.5"
+                  max="5"
+                  step="0.5"
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={handleCloseReviewModal}
+                  className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
+                >
+                  {currentReview ? 'Update' : 'Submit'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showDeletePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold text-center">Review Deleted Successfully</h2>
+            <div className="flex justify-end">
+              <button
+                onClick={handleCloseDeletePopup}
+                className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );
-}
+};
 
 export default Profile;

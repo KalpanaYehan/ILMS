@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
+import axios from 'axios'
 
 const AddBook = () => {
 
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    name: '',
+    bookName: '',
     author: '',
     category:'',
-    ISBN:'',
+    isbn:'',
     publisher: '',
     pages: '',
     copies: '',
+    Img_url: ''
   });
 
   const handleChange = (e) => {
@@ -23,21 +27,68 @@ const AddBook = () => {
     });
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   // Handle form submission
+  //   console.log(formData);
+  //   window.alert("Book Added");
+  //   setFormData({
+  //     name: '',
+  //     author: '',
+  //     category:'',
+  //     ISBN:'',
+  //     publisher: '',
+  //     pages: '',
+  //     copies: '',
+  //   });
+  // };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log(formData);
-    window.alert("Book Added");
-    setFormData({
-      name: '',
-      author: '',
-      category:'',
-      ISBN:'',
-      publisher: '',
-      pages: '',
-      copies: '',
-    });
+    // Collecting form data (assuming you have state variables for each field)
+    const { bookName, author, category, publisher, isbn, pages, copies, Img_url } = formData;
+  
+    // setLoading(true); // Setting loading state while making the request
+  
+    // Make the API call to add a book
+    axios
+      .post('http://localhost:8081/addBook', { bookName, author, category, publisher, isbn, pages, copies,Img_url })
+      .then((res) => {
+        // Handle different response cases
+        if (res.data.message === 'success') {
+          // setLoading(false); // Stop loading
+          // enqueueSnackbar('Book added successfully', { variant: 'success' });
+          navigate('/books/books'); // Navigate to the books list page
+        } else if (res.data.message === 'unsuccess') {
+          // setLoading(false); // Stop loading
+          // enqueueSnackbar('Failed to add book. Please log in.', { variant: 'error' });
+          console.log(res.data)
+          navigate('/login'); // Redirect to login if not authorized
+        }
+        // } else {
+        //   setLoading(false); // Stop loading
+        //   enqueueSnackbar(res.data.message, { variant: 'error' }); // Show error message if any other issue
+        // }
+      })
+      .catch((error) => {
+        // setLoading(false); // Stop loading on error
+        // enqueueSnackbar(error.message, { variant: 'error' }); // Display error message
+        console.log(error);
+      });
+      console.log(formData);
+      window.alert("Book Added");
+      setFormData({
+        bookName: '',
+        author: '',
+        category:'',
+        isbn:'',
+        publisher: '',
+        pages: '',
+        copies: '',
+        Img_url:'',
+      })
   };
+  
 
   return (
     <>
@@ -48,17 +99,18 @@ const AddBook = () => {
        
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="bookName">
               Book Name
             </label>
             <input
               type="text"
-              name="name"
+              name="bookName"
               id="name"
               placeholder='Enter Book Name'
-              value={formData.name}
+              value={formData.bookName}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -73,6 +125,7 @@ const AddBook = () => {
               value={formData.author}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -87,6 +140,7 @@ const AddBook = () => {
               value={formData.category}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
@@ -101,18 +155,19 @@ const AddBook = () => {
               value={formData.publisher}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="ISBN">
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="isbn">
               ISBN 
             </label>
             <input
               type="text"
-              name="ISBN"
+              name="isbn"
               id="ISBN"
               placeholder='Enter ISBN number'
-              value={formData.ISBN}
+              value={formData.isbn}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             />
@@ -143,6 +198,21 @@ const AddBook = () => {
               value={formData.copies}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="Img_url">
+              Image URL
+            </label>
+            <input
+              type="text"
+              name="Img_url"
+              id="Img_url"
+              placeholder='Enter Image URL'
+              value={formData.Img_url}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
          

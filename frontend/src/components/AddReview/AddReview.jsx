@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
-function AddReview({ titleId, memberName, onClose }) {
-
+function AddReview({ titleId, memberName, onClose, onReviewSubmit }) {
   // State variables to store the review data
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
- // const [reviewTitle, setReviewTitle] = useState('');
 
   // Function to handle the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data= {
-  
+    const data = {
       Title_ID: titleId,
       Member_ID: memberName,
       Rating: rating,
       Review_Text: reviewText,
-      // Review_Date: new Date().toISOString().slice(0, 10)
-      Review_Date: new Date().toLocaleDateString('en-CA') ,  // Format the date as 'YYYY-MM-DD'
-    }
+      Review_Date: new Date().toLocaleDateString('en-CA'),  // Format the date as 'YYYY-MM-DD'
+    };
     console.log(data);
-    axios.post(`http://localhost:8081/reviews`,data)
+    axios.post(`http://localhost:8081/reviews`, data)
+   
       .then((response) => {
+        onReviewSubmit();
         console.log("Review added successfully", response.data);
+        // Call the onReviewSubmit function to fetch the latest reviews
+        
         // Close the modal after submitting the review
-        onClose(); 
+        onClose();
+        
+        
       })
       .catch((err) => {
         console.error("Error adding review:", err.message);
@@ -85,4 +86,3 @@ function AddReview({ titleId, memberName, onClose }) {
 }
 
 export default AddReview;
-

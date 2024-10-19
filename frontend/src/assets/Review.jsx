@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import Slider from 'react-slick';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'; // Import star icons
@@ -8,11 +10,11 @@ import 'slick-carousel/slick/slick-theme.css';
 const Review = ({ reviews }) => {
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: reviews.length > 1, // Set infinite to false if there's only one review
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: reviews.length > 1, // Set autoplay to false if there's only one review
     autoplaySpeed: 2000,
   };
 
@@ -55,16 +57,15 @@ const Review = ({ reviews }) => {
                 <p className="font-bold">{review.First_Name} {review.Last_Name}</p>
                   {renderStars(review.Rating)} {/* Display stars based on rating */}
                 </div>
+                <p className="mt-3 mb-1 text-lg text-gray-700">{review.Review_date}</p>
               </div>
             ))}
           </Slider>
         </div>
       </div>
     </section>
-    
   );
 };
 
 export default Review;
-
 
