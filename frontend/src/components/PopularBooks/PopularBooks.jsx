@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
 
 // const PopularBooksData = [
 //   {
@@ -58,6 +61,7 @@ const PopularBooks = () => {
       });
   }, []);
 
+
   var settings = {
     dots: true,
     arrows: false,
@@ -97,6 +101,7 @@ const PopularBooks = () => {
   };
 
   return (
+
       <>
           <div className="py-10 mb-10">
             <div className="container">
@@ -123,6 +128,7 @@ const PopularBooks = () => {
                   <div className="  mb-4">
                     <img
                       src={book.Img_url}
+
                       alt=""
                       className="rounded-sm w-[90%] h-70 mx-auto"
                     />
@@ -131,9 +137,11 @@ const PopularBooks = () => {
                   <div className="flex flex-col items-center gap-4">
                     <div className="space-y-3">
                       <h1 className="text-xl font-bold text-black/80  font-cursive2">
+
                         {book.Title_name}
                       </h1>
                       <p className="text-sm text-center text-gray-600">{book.author}</p>
+
                     </div>
                   </div>
                   
@@ -142,8 +150,10 @@ const PopularBooks = () => {
             ))}
           </Slider>
         </div>
+
     </>
   );
 };
 
 export default PopularBooks;
+

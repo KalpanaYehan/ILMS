@@ -1,3 +1,4 @@
+
 import { React, useState,useContext} from 'react'
 import Logo from "../assets/website/newLogo.jpg"
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,6 +16,7 @@ const Login = () => {
   const{setUser} = useContext(AuthContext)
   axios.defaults.withCredentials =true
   
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -25,6 +27,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     axios.post("http://localhost:8081/login", { userEmail:formData.userEmail, password:formData.password })
        .then(result => {
          console.log(result);
@@ -59,6 +62,7 @@ const Login = () => {
           <div>
             
             <h2 className="mb-5 text-center text-4xl font-bold leading-9 tracking-tight text-gray-900">
+
               Welcome to NexLib
             </h2>
             <p className='mb-5 leading-6 text-center font-semibold'>Sign in to your account</p>
@@ -69,6 +73,7 @@ const Login = () => {
             />
           </div>
   
+
           <div className="mt-10 mx-auto w-full max-w-sm">
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
@@ -84,18 +89,23 @@ const Login = () => {
                     onChange={handleChange}
                     required
                     className="indent-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm leading-6"
+
                   />
                 </div>
               </div>
   
+
               <div>
                 <div className="flex items-center justify-between">
+
                   <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                     Password
                   </label>
 
+
                 </div>
                 <div className="mt-2">
+
                   <input
                     id="password"
                     name="password"
@@ -110,14 +120,16 @@ const Login = () => {
               </div>
   
               <div>
-               
+
                 <button
                   type="submit"
                   className="mt-10 flex w-full justify-center rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
+
                   Sign in
                 </button>
              
+
               </div>
             </form>
   

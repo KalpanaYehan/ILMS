@@ -1,8 +1,11 @@
+
 import React, { useState, useRef,useContext} from 'react';
+
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import axios from 'axios'
+
 import { AuthContext } from '../context/AuthContext';
 
 function GiveBook() {
@@ -29,6 +32,7 @@ function GiveBook() {
 
     const Admin_ID = user ? user.userId : null;
 
+
     let currentDate = new Date();
     let year = currentDate.getFullYear();
     let month = String(currentDate.getMonth() + 1).padStart(2, '0');  // Months are 0-indexed
@@ -50,7 +54,9 @@ function GiveBook() {
             id: '1001B',
             title: "Harry Potter",
             author: "J K Rowling",
+
             img: 'https://m.media-amazon.com/images/I/81q77Q39nEL.AC_UF1000,1000_QL80.jpg',
+
             availability: "false"
         },
         {
@@ -78,15 +84,18 @@ function GiveBook() {
 
     */}
 
+
     const handleSubmit =async (e) => {
         e.preventDefault();
 
         setCustomer(null);
         setBook(null);
+
         setError(null);
 
         //const user = users.find((user) => user.id === userId);
         //const book = books.find((book) => book.id === bookId);
+
 
         try {
           // Fetch user details
@@ -113,8 +122,10 @@ function GiveBook() {
       }
   };
 
+
     const handleClick = (e) => {
         e.preventDefault();
+
 
         axios.post('http://localhost:8081/issue', {Admin_ID, customerId, bookId, Issued_Date})
         .then((res) => {
@@ -125,6 +136,7 @@ function GiveBook() {
             setError(null);
             setBookId('')
             setCustomerId('')
+
         })
         .catch((err) => console.log(err));
 
@@ -143,7 +155,9 @@ function GiveBook() {
 
     return (
         <>
+
             <Navbar/>
+
             {/*<h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Issue a Book</h1>*/}
             <div className="relative mx-auto max-w-5xl text-center my-5">
             <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
@@ -160,8 +174,10 @@ function GiveBook() {
                                 type="text"
                                 id="userId"
                                 placeholder='Enter user ID'
+
                                 value={customerId}
                                 onChange={(e) => setCustomerId(e.target.value)}
+
                                 className="shadow appearance-none border rounded py-2 px-3 mx-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 required
                             />
@@ -185,6 +201,7 @@ function GiveBook() {
 
                     {/* Attach the detailsRef to this div */}
                     <div ref={detailsRef}>
+
                         {customer && (
                             <div className="my-5 mx-2 block rounded-lg shadow-lg p-4 bg-gray-100">
                                 <div className="flex items-center">
@@ -196,10 +213,12 @@ function GiveBook() {
                                         {/* <p className="font-semibold text-gray-900 text-lg mb-1"><strong>NIC:</strong> {user.nic}</p> */}
                                         <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Phone Number:</strong> {customer.Contact_No}</p>
                                         <p className="font-semibold text-gray-900 text-lg mb-1"><strong>E-mail:</strong> {customer.Email}</p>
+
                                     </div>
                                 </div>
                             </div>
                         )}
+
 
                         {book && (
                             <div className="my-5 mx-2 block rounded-lg shadow-lg p-4 bg-gray-100">
@@ -210,16 +229,19 @@ function GiveBook() {
                                         <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Title:</strong> {book.Title_name}</p>
                                         <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Author:</strong> {book.Author}</p>
                                         <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Availability:</strong> {book.Status === 1 ? "Yes" : "No"}</p>
+
                                     </div>
                                 </div>
                             </div>
                         )}
+
 
                           {(book && customer && book.Status === 1) && (
                               <button type="submit" onClick={handleClick} className="w-full justify-center mx-2 my-5 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                   Add to waiting list
                               </button>
                           )}
+
 
                     </div>
                 </div>
@@ -229,4 +251,6 @@ function GiveBook() {
     );
 }
 
+
 export default GiveBook;
+

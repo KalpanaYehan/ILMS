@@ -4,11 +4,13 @@ const Footer = () => {
   return (
     /* Footer container */
     <footer
+
     className="text-center text-surface/75 dark:bg-neutral-700 dark:text-white/75 lg:text-left bg-zinc-200">
        {/*<div
         className="flex items-center justify-center p-6 border-b-2 border-neutral-200 dark:border-white/10 lg:justify-between">
           
         <div className="hidden me-12 lg:block">
+
         <span>Get connected with us on social networks</span>
         </div>
         
@@ -78,12 +80,14 @@ const Footer = () => {
     </div>*/}
 
     
+
     <div className="py-10 mx-6 text-center md:text-left">
         <div className="grid gap-8 grid-1 md:grid-cols-2 lg:grid-cols-4">
         
         <div className="">
             <h6
             className="flex items-center justify-center mb-4 text-4xl font-semibold md:justify-start">
+
             <span className="me-3 [&>svg]:h-4 [&>svg]:w-4">
                 
             </span>
@@ -96,7 +100,9 @@ const Footer = () => {
         
         <div>
             <h6
+
             className="flex justify-center mb-4 font-semibold uppercase md:justify-start">
+
             Opening Hours
             </h6>
             <p className="mb-4">
@@ -113,7 +119,9 @@ const Footer = () => {
         
         <div>
             <h6
+
             className="flex justify-center mb-4 font-semibold uppercase md:justify-start">
+
             Useful links
             </h6>
             <p className="mb-4">
@@ -129,10 +137,12 @@ const Footer = () => {
         
         <div>
             <h6
+
             className="flex justify-center mb-4 font-semibold uppercase md:justify-start">
             Contact
             </h6>
             <p className="flex items-center justify-center mb-4 md:justify-start">
+
             <span className="me-3 [&>svg]:h-5 [&>svg]:w-5">
                 <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -146,7 +156,9 @@ const Footer = () => {
             </span>
             123 Galle Road, Colombo 03, Sri Lanka
             </p>
+
             <p className="flex items-center justify-center mb-4 md:justify-start">
+
             <span className="me-3 [&>svg]:h-5 [&>svg]:w-5">
                 <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -160,7 +172,9 @@ const Footer = () => {
             </span>
             nexlib@gmail.com
             </p>
+
             <p className="flex items-center justify-center mb-4 md:justify-start">
+
             <span className="me-3 [&>svg]:h-5 [&>svg]:w-5">
                 <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +207,9 @@ const Footer = () => {
     </div>
 
    
+
     <div className="p-6 text-center bg-black/5">
+
         <span>© 2024 Copyright:</span>
         <a className="font-semibold" href="https://tw-elements.com/">NexLib</a>
     </div>

@@ -1,3 +1,4 @@
+
 import bi1 from '../../public/BI1.jpg';
 import bi2 from '../../public/BI2.jpg';
 import bi3 from '../../public/BI3.jpg';
@@ -108,3 +109,4 @@ Posts.forEach(post => {
 })
 
 export default Posts;
+

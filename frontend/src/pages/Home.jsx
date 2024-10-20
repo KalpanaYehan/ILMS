@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Pic from '../assets/website/newPic.jpg';
 import PopulerBooks from '../components/PopularBooks/PopularBooks';
@@ -67,3 +68,4 @@ const Home = () => {
 };
 
 export default Home;
+

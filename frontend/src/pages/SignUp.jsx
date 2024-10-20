@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
+
 import Logo from "../assets/website/newLogo.jpg";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Validation from '../components/Validation';  // Import validation
 
+
 const SignUp = () => {
 
   const [formData, setFormData] = useState({
+
     firstName: '',
     lastName: '',
+
     phoneNumber: '',
     email: '',
     password: '',
     userType: 'member',
   });
 
+
   const [errors, setErrors] = useState({});  // State for validation errors
   const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +35,7 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
 
     // Validate form data
     const validationErrors = Validation(formData);
@@ -58,6 +65,7 @@ const SignUp = () => {
     } else {
       console.log("Validation errors:", validationErrors);
     }
+
   };
 
   const handleUserTypeToggle = () => {
@@ -68,6 +76,7 @@ const SignUp = () => {
   };
 
   return (
+
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md">
         <h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Welcome to NexLib</h1>
@@ -110,6 +119,7 @@ const SignUp = () => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="phoneNumber">
+
               Phone Number
             </label>
             <input
@@ -121,10 +131,12 @@ const SignUp = () => {
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
+
             {errors.phoneNumber && <p className="text-red-600 font-light">{errors.phoneNumber}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="email">
+
               E-mail
             </label>
             <input
@@ -136,10 +148,12 @@ const SignUp = () => {
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
+
             {errors.email && <p className="text-red-600 font-light">{errors.email}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
+
               Password
             </label>
             <input
@@ -150,6 +164,7 @@ const SignUp = () => {
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             />
+
             {errors.password && <p className="text-red-600 font-light">{errors.password}</p>}
           </div>
           {/* <div className="mb-4 flex items-center">
@@ -185,6 +200,7 @@ const SignUp = () => {
           Already have an account?{' '}<br/>
           <Link to="/" className="text-yellow-950 hover:text-yellow-900 font-bold">Sign in to your account</Link>
         </p>
+
       </div>
     </div>
   );

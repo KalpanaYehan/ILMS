@@ -1,9 +1,12 @@
+
 import React, { useState, useRef,useContext } from 'react';
+
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+
 import { AuthContext } from '../context/AuthContext';
 
 function ReturnBook() {
@@ -17,10 +20,12 @@ function ReturnBook() {
   const [bookId, setBookId] = useState('');
   //const [bookDetails, setBookDetails] = useState(null);
   //const [recordDetails, setRecordDetails] = useState(null);
+
   const [error, setError] = useState(null);
 
   // Reference for the details section
   const detailsRef = useRef(null);
+
 
   const [customer, setCustomer] = useState({});
   const [book, setBook] = useState({});
@@ -28,24 +33,30 @@ function ReturnBook() {
   const [fine, setFine] = useState(0);
   const Admin_ID = user ? user.userId : null;
 
+
   let currentDate = new Date();
   let year = currentDate.getFullYear();
   let month = String(currentDate.getMonth() + 1).padStart(2, '0');  // Months are 0-indexed
   let day = String(currentDate.getDate()).padStart(2, '0');
+
   const date = `${year}-${month}-${day}`
+
   
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+
 
     setCustomer(null);
     setBook(null);
     setRecord(null);
     setError(null);
     
+
     //const user = users.find((user) => user.id === userId);
     //const book = books.find((book) => book.id === bookId);
     //const record = waitingList.find((record) => record.userId === userId && record.bookId === bookId);
+
 
    
       
@@ -194,10 +205,12 @@ function ReturnBook() {
             setError(null);
             setCustomerId('')
             setBookId('')
+
             } 
         )
         .catch(err => console.log(err));
   };
+
 
 
   // Card components within the ReturnBook component
@@ -215,9 +228,11 @@ function ReturnBook() {
         {/* <p className="text-gray-700"><strong>NIC:</strong> {customer.nic}</p> */}
         <p className="text-gray-700"><strong>Phone Number:</strong> {customer.Contact_No}</p>
         <p className="text-gray-700"><strong>E-mail:</strong> {customer.Email}</p>
+
       </div>
     </div>
   )};
+
 
   const BookCard = ({book}) => {
     if (!book) return null; // Ensure bookDetails is not null
@@ -230,12 +245,14 @@ function ReturnBook() {
         <h2 className="text-xl font-bold text-gray-900 mb-2">Book Details</h2>
         <p className="text-gray-700"><strong>Title:</strong> {book.Title_name}</p>
         <p className="text-gray-700"><strong>Author:</strong> {book.Author}</p>
+
       </div>
     </div>
   )};
 
   const RecordCard = ({record}) => {
     if (!record) return null; // Ensure recordDetails is not null
+
   
     // Function to handle date formatting safely
     const formatDate = (date) => {
@@ -248,9 +265,11 @@ function ReturnBook() {
       <div className="flex shadow-md rounded-lg p-4 my-4 bg-white">
         <div className="ml-4">
           <h2 className="text-xl font-bold text-gray-900 mb-2">Record Details</h2>
+
           <p className="text-gray-700"><strong>Record ID:</strong> {record.Issue_ID}</p>
           <p className="text-gray-700"><strong>Issued Date:</strong> {formatDate(record.Issued_Date)}</p>
           <p className="text-gray-700"><strong>Fine:</strong> {fine} Rupees</p>
+
         </div>
       </div>
     );
@@ -258,7 +277,9 @@ function ReturnBook() {
   
   return (
     <>
+
       <Navbar/>
+
       {/*<h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Return a Book</h1>*/}
       <div className="relative mx-auto max-w-5xl text-center my-5">
             <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
@@ -275,8 +296,10 @@ function ReturnBook() {
                 type="text"
                 id="userId"
                 placeholder='Enter user ID'
+
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
+
                 className="shadow appearance-none border rounded py-2 px-3 mx-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required
               />
@@ -297,11 +320,13 @@ function ReturnBook() {
           </form>
           {error && <div className="my-5 mx-2 block text-gray-700 text-md font-semibold mb-2">{error}</div>}
 
+
           {record && (
             <div ref={detailsRef}>
               <RecordCard record={record} />
               <UserCard customer={customer} />
               <BookCard book={book} />
+
               <button type="submit" onClick={handleClick} className="w-full justify-center mx-2 my-5 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Return Book</button>
             </div>
           )}
@@ -312,4 +337,6 @@ function ReturnBook() {
   );
 }
 
+
 export default ReturnBook;
+
