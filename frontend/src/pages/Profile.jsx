@@ -1,93 +1,282 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import User from "../assets/website/user.jpg"
-import Navbar from '../components/Navbar/Navbar';
 
-// Example data for the admin
-{/*
-  const adminData = {
-  admin_ID: '1001A',
-  firstName: 'John',
-  lastName: 'Doe',
-  contact: '+1 (555) 123-4567',
-  email: 'admin@example.com',
-  img: '', // Replace with the actual image URL
-};
-*/}
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar/Navbar';
+import Footer from '../components/Footer/Footer';
+import User2 from "../assets/website/member1.jpg";
 
 const Profile = () => {
+  const [userDetails, setUserDetails] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [borrowedBooks, setBorrowedBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [currentReview, setCurrentReview] = useState(null); // State to store the review being edited
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false); // State to manage delete confirmation popup
+  const navigate = useNavigate();  // Hook to navigate to other pages 
 
-  const location = useLocation();
-  const { userType, userData } = location.state || {};
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      fetchUserDetails(user.userId);
+      fetchUserReviews(user.userId);
+      fetchBorrowedBooks(user.userId);
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const fetchUserDetails = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/user/${userId}`, { withCredentials: true });
+      setUserDetails(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+const storedUser = localStorage.getItem('user');
+const userID = storedUser ? JSON.parse(storedUser).userId: null;
+console.log(userID);
+
+  const fetchUserReviews = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/review/${userId}`, { withCredentials: true });
+      setReviews(response.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const fetchBorrowedBooks = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/borrowed/${userId}`, { withCredentials: true });
+      setBorrowedBooks(response.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await axios.delete(`http://localhost:8081/reviews/${reviewId}`, { withCredentials: true });
+      setShowDeletePopup(true); // Show delete confirmation popup
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleUpdateReview = (review) => {
+    setCurrentReview(review); // Set the review being edited
+    setRating(review.Rating);
+    setReviewText(review.Review_Text);
+    setShowReviewModal(true); // Show the review modal
+  };
+
+  const handleCloseReviewModal = () => {
+    setShowReviewModal(false);
+    setCurrentReview(null); // Clear the current review
+    setRating(0);
+    setReviewText('');
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    const data = {
+      //Title_ID: currentReview.Title_ID,
+      //Member_ID: userDetails.Member_ID,
+      Rating: rating,
+      Review_Text: reviewText,
+      Review_Date: new Date().toLocaleDateString('en-CA'), // Format the date as 'YYYY-MM-DD'
+    };
+
+    try {
+      if (currentReview) {
+        // Update existing review
+        await axios.put(`http://localhost:8081/reviews/${currentReview.Review_ID}`, data);
+        console.log("Review updated successfully");
+        
+      } else {
+        // Add new review
+        await axios.post(`http://localhost:8081/reviews`, data);
+        console.log("Review added successfully");
+      }
+      
+      fetchUserReviews(userID);
+      handleCloseReviewModal();
+    } catch (err) {
+      console.error("Error submitting review:", err.message);
+    }
+  };
+  
+
+  const handleCloseDeletePopup = () => {
+    setShowDeletePopup(false);
+    fetchUserReviews(userID); // Refresh the reviews list
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <>
-    <Navbar type={userType} data={userData}/>
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md mt-5">
-
-      {/* Back Button */}
-      {/*<div className="flex justify-start mb-5">
-        <button
-          onClick={handleBackClick}
-          className="px-4 py-2 rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          Back
-        </button>
-      </div>*/}
-
-            <div className="relative mx-auto max-w-5xl text-center">
-            <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
-            {userType === 'admin' ? 'Admin' : 'User'} Profile
-            </span>
+      <Navbar />
+      <div className="min-h-screen bg-gray-100">
+        <div className="container p-4 mx-auto">
+        
+          <div className="flex p-6 mb-6 bg-white rounded-lg shadow-md">
+          <img src={User2} alt="user" className='duration-200 rounded-full cursor-pointer w-60 hover:scale-105' />
+          <div className='px-20 py-10 text-xl '>
+          
+            <p className="mb-2"><strong>Name:</strong> {userDetails.First_name} {userDetails.Last_name}</p>
+            <p className="mb-2"><strong>Email:</strong> {userDetails.Email}</p>
+            <p className="mb-2"><strong>Contact No:</strong> {userDetails.Contact_No}</p>
           </div>
-      
-      {/*<h1 className="text-4xl font-bold text-center mb-6">{userType === 'admin' ? 'Admin' : 'User'} Profile</h1>*/}
-      
-      {/* Admin Image */}
-      <div className="flex justify-center my-6">
-        <img
-          src={userData.img}
-          alt={`${userData.firstName} ${userData.lastName}`}
-          className="w-32 h-32 rounded-full shadow-lg"
-        />
+            
+          </div>
+
+          <div className="p-6 mb-6 bg-white rounded-lg shadow-md">
+            <h1 className="mb-4 text-2xl font-bold text-red-950">My Reviews</h1>
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left border-b">Book Title</th>
+                  <th className="px-4 py-2 text-left border-b">Review</th>
+                  <th className="px-4 py-2 text-left border-b">Review Date</th>
+                  <th className="px-4 py-2 text-left border-b">Rating</th>
+                  <th className="px-4 py-2 text-left border-b">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reviews.map(review => (
+                  <tr key={review.Review_ID}>
+                    <td className="px-4 py-2 border-b">{review.Title_name}</td>
+                    <td className="px-4 py-2 border-b">{review.Review_Text}</td>
+                    <td className="px-4 py-2 border-b">{review.Review_Date}</td>
+                    <td className="px-4 py-2 border-b">{review.Rating}</td>
+                    <td className="flex px-4 py-2 border-b">
+                      <button
+                        onClick={() => handleDeleteReview(review.Review_ID)}
+                        className="px-3 py-1 mr-2 text-white bg-red-500 rounded"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => handleUpdateReview(review)}
+                        className="px-3 py-1 text-white bg-blue-500 rounded"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="p-6 bg-white rounded-lg shadow-md">
+            <h1 className="mb-4 text-2xl font-bold text-red-950">My Borrowed Books</h1>
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left border-b">Book Title</th>
+                  <th className="px-4 py-2 text-left border-b">Author</th>
+                  <th className="px-4 py-2 text-left border-b">Issued Date</th>
+                  <th className="px-4 py-2 text-left border-b">Return Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {borrowedBooks.map(book => (
+                  <tr key={book.Book_ID}>
+                    <td className="px-4 py-2 border-b">{book.Title_name}</td>
+                    <td className="px-4 py-2 border-b">{book.Author}</td>
+                    <td className="px-4 py-2 border-b">{book.Issued_Date}</td>
+                    <td className="px-4 py-2 border-b">{book.Returned_Date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      {/* Admin Details in Cards */}
-      <div className="space-y-4">
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <label className="font-semibold">{userType === 'admin' ? 'Admin' : 'User'} ID:</label>
-          <span className="ml-2 text-gray-700">{userData.id}</span>
+      {showReviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold text-center">{currentReview ? 'Update Review' : 'Enter Review'}</h2>
+            <form onSubmit={handleSubmitReview}>
+              <div className="mb-4">
+                <label htmlFor="reviewText" className="block font-medium">Review:</label>
+                <textarea
+                  id="reviewText"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  rows="4"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="rating" className="block font-medium">Rating:</label>
+                <input
+                  type="number"
+                  id="rating"
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  min="0.5"
+                  max="5"
+                  step="0.5"
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={handleCloseReviewModal}
+                  className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
+                >
+                  {currentReview ? 'Update' : 'Submit'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <label className="font-semibold">First Name:</label>
-          <span className="ml-2 text-gray-700">{userData.firstName}</span>
-        </div>
-        
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <label className="font-semibold">Last Name:</label>
-          <span className="ml-2 text-gray-700">{userData.lastName}</span>
-        </div>
+      )}
 
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <label className="font-semibold">NIC:</label>
-          <span className="ml-2 text-gray-700">{userData.nic}</span>
+      {showDeletePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold text-center">Review Deleted Successfully</h2>
+            <div className="flex justify-end">
+              <button
+                onClick={handleCloseDeletePopup}
+                className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
-        
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <label className="font-semibold">Contact:</label>
-          <span className="ml-2 text-gray-700">{userData.phoneNumber}</span>
-        </div>
-        
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-          <label className="font-semibold">Email:</label>
-          <span className="ml-2 text-gray-700">{userData.email}</span>
-        </div>
-        
-      </div>
-    </div>
+      )}
+
+      <Footer />
     </>
   );
 };
 
 export default Profile;
+

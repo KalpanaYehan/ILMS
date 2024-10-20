@@ -1,32 +1,37 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef,useContext} from 'react';
+
 import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import axios from 'axios'
 
+import { AuthContext } from '../context/AuthContext';
+
 function GiveBook() {
 
-    const location = useLocation();
-    const { userType, userData } = location.state || {};
-
-    const [userId, setUserId] = useState('');
-    const [userDetails, setUserDetails] = useState(null);
+    // const location = useLocation();
+    // const { userType, userData } = location.state || {};
+    const {user} = useContext(AuthContext)
+    const [customerId, setCustomerId] = useState('');
+    //const [userDetails, setUserDetails] = useState(null);
 
     const [bookId, setBookId] = useState('');
-    const [bookDetails, setBookDetails] = useState(null);
+    //const [bookDetails, setBookDetails] = useState(null);
 
     const [error, setError] = useState(null);
 
-    const [formData, setFormData] = useState({
-        userId: '',
-        bookId: '',
-        date: ''
-    });
+    // const [formData, setFormData] = useState({
+    //     userId: '',
+    //     bookId: '',
+    //     date: ''
+    // });
 
-    const [user, setUser] = useState({});
-    const [book, setBook] = useState({});
+    const [customer, setCustomer] = useState(null);
+    const [book, setBook] = useState(null);
 
-    const Admin_ID = userData.id;
+    const Admin_ID = user ? user.userId : null;
+
 
     let currentDate = new Date();
     let year = currentDate.getFullYear();
@@ -49,7 +54,9 @@ function GiveBook() {
             id: '1001B',
             title: "Harry Potter",
             author: "J K Rowling",
-            img: 'https://m.media-amazon.com/images/I/81q77Q39nEL._AC_UF1000,1000_QL80_.jpg',
+
+            img: 'https://m.media-amazon.com/images/I/81q77Q39nEL.AC_UF1000,1000_QL80.jpg',
+
             availability: "false"
         },
         {
@@ -77,68 +84,59 @@ function GiveBook() {
 
     */}
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit =async (e) => {
         e.preventDefault();
 
-        setUserDetails(null);
-        setBookDetails(null);
+        setCustomer(null);
+        setBook(null);
+
         setError(null);
 
         //const user = users.find((user) => user.id === userId);
         //const book = books.find((book) => book.id === bookId);
 
-        axios.get('http://localhost:8081/user/' + userId)
-        .then(res => setUser(res.data[0])    
-        )
-        .catch(err => console.log(err));
 
+        try {
+          // Fetch user details
+          const customerResponse = await axios.get('http://localhost:8081/user/' + customerId);
+          setCustomer(customerResponse.data);
+  
+          // Fetch book details
+          const bookResponse = await axios.get('http://localhost:8081/getBook/' + bookId);
+          setBook(bookResponse.data);
+  
+          // Check if customer or book was not found
+          if (!customerResponse.data) {
+              setError('User not found');
+          } else if (!bookResponse.data) {
+              setError('Book not found');
+          } else {
+              // Scroll to details if both user and book are found
+              detailsRef.current.scrollIntoView({ behavior: 'smooth' });
+          }
+  
+      } catch (err) {
+          console.log(err);
+          setError('Error fetching data');
+      }
+  };
 
-        axios.get('http://localhost:8081/book/' + bookId)
-        .then(res => setBook(res.data[0]) 
-        )
-        .catch(err => console.log(err));
-
-        
-        if (user) {
-            setUserDetails({ 
-                id: user.Member_ID, 
-                firstName: user.First_Name, 
-                lastName: user.Last_Name, 
-                email: user.Email, 
-                phoneNumber: user.Contact_No,
-                password: user.Password,
-                nic: user.nic, 
-                img: user.img
-            });
-        } else {
-            setError('User not found');
-        }
-
-        if (book) {
-            setBookDetails({
-                id: book.Title_ID,
-                title: book.Title_name,
-                author: book.Name,
-                img: book.img,
-                availability: book.Status,
-            });
-        } else {
-            setError('Book not found');
-        }
-
-        // Scroll to details section if both user and book are found
-        if (user && book) {
-            detailsRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
 
     const handleClick = (e) => {
         e.preventDefault();
 
-        axios.post('http://localhost:8081/issue', {Admin_ID, userId, bookId, Issued_Date})
+
+        axios.post('http://localhost:8081/issue', {Admin_ID, customerId, bookId, Issued_Date})
         .then((res) => {
             console.log(res);
             window.alert(res.data.Message);
+            setCustomer(null);
+            setBook(null);
+            setError(null);
+            setBookId('')
+            setCustomerId('')
+
         })
         .catch((err) => console.log(err));
 
@@ -157,7 +155,9 @@ function GiveBook() {
 
     return (
         <>
-            <Navbar type={userType} data={userData}/>
+
+            <Navbar/>
+
             {/*<h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Issue a Book</h1>*/}
             <div className="relative mx-auto max-w-5xl text-center my-5">
             <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
@@ -174,8 +174,10 @@ function GiveBook() {
                                 type="text"
                                 id="userId"
                                 placeholder='Enter user ID'
-                                value={userId}
-                                onChange={(e) => setUserId(e.target.value)}
+
+                                value={customerId}
+                                onChange={(e) => setCustomerId(e.target.value)}
+
                                 className="shadow appearance-none border rounded py-2 px-3 mx-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 required
                             />
@@ -199,41 +201,47 @@ function GiveBook() {
 
                     {/* Attach the detailsRef to this div */}
                     <div ref={detailsRef}>
-                        {userDetails && (
+
+                        {customer && (
                             <div className="my-5 mx-2 block rounded-lg shadow-lg p-4 bg-gray-100">
                                 <div className="flex items-center">
-                                    <img src={userDetails.img} alt="User" className="w-24 h-24 rounded-full mr-4" />
+                                    {/* <img src={userDetails.img} alt="User" className="w-24 h-24 rounded-full mr-4" /> */}
                                     <div>
                                         <h2 className="font-semibold text-gray-900 text-2xl mb-2">User Details</h2>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>First Name:</strong> {userDetails.firstName}</p>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Last Name:</strong> {userDetails.lastName}</p>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>NIC:</strong> {userDetails.nic}</p>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Phone Number:</strong> {userDetails.phoneNumber}</p>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>E-mail:</strong> {userDetails.email}</p>
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>First Name:</strong> {customer.First_name}</p>
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Last Name:</strong> {customer.Last_name}</p>
+                                        {/* <p className="font-semibold text-gray-900 text-lg mb-1"><strong>NIC:</strong> {user.nic}</p> */}
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Phone Number:</strong> {customer.Contact_No}</p>
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>E-mail:</strong> {customer.Email}</p>
+
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {bookDetails && (
+
+                        {book && (
                             <div className="my-5 mx-2 block rounded-lg shadow-lg p-4 bg-gray-100">
                                 <div className="flex items-center">
-                                    <img src={bookDetails.img} alt="Book" className="w-24 h-24 rounded-lg mr-4" />
+                                    {/* <img src={book.img} alt="Book" className="w-24 h-24 rounded-lg mr-4" /> */}
                                     <div>
                                         <h2 className="font-semibold text-gray-900 text-2xl mb-2">Book Details</h2>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Title:</strong> {bookDetails.title}</p>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Author:</strong> {bookDetails.author}</p>
-                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Availability:</strong> {bookDetails.availability === "false" ? "No" : "Yes"}</p>
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Title:</strong> {book.Title_name}</p>
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Author:</strong> {book.Author}</p>
+                                        <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Availability:</strong> {book.Status === 1 ? "Yes" : "No"}</p>
+
                                     </div>
                                 </div>
                             </div>
                         )}
 
-{(bookDetails && userDetails && bookDetails.availability === 1) && (
-    <button type="submit" onClick={handleClick} className="w-full justify-center mx-2 my-5 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-        Add to waiting list
-    </button>
-)}
+
+                          {(book && customer && book.Status === 1) && (
+                              <button type="submit" onClick={handleClick} className="w-full justify-center mx-2 my-5 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  Add to waiting list
+                              </button>
+                          )}
+
 
                     </div>
                 </div>
@@ -243,4 +251,6 @@ function GiveBook() {
     );
 }
 
-export default GiveBook;
+
+export default GiveBook;
+
