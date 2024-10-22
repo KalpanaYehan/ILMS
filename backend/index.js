@@ -59,14 +59,14 @@ db.connect((err) => {
 });
 
 app.post('/register', (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password, userType } = req.body;
+    const { firstName, lastName, email, phoneNumber, password, role } = req.body;
 
     
     bcrypt.hash(password, 5)
         .then((hash) => {
             
-            const sql = "INSERT INTO member (First_name, Last_name, Email, Contact_No, Password) VALUES (?, ?, ?, ?, ?)";
-            const values = [firstName, lastName, email, phoneNumber, hash];
+            const sql = "INSERT INTO member (First_name, Last_name, Email, Contact_No, Password, Role) VALUES (?, ?, ?, ?, ?,?)";
+            const values = [firstName, lastName, email, phoneNumber, hash,role];
 
             db.query(sql, values, (err, result) => {
                 if (err) {
@@ -1013,13 +1013,14 @@ app.get('/popularBooks', async (req, res) => {
             JOIN
                 author a ON bt.Author_ID = a.Author_ID
             WHERE 
-                ib.Issued_date >= CURDATE() - INTERVAL (WEEKDAY(CURDATE()) + 7) DAY
-                AND ib.Issued_date < CURDATE() - INTERVAL WEEKDAY(CURDATE()) DAY
+                ib.Issued_date >= DATE_SUB(CURDATE(), INTERVAL DAYOFMONTH(CURDATE())-1 DAY)
+                AND ib.Issued_date < LAST_DAY(CURDATE()) + INTERVAL 1 DAY
             GROUP BY 
                 bt.Title_ID, bt.Title_name, bt.Img_url, a.Name
             ORDER BY 
                 issue_count DESC
-            LIMIT 5
+            LIMIT 10;
+
         `;
 
         const [result] = await connection.query(sql);
