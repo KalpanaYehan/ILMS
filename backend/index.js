@@ -10,6 +10,9 @@ import booksRout from './routes/booksRout.js';
 import publishersRout from './routes/publishersRout.js'
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 
 const app = express();
@@ -31,10 +34,11 @@ app.get('/', (req, res) => {
 });
 
 export const pool = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "Kalpana@1e2",
-    database: "library_system",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    port: process.env.DB_PORT,
 });
 
 app.use('/books/books',booksRout)
@@ -855,7 +859,7 @@ app.get("/books/:id", (req, res) => {
               bt.Status AS 'Status',
               bt.NoOfPages AS 'NoOfPages',
               bt.Ave_Rate AS 'AverageRating',
-              BT.Des AS 'Description',
+              bt.Des AS 'Description',
               bt.Img_url AS 'ImageURL', 
               bt.im1 AS 'Image1',
               bt.im2 as 'Image2',
@@ -874,15 +878,17 @@ app.get("/books/:id", (req, res) => {
               bt.Title_ID = ?`;
   
     // execute the sql query
-    db.query(sql, [titleId], (err, result) => {
+    pool.query(sql, [titleId], (err, result) => {
       if (err) {
         console.log(err)
         return res.status(500).json({ message: "Internal server error" });
       }
   
       if (result.length === 0) {
+        console.log("Book not found")
         return res.status(404).json({ message: "Book not found" });
       }
+      console.log(result)
   
       return res.status(200).json(result);
     });
@@ -923,7 +929,7 @@ app.get("/books/:id", (req, res) => {
   
   //getting all the reviews
   app.get("/reviews", (req, res) => {
-    db.query("SELECT * FROM review", (err, result) => {
+    pool.query("SELECT * FROM review", (err, result) => {
       if (err) {
         console.error("Error getting reviews:", err.message);
         res.status(500).send("Error getting reviews");
@@ -935,7 +941,7 @@ app.get("/books/:id", (req, res) => {
   
   // getting review with title id
   app.get("/reviews/:title_id", (req, res) => {
-    db.query(
+    pool.query(
       `SELECT review.*, member.First_Name, member.Last_Name,
        DATE_FORMAT(review.Review_Date, '%Y-%m-%d') AS Review_date
        FROM review
@@ -963,7 +969,7 @@ app.get("/books/:id", (req, res) => {
   
     const values = [Title_ID, Member_ID, Rating, Review_Text, Review_Date];
   
-    db.execute(query, values, (err, result) => {
+    pool.execute(query, values, (err, result) => {
       if (err) {
         console.error("Error adding review:", err);
         return res.status(500).json({ message: "Error adding review" });
@@ -982,7 +988,7 @@ app.get("/books/:id", (req, res) => {
   
   //deleting a review
   app.delete("/reviews/:review_id", (req, res) => {
-    db.query(
+    pool.query(
       "DELETE FROM review WHERE review_id = ?",
       [req.params.review_id],
       (err, result) => {
@@ -1041,7 +1047,7 @@ app.get("/review/:id", async(req, res) => {
       
         const values = [Rating, Review_Text, Review_Date, id];
       
-        db.execute(query, values, (err, result) => {
+        pool.execute(query, values, (err, result) => {
           if (err) {
             console.error("Error updating review:", err);
             return res.status(500).json({ message: "Error updating review" });
@@ -1094,7 +1100,7 @@ app.get("/borrowed/:id", async(req, res) => {
       GROUP BY c.Category_name
     `;
   
-    db.query(query, (err, result) => {
+    pool.query(query, (err, result) => {
       if (err) {
         console.error("Error getting book count by category:", err.message);
         res.status(500).send("Error getting book count by category");
@@ -1130,7 +1136,7 @@ app.get("/borrowed/:id", async(req, res) => {
           AND DATEDIFF(CURDATE(), ib.Issued_Date) > 14
       `;
     
-      db.query(query, (err, result) => {
+      pool.query(query, (err, result) => {
         if (err) {
           console.error("Error getting overdue books:", err.message);
           res.status(500).send("Error getting overdue books");
@@ -1152,7 +1158,7 @@ app.get("/borrowed/:id", async(req, res) => {
       ORDER BY MONTH(Issued_Date)
     `;
   
-    db.query(query, [year], (err, results) => {
+    pool.query(query, [year], (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1169,7 +1175,7 @@ app.get("/borrowed/:id", async(req, res) => {
       FROM book_title
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1183,11 +1189,11 @@ app.get("/borrowed/:id", async(req, res) => {
   app.get('/total-members', (req, res) => {
     const query = `
       SELECT COUNT(*) AS totalMembers
-      FROM Member
+      FROM member
       WHERE Role = 'user'
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1213,7 +1219,7 @@ app.get("/borrowed/:id", async(req, res) => {
       LIMIT 10
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1237,7 +1243,7 @@ app.get("/borrowed/:id", async(req, res) => {
       LIMIT 10
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1261,7 +1267,7 @@ app.get("/borrowed/:id", async(req, res) => {
       LIMIT 10
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1289,7 +1295,7 @@ app.get("/borrowed/:id", async(req, res) => {
       LIMIT 6
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1316,7 +1322,7 @@ app.get("/borrowed/:id", async(req, res) => {
       LIMIT 6
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
@@ -1343,7 +1349,7 @@ app.get("/borrowed/:id", async(req, res) => {
       LIMIT 6
     `;
   
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
       if (err) {
         console.error('Error executing query:', err.message);
         res.status(500).send('Error executing query');
