@@ -329,6 +329,7 @@ function BookDetails() {
 
 
   //test
+  // const [bookDetails, setBookDetails] = useState([]);
   // Fetch book details for the book with the given id from the database
   useEffect(() => {
     const fetchBook = async (title_id) => {
