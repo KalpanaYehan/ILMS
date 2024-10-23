@@ -26,7 +26,7 @@ const AddAuthor = () => {
     
     // Make the API call to update the author
     axios
-      .post(`http://localhost:8081/addAuthor`, formData) // Assuming a PUT endpoint for updating an author
+      .post(`http://localhost:8081/books/authors`, formData) // Assuming a PUT endpoint for updating an author
       .then((res) => {
         if (res.data.message === 'Author successfully added') {
           console.log(res.data.message)

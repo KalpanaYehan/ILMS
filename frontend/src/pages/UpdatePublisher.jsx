@@ -19,7 +19,7 @@ const UpdatePublisher = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:8081/getPublisher/${id}`) // Assuming you have a GET endpoint for fetching a publisher by ID
+      .get(`http://localhost:8081/books/publishers/${id}`) // Assuming you have a GET endpoint for fetching a publisher by ID
       .then((response) => {
         setFormData({
           publisherName: response.data.Name,
@@ -48,7 +48,7 @@ const UpdatePublisher = () => {
     
     // Make the API call to update the publisher
     axios
-      .put(`http://localhost:8081/editPublisher/${id}`, formData) // Assuming a PUT endpoint for updating a publisher
+      .put(`http://localhost:8081/books/publishers/${id}`, formData) // Assuming a PUT endpoint for updating a publisher
       .then((res) => {
         if (res.data.message === 'successfully updated') {
           setLoading(false);

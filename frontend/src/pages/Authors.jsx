@@ -21,7 +21,7 @@ function Authors() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/getAuthors')
+        .get('http://localhost:8081/books/authors')
         .then((response)=>{
             // if(response.data.message !== "success") {
             //     // navigate('/login');
@@ -42,7 +42,7 @@ function Authors() {
 },[])
 
   const refreshAuthors = async () => {
-    const response = await axios.get("http://localhost:8081/getAuthors"); // Fetch the updated list of books
+    const response = await axios.get("http://localhost:8081/books/authors"); // Fetch the updated list of books
     setPost(response.data)
     setAuthor(response.data)
   };
@@ -145,13 +145,14 @@ function Authors() {
         <div className="mx-auto px-[15%] min-h-24">
           <div className="grid grid-cols-1 gap-4">
             {authors.map((author) => (
-              <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={author.Name}>
+              <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={author.Author_ID}>
                 <div className='w-[10%] mr-6'>
                   <img src={`${author.Img_url}`} alt="pic" className="rounded-full w-20 h-20  mx-auto my-auto"/>
                 </div>
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{author.Name}</h2>
-                  <p className="text-gray-700 text-xl">{author.Country}</p>
+                  <span className="text-gray-700 text-xl">{author.Country}</span>
+                  <p>{author.Author_ID}</p>
                 </div>
                 <div className='flex items-center gap-2'>
                   <Link to={`/books/Authors/edit/${author.Author_ID}`} className="text-xs mt-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 hover:scale-105">

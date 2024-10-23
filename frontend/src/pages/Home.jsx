@@ -43,7 +43,7 @@ const Home = () => {
           <h1 className='text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-secondary to-gray-900 my-6'>
             Welcome To NexLib
           </h1>
-          <div className='text-lg text-gray-700 font-semibold max-w-6xl mx-auto text-justify px-6'>
+          <div className='text-lg text-gray-700 font-semibold max-w-7xl mx-auto text-justify px-10'>
             <p>
             The Interactive Library Management System (ILMS) is a cutting-edge, 
             all-inclusive system created to improve user experience and transform 

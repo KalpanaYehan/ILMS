@@ -52,7 +52,7 @@ const AddBook = () => {
   
     // Make the API call to add a book
     axios
-      .post('http://localhost:8081/addBook', { bookName, author, category, publisher, isbn, pages, copies,Img_url })
+      .post('http://localhost:8081/books/books', { bookName, author, category, publisher, isbn, pages, copies,Img_url })
       .then((res) => {
         // Handle different response cases
         if (res.data.message === 'success') {

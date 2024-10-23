@@ -25,7 +25,7 @@ const AddPublisher = () => {
 
     // Make the API call to add the publisher
     axios
-      .post('http://localhost:8081/addPublisher', formData) // Assuming the POST endpoint for adding a publisher
+      .post('http://localhost:8081/books/publishers', formData) // Assuming the POST endpoint for adding a publisher
       .then((res) => {
         if (res.data.message === 'Publisher successfully added') {
           console.log(res.data.message);

@@ -103,16 +103,16 @@ const PopularBooks = () => {
   return (
 
       <>
-          <div className="py-10 mb-10">
+          <div className="py-2 m-10">
             <div className="container">
               {/* header section */}
-              <div className="mb-10">
+              <div className="mb-5">
               {books.length > 0 && (
                 <h1
                   data-aos="fade-up"
                   className="text-center text-4xl font-bold"
                 >
-                  Most popular of the week...
+                  Top Picks of the Month...
                 </h1>
                 )}
               </div>
@@ -123,25 +123,23 @@ const PopularBooks = () => {
         <div data-aos="zoom-in">
           <Slider {...settings}>
             {books.map((book) => (
-              <div key={book.Title_ID} className="my-6">
-                <div className="flex flex-col gap-4 shadow-lg py-8 px-6 mx-4 rounded-xl  bg-primary/20 relative">
-                  <div className="  mb-4">
+              <div key={book.Title_ID} className="mb-16">
+                <div className="flex flex-col gap-4 shadow-lg py-8 px-6 mx-4 rounded-xl  bg-primary/20 relative h-[450px]">
+                  <div className="mb-2 h-[300px]">
                     <img
                       src={book.Img_url}
-
-                      alt=""
-                      className="rounded-sm w-[90%] h-70 mx-auto"
+                      alt="image"
+                      className="rounded-sm w-full h-full object-cover mx-auto"
                     />
                   </div>
                   {/* content section */}
                   <div className="flex flex-col items-center gap-4">
-                    <div className="space-y-3">
-                      <h1 className="text-xl font-bold text-black/80  font-cursive2">
+                    <div className="mb-3">
+                      <h1 className="text-xl font-bold text-black/80  font-cursive2 text-center">
 
                         {book.Title_name}
                       </h1>
                       <p className="text-sm text-center text-gray-600">{book.author}</p>
-
                     </div>
                   </div>
                   

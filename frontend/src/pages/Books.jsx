@@ -12,7 +12,6 @@ const Books = () => {
 
   return (
     <>
-      
 
     {user && user.role === 'admin' && (
       <>
@@ -80,7 +79,7 @@ const Books = () => {
                           <h1 className="text-2xl font-bold text-center text-black/80 font-cursive2">
                             Books
                           </h1>
-                          <p className="text-sm text-center text-gray-600">Easily remove books from your library to keep your collection organized and relevant.</p>
+                          <p className="text-sm text-center text-gray-600">Effortlessly manage your library's collection by viewing book details, adding new titles, or removing outdated ones to keep your catalog organized</p>
                         </div>
                       </div>
                     
@@ -130,7 +129,7 @@ const Books = () => {
                           <h1 className="text-2xl font-bold text-center text-black/80 font-cursive2">
                             Authors
                           </h1>
-                          <p className="text-sm text-center text-gray-600">Easily manage authors in your library by viewing detailed information, adding new authors, or removing those no longer relevant.</p>
+                          <p className="text-sm text-center text-gray-600">Easily manage authors in your library by viewing detailed information, adding new authors, or removing those no longer relevant</p>
                         </div>
                       </div>
                       
@@ -157,7 +156,7 @@ const Books = () => {
                           <h1 className="text-2xl font-bold text-center text-black/80 font-cursive2">
                             Publishers
                           </h1>
-                          <p className="text-sm text-center text-gray-600">Manage your publishers effortlessly by viewing detailed information, adding new publishers, or removing outdated ones.</p>
+                          <p className="text-sm text-center text-gray-600">Manage your publishers effortlessly by viewing detailed information, adding new publishers, or removing outdated ones</p>
                         </div>
                       </div>
                       
@@ -168,9 +167,8 @@ const Books = () => {
 
         </div>
       </section>
-
-      <Footer/>
       </div>
+      <Footer/>
       </>
     )}
 

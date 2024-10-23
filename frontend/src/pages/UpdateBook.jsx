@@ -25,7 +25,7 @@ const UpdateBook = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:8081/getBook/${id}`) // Assuming you have a GET endpoint for fetching a book by ID
+      .get(`http://localhost:8081/books/books/${id}`) // Assuming you have a GET endpoint for fetching a book by ID
       .then((response) => {
         setFormData({
           bookName: response.data.Title_name,
@@ -60,7 +60,7 @@ const UpdateBook = () => {
     
     // Make the API call to update the book
     axios
-      .put(`http://localhost:8081/editBook/${id}`, formData) // Assuming a PUT endpoint for updating a book
+      .put(`http://localhost:8081/books/books/${id}`, formData) // Assuming a PUT endpoint for updating a book
       .then((res) => {
         if (res.data.message === 'successfully updated') {
           setLoading(false);

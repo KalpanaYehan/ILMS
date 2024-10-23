@@ -14,8 +14,7 @@ const Users = () => {
 
   return (
     <>
-      <Navbar type={userType} data={userData} />
-
+      <Navbar/>
       <div className="min-h-screen ">
 
         <section

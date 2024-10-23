@@ -17,7 +17,7 @@ const SignUp = () => {
     phoneNumber: '',
     email: '',
     password: '',
-    userType: 'member',
+    role: 'user',
   });
 
 
@@ -60,7 +60,7 @@ const SignUp = () => {
         phoneNumber: '',
         email: '',
         password: '',
-        userType: 'member',
+        role: 'user',
       });
     } else {
       console.log("Validation errors:", validationErrors);

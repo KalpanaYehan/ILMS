@@ -21,7 +21,7 @@ function Publishers() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/getPublishers')
+        .get('http://localhost:8081/books/publishers')
         .then((response)=>{
             // if(response.data.message !== "success") {
             //     // navigate('/login');
@@ -42,7 +42,7 @@ function Publishers() {
 },[])
 
   const refreshPublishers = async () => {
-    const response = await axios.get("http://localhost:8081/getPublishers"); // Fetch the updated list of publisher
+    const response = await axios.get("http://localhost:8081/books/publishers"); // Fetch the updated list of publisher
     setPost(response.data)
     setPublisher(response.data)
   };
@@ -145,13 +145,14 @@ function Publishers() {
         <div className="mx-auto px-[15%] min-h-24">
           <div className="grid grid-cols-1 gap-4">
             {publishers.map((publisher) => (
-              <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={publisher.Name}>
+              <div className="flex py-2 px-4 border border-gray-300 rounded-3xl shadow-md bg-primary/20" key={publisher.Publisher_ID}>
                 {/* <div className='w-[10%] mr-6'>
                   <img src={`$tPubsetPublisher.img}`} alt="pic" className="rounded-sm w-full  mx-auto my-auto"/>
                 </div> */}
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{publisher.Name}</h2>
-                  <p className="text-gray-700 text-xl">{publisher.Location}</p>
+                  <span className="text-gray-700 text-xl">{publisher.Location}</span>
+                  <p>{publisher.Publisher_ID}</p>
                   {/* {publishers.availability==="true"? (
                     <button className="text-xs mt-2 px-4 py-1 bg-green-600 text-white rounded-full">
                       Available

@@ -48,7 +48,7 @@ const Navbar = () => {
 
     return (
         <div className='text-white bg-gray-900 bg-gradient-to-r from-secondary/70 to-secondary/20'>
-            <div className='container py-2'>
+            <div className='mx-auto max-w-7xl py-2'>
                 <div className='flex items-center justify-between pl-10 pr-10'>
                     {/* Logo section */}
                     <div data-aos='fade-down' data-aos-once='true'>

@@ -21,7 +21,7 @@ function BookSearch() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/getBooks')
+        .get('http://localhost:8081/books/books')
         .then((response)=>{
             // if(response.data.message !== "success") {
             //     // navigate('/login');

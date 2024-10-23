@@ -23,7 +23,7 @@ function RemoveBook() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/getBooks')
+        .get('http://localhost:8081/books/books')
         .then((response)=>{
             // if(response.data.message !== "success") {
             //     // navigate('/login');
@@ -44,7 +44,7 @@ function RemoveBook() {
 },[])
 
   const refreshBooks = async () => {
-    const response = await axios.get("http://localhost:8081/getBooks"); // Fetch the updated list of books
+    const response = await axios.get("http://localhost:8081/books/books"); // Fetch the updated list of books
     setPost(response.data)
     setBook(response.data)
   };

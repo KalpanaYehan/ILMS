@@ -20,7 +20,7 @@ const UpdateAuthor = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:8081/getAuthor/${id}`) // Assuming you have a GET endpoint for fetching an author by ID
+      .get(`http://localhost:8081/books/authors/${id}`) // Assuming you have a GET endpoint for fetching an author by ID
       .then((response) => {
         setFormData({
           authorName: response.data.Name,
@@ -50,7 +50,7 @@ const UpdateAuthor = () => {
     
     // Make the API call to update the author
     axios
-      .put(`http://localhost:8081/editAuthor/${id}`, formData) // Assuming a PUT endpoint for updating an author
+      .put(`http://localhost:8081/books/authors/${id}`, formData) // Assuming a PUT endpoint for updating an author
       .then((res) => {
         if (res.data.message === 'Author successfully updated') {
           setLoading(false);
