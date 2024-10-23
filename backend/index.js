@@ -5,9 +5,9 @@ import bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import {verifyUser} from './middlewares/verifyUser.js';
-//import authorsRout from './routes/authorsRout.js';
-//import booksRout from './routes/booksRout.js';
-//import publishersRout from './routes/publishersRout.js
+import authorsRout from './routes/authorsRout.js';
+import booksRout from './routes/booksRout.js';
+import publishersRout from './routes/publishersRout.js'
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -26,853 +26,718 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-const db = mysql.createConnection({
-    host: "localhost",
-  user: "root",
-  password: "Kalpana@1e2",
-  database: "library_system",
-});
-
-// const verifyUser = (req, res, next) => {
-//     const token = req.cookies.token;
-  
-//     if (!token) {
-//       return res.status(401).json({ message: "Token is not available" });
-//     }
-  
-//     jwt.verify(token, 'default-secret', (err, decoded) => {
-//       if (err) {
-//         return res.status(403).json({ message: "Token is invalid" });
-//       }
-//       req.user = decoded; // Optionally attach user data to the request object
-//       next();
-//     });
-//   };
-  
-
-db.connect((err) => {
-    if (err) {
-        console.error("Error connecting to the database:", err.message);
-        return;
-    }
-    console.log("Connected to the MySQL database!");
-});
-
-app.post('/register', (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password, role } = req.body;
-
-    
-    bcrypt.hash(password, 5)
-        .then((hash) => {
-            
-            const sql = "INSERT INTO member (First_name, Last_name, Email, Contact_No, Password, Role) VALUES (?, ?, ?, ?, ?,?)";
-            const values = [firstName, lastName, email, phoneNumber, hash,role];
-
-            db.query(sql, values, (err, result) => {
-                if (err) {
-                    console.error("Error inserting data: ", err.message);
-                    return res.status(500).json({ error: err.message });
-                }
-                
-                res.status(201).json({ message: "User registered successfully", userId: result.insertId });
-            });
-        })
-        .catch((err) => {
-            console.error("Error hashing password: ", err.message);
-            res.status(500).json({ error: err.message });
-        });
-});
-
-app.post('/login', (req, res) => {
-    const { userEmail, password } = req.body;
-
-    db.query('SELECT * FROM member WHERE Email = ?', [userEmail], (error, results) => {
-        if (error) {
-            return res.status(500).json({ message: "Internal server error" });
-        }
-        if (results.length > 0) {
-            const user = results[0];
-
-            bcrypt.compare(password, user.Password, (err, isMatch) => {
-                if (err) {
-                    return res.status(500).json({ message: "Error comparing passwords" });
-                }
-                if (isMatch) {
-                    const accesstoken= jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '15m' });
-                    const refreshtoken = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '1d' });
-                    res.cookie("accesstoken", accesstoken,{maxAge:900000});
-                    res.cookie("refreshtoken", refreshtoken,{maxAge:86400000,secure:true,sameSite:'strict'})
-                    res.status(200).json({ 
-                        message: "success",
-                        accesstoken: accesstoken,
-                        user: { userId:user.Member_ID, username: user.First_name, role: user.Role, email: user.Email}
-                    });
-                  
-                } else {
-                    res.status(401).json({ message: "The password is incorrect" });
-                }
-            });
-        } else {
-            res.status(404).json({ message: "No record found" });
-        }
-      
-    });
-});
-
-
-
-app.get('/home',verifyUser,async(req,res)=>{
-  try{
-      return res.status(200).json({
-          message:"success",
-  })
-  }catch(error){
-      console.log(error.message);
-      res.status(500).send({message:error.message})
-  }
-})
-
 app.get('/', (req, res) => {
     return res.json("from the backend side");
 });
-const pool = mysql.createPool({
+
+export const pool = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "Kalpana@1e2",
     database: "library_system",
 });
 
+app.use('/books/books',booksRout)
+app.use('/books/authors',authorsRout)
+app.use('/books/publishers',publishersRout)
+
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error("Error connecting to the database:", err.message);
+    return;
+  }
+  console.log("Connection pool is initialized and healthy!");
+  connection.release();
+});
+
+app.post('/register', async (req, res) => {
+  const { firstName, lastName, email, phoneNumber, password, role } = req.body;
+
+  try {
+      const connection = await pool.promise().getConnection(); // Get a connection from the pool
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 5);
+
+      // SQL query for inserting a new user
+      const sql = `
+          INSERT INTO member (First_name, Last_name, Email, Contact_No, Password, Role)
+          VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      // Execute the query with values
+      const [result] = await connection.query(sql, [firstName, lastName, email, phoneNumber, hashedPassword, role]);
+
+      // Respond with success and the new user's ID
+      res.status(201).json({ message: "User registered successfully", userId: result.insertId });
+
+  } catch (err) {
+      console.error("Error during registration: ", err.message);
+      res.status(500).json({ error: "Failed to register user." });
+  } finally {
+      if (connection) connection.release(); // Release the connection back to the pool
+  }
+});
+
+app.post('/login', async (req, res) => {
+  const { userEmail, password } = req.body;
+
+  let connection;
+
+  try {
+      // Get a connection from the pool
+      connection = await pool.promise().getConnection();
+
+      // Query to find the user by email
+      const sql = 'SELECT * FROM member WHERE Email = ?';
+      const [results] = await connection.query(sql, [userEmail]);
+
+      if (results.length > 0) {
+          const user = results[0];
+
+          // Compare the provided password with the hashed password in the database
+          const isMatch = await bcrypt.compare(password, user.Password);
+
+          if (isMatch) {
+              // Generate access and refresh tokens
+              const accesstoken = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '15m' });
+              const refreshtoken = jwt.sign({ userEmail: user.Email }, "default-secret", { expiresIn: '1d' });
+
+              // Set the cookies
+              res.cookie("accesstoken", accesstoken, { maxAge: 900000 });
+              res.cookie("refreshtoken", refreshtoken, { maxAge: 86400000, secure: true, sameSite: 'strict' });
+
+              // Respond with the user details and access token
+              res.status(200).json({
+                  message: "success",
+                  accesstoken: accesstoken,
+                  user: { userId: user.Member_ID, username: user.First_name, role: user.Role, email: user.Email }
+              });
+
+          } else {
+              res.status(401).json({ message: "The password is incorrect" });
+          }
+      } else {
+          res.status(404).json({ message: "No record found" });
+      }
+
+  } catch (error) {
+      console.error("Error during login:", error.message);
+      res.status(500).json({ message: "Internal server error" });
+  } finally {
+      if (connection) connection.release(); // Release the connection back to the pool
+  }
+});
 
 
+app.get('/home', verifyUser, async (req, res) => {
+  let connection;
+  try {
+    // Get a connection from the pool with promises
+    connection = await pool.promise().getConnection();
 
-// app.post('/addBook', (req, res) => {
-//     const { bookName, author, category, publisher,isbn, pages,copies } = req.body;
+    // You can execute a query here if needed
+    // Example: const [results] = await connection.query('SELECT * FROM some_table');
 
-//     // Start by inserting author, category, and book with related tables in a transaction
-//     db.beginTransaction((err) => {
-//         if (err) {
-//             return res.status(500).json({ error: "Failed to start transaction" });
-//         }
+    // Just returning a success message for now
+    res.status(200).json({
+      message: "success",
+    });
 
-//         // Insert or find the author
-//         const authorSql = 'INSERT INTO author (Author_ID) VALUES (?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)';
-//         db.query(authorSql, [author], (err, authorResult) => {
-//             if (err) {
-//                 db.rollback(() => {
-//                     return res.status(500).json({ error: "Error inserting or retrieving author" });
-//                 });
-//             }
-//             const authorId = authorResult.insertId;
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });
+  } finally {
+    // Release the connection back to the pool
+    if (connection) connection.release();
+  }
+});
 
-//             // Insert or find the category
-//             const categorySql = 'INSERT INTO category (Category_name) VALUES (?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)';
-//             db.query(categorySql, [category], (err, categoryResult) => {
-//                 if (err) {
-//                     db.rollback(() => {
-//                         return res.status(500).json({ error: "Error inserting or retrieving category" });
-//                     });
-//                 }
-//                 const categoryId = categoryResult.insertId;
 
-//                 // Insert the book into the `Books` table
-//                 const bookSql = 'INSERT INTO book_title (Category_ID, Author_ID,Title_name,No_of_copies,ISBN_Number,NoOfPages,Status) VALUES (?, ?, ?, ?)';
-//                 const bookValues = [categoryId,authorId,bookName,copies,isbn,pages,1];
-//                 db.query(bookSql, bookValues, (err, bookResult) => {
-//                     if (err) {
-//                         db.rollback(() => {
-//                             return res.status(500).json({ error: "Error inserting book" });
-//                         });
-//                     }
-//                     const titleId = bookResult.insertId;
-
-//                     // Insert into the `Inventory` table to track copies
-//                     const inventorySql = 'INSERT INTO Inventory (Title_ID) VALUES (?)';
-//                     const inventoryValues = [bookId];
-//                     db.query(inventorySql, inventoryValues, (err, inventoryResult) => {
-//                         if (err) {
-//                             db.rollback(() => {
-//                                 return res.status(500).json({ error: "Error inserting inventory" });
-//                             });
-//                         }
-
-//                         const bookID = bookResult.insertId;
-
-//                         // Commit the transaction
-//                         db.commit((err) => {
-//                             if (err) {
-//                                 db.rollback(() => {
-//                                     return res.status(500).json({ error: "Error committing transaction" });
-//                                 });
-//                             }
-
-//                             res.status(201).json({ message: "Book added successfully", bookId: bookId });
-//                         });
-//                     });
-//                 });
-//             });
-//         });
-//     });
-// });
-
-// const pool = mysql.createPool({
-//     host: "localhost",
-//     user: "root",
-//     password: "Kalpana@1e2",
-//     database: "library_system",
-//   });
-
-// // pool.query = util.promisify(pool.query);
+////////////////////////////above from this line/////////////////////////////////////////////
 
 // app.post('/addBook', async (req, res) => {
-//     const { bookName, author, category, publisher, isbn, pages, copies } = req.body;
-  
-//     const connection = pool.getConnection();
-  
-//     try {
-//       // Begin transaction
-//       await connection.beginTransaction();
-  
-//       // Step 1: Insert or find the author
-//       const [authorResult] = await connection.query(
-//         'INSERT INTO author (Name) VALUES (?) ON DUPLICATE KEY UPDATE Author_ID=LAST_INSERT_ID(Author_ID)',
-//         [author]
-//       );
-//       const authorId = authorResult.insertId;
-  
-//       // Step 2: Insert or find the category
-//       const [categoryResult] = await connection.query(
-//         'INSERT INTO category (Category_name) VALUES (?) ON DUPLICATE KEY UPDATE Category_ID=LAST_INSERT_ID(Category_ID)',
-//         [category]
-//       );
-//       const categoryId = categoryResult.insertId;
+//     const { bookName, author, category, publisher, isbn, pages, copies, Img_url } = req.body;
 
-//       // Step 3: Insert or find the category
-//       const [publisherResult] = await connection.query(
-//         'INSERT INTO publisher (Name) VALUES (?) ON DUPLICATE KEY UPDATE Publisher_ID=LAST_INSERT_ID(Publisher_ID)',
-//         [publisher]
-//       );
-//       const publisherId = publisherResult.insertId;
-  
-//       // Step 4: Insert the book into the `Books` table
-//       const bookSql = 'INSERT INTO book_title (Category_ID, Author_ID,Publisher_ID, Title_name, No_of_copies, ISBN_Number, NoOfPages, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-//       const [bookResult] = await connection.query(bookSql, [
-//         categoryId,
-//         authorId,
-//         publisherId,
-//         bookName,
-//         copies,
-//         isbn,
-//         pages,
-//         1,
-//       ]);
-//       const titleId = bookResult.insertId;
-  
-//       // Step 5: Insert into the `Inventory` table to track copies
-//       const inventorySql = 'INSERT INTO book (Title_ID) VALUES (?)';
-//       await connection.query(inventorySql, [titleId]);
-  
-//       // Commit the transaction
-//       await connection.commit();
-  
-//       // Respond with success
-//       res.status(201).json({ message: "success", bookId: titleId });
-  
-//     } catch (err) {
-//       // Rollback the transaction in case of error
-//       await connection.rollback();
-//       console.error("Error adding book:", err.message);
-//       res.status(500).json({ error: "Failed to add book" });
-//     } finally {
-//       // Release the connection
-//       connection.release();
-//     }
-    
-//   });
-
-
-
-app.post('/addBook', async (req, res) => {
-    const { bookName, author, category, publisher, isbn, pages, copies, Img_url } = req.body;
-
-    const connection = await pool.promise().getConnection();
+//     const connection = await pool.promise().getConnection();
  
-    try {
-        // Begin transaction
-        await connection.beginTransaction();
+//     try {
+//         // Begin transaction
+//         await connection.beginTransaction();
 
-        // Step 1: Insert or find the author
-        const [authorResult] = await connection.query(
-            'INSERT INTO author (Name) VALUES (?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
-            [author]
-        );
-        const authorId = authorResult.insertId;
+//         // Step 1: Insert or find the author
+//         const [authorResult] = await connection.query(
+//             'INSERT INTO author (Name) VALUES (?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+//             [author]
+//         );
+//         const authorId = authorResult.insertId;
 
-        // Step 2: Insert or find the category
-        const [categoryResult] = await connection.query(
-            'INSERT INTO category (Category_name) VALUES (?) ON DUPLICATE KEY UPDATE Category_name=VALUES(Category_name)',
-            [category]
-        );
-        const categoryId = categoryResult.insertId;
+//         // Step 2: Insert or find the category
+//         const [categoryResult] = await connection.query(
+//             'INSERT INTO category (Category_name) VALUES (?) ON DUPLICATE KEY UPDATE Category_name=VALUES(Category_name)',
+//             [category]
+//         );
+//         const categoryId = categoryResult.insertId;
 
-        // Step 3: Insert or find the publisher
-        const [publisherResult] = await connection.query(
-            'INSERT INTO publisher (Name) VALUES (?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
-            [publisher]
-        );
-        const publisherId = publisherResult.insertId;
+//         // Step 3: Insert or find the publisher
+//         const [publisherResult] = await connection.query(
+//             'INSERT INTO publisher (Name) VALUES (?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+//             [publisher]
+//         );
+//         const publisherId = publisherResult.insertId;
 
-        // Step 4: Insert the book into the `book_title` table
-        const bookSql = 'INSERT INTO book_title (Category_ID, Author_ID, Publisher_ID, Title_name, No_of_copies, ISBN_Number, NoOfPages, Status, Img_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const [bookResult] = await connection.query(bookSql, [
-            categoryId,
-            authorId,
-            publisherId,
-            bookName,
-            copies,
-            isbn,
-            pages,
-            1, // Status for available book
-            Img_url,
-        ]);
-        const titleId = bookResult.insertId;
+//         // Step 4: Insert the book into the `book_title` table
+//         const bookSql = 'INSERT INTO book_title (Category_ID, Author_ID, Publisher_ID, Title_name, No_of_copies, ISBN_Number, NoOfPages, Status, Img_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+//         const [bookResult] = await connection.query(bookSql, [
+//             categoryId,
+//             authorId,
+//             publisherId,
+//             bookName,
+//             copies,
+//             isbn,
+//             pages,
+//             1, // Status for available book
+//             Img_url,
+//         ]);
+//         const titleId = bookResult.insertId;
 
-        // Step 5: Insert into the `book` table to track copies
-        const inventorySql = 'INSERT INTO book (Title_ID) VALUES (?)';
-        await connection.query(inventorySql, [titleId]);
+//         // Step 5: Insert into the `book` table to track copies
+//         const inventorySql = 'INSERT INTO book (Title_ID) VALUES (?)';
+//         await connection.query(inventorySql, [titleId]);
 
-        // Commit the transaction
-        await connection.commit();
+//         // Commit the transaction
+//         await connection.commit();
 
-        // Respond with success
-        res.status(201).json({ message: "success", bookId: titleId });
+//         // Respond with success
+//         res.status(201).json({ message: "success", bookId: titleId });
 
-    } catch (err) {
-        // Rollback the transaction in case of error
-        await connection.rollback();
-        console.error("Error adding book:", err.message);
-        res.status(500).json({ error: "Failed to add book" });
-    } finally {
-        // Release the connection
-        connection.release();
-    }
-});
+//     } catch (err) {
+//         // Rollback the transaction in case of error
+//         await connection.rollback();
+//         console.error("Error adding book:", err.message);
+//         res.status(500).json({ error: "Failed to add book" });
+//     } finally {
+//         // Release the connection
+//         connection.release();
+//     }
+// });
 
-app.get('/getBooks', async (req, res) => {
-    const connection = await pool.promise().getConnection();
+// app.get('/getBooks', async (req, res) => {
+//     const connection = await pool.promise().getConnection();
 
-    try {
-        const sql = `
-            SELECT 
+//     try {
+//         const sql = `
+//             SELECT 
             
-                a.Title_name,
-                b.Name AS Author,
-               a.Title_ID,
-                a.Img_url
-            FROM book_title a
-            JOIN author b ON b.Author_ID = a.Author_ID
-            order by a.Title_ID
-        `;
-
-        const [books] = await connection.query(sql);
-
-        if (books.length === 0) {
-            return res.status(404).json({ message: "No books found." });
-        }
-
-        res.status(200).json(books);
-
-    } catch (err) {
-        console.error("Error fetching books:", err.message);
-        res.status(500).json({ error: "Failed to fetch books." });
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/getBook/:id', async (req, res) => {
-    const { id } = req.params; // Extract the Title_ID from the route parameters
-    const connection = await pool.promise().getConnection();
-
-    try {
-        const sql = `
-           SELECT 
-                a.Title_name,
-                b.Name AS Author,
-                c.Category_name,
-                d.Name AS Publisher_name,
-                a.ISBN_Number,
-                a.NoOfPages,
-                a.No_of_copies,
-                a.Img_url,
-                a.Status
-
-            FROM 
-                book_title a
-            JOIN 
-                author b ON b.Author_ID = a.Author_ID
-            JOIN 
-                category c ON c.Category_ID = a.Category_ID -- Join with the category table
-            JOIN 
-                publisher d ON d.Publisher_ID = a.Publisher_ID -- Join with the publisher table
-            WHERE 
-                a.Title_ID = ?
-
-        `;
-
-        const [book] = await connection.query(sql, [id]);
-
-        if (book.length === 0) {
-            return res.status(404).json({ message: "Book not found." });
-        }
-
-        res.status(200).json(book[0]); // Return the single book object
-
-    } catch (err) {
-        console.error("Error fetching book:", err.message);
-        res.status(500).json({ error: "Failed to fetch book." });
-    } finally {
-        connection.release();
-    }
-});
-
-// Express route to edit a book
-app.put('/editBook/:id', async (req, res) => {
-    const connection = await pool.promise().getConnection();
-    const { id } = req.params; // Title_ID
-    const {
-        bookName,   // New book title
-        author,    // New author ID
-        category,  // New category ID
-        isbn, // New publisher ID
-        publisher,
-        pages,
-        copies,
-        Img_url      // New image URL
-    } = req.body;    // Assume these details come from the frontend
-
-    try {
-        // SQL query to update book details
-        const sql = `
-            UPDATE book_title
-            SET 
-                Title_name = ?, 
-                Author_ID = (SELECT Author_ID FROM author WHERE Name = ?), 
-                Category_ID = (SELECT Category_ID FROM category WHERE Category_name = ?), 
-                Publisher_ID = (SELECT Publisher_ID FROM publisher WHERE Name = ?),
-                ISBN_Number = ?,
-                NoOfPages = ?,
-                No_of_copies = ?,
-                Img_url = ?
-            WHERE 
-                Title_ID = ?
-        `;
-
-        const values = [bookName, author, category, publisher, isbn, pages,copies,Img_url,id];
+//                 a.Title_name,
+//                 b.Name AS Author,
+//                a.Title_ID,
+//                 a.Img_url
+//             FROM book_title a
+//             JOIN author b ON b.Author_ID = a.Author_ID
+//             order by a.Title_ID
+//         `;
+
+//         const [books] = await connection.query(sql);
+
+//         if (books.length === 0) {
+//             return res.status(404).json({ message: "No books found." });
+//         }
+
+//         res.status(200).json(books);
+
+//     } catch (err) {
+//         console.error("Error fetching books:", err.message);
+//         res.status(500).json({ error: "Failed to fetch books." });
+//     } finally {
+//         connection.release();
+//     }
+// });
+
+// app.get('/getBook/:id', async (req, res) => {
+//     const { id } = req.params; // Extract the Title_ID from the route parameters
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         const sql = `
+//            SELECT 
+//                 a.Title_name,
+//                 b.Name AS Author,
+//                 c.Category_name,
+//                 d.Name AS Publisher_name,
+//                 a.ISBN_Number,
+//                 a.NoOfPages,
+//                 a.No_of_copies,
+//                 a.Img_url,
+//                 a.Status
+
+//             FROM 
+//                 book_title a
+//             JOIN 
+//                 author b ON b.Author_ID = a.Author_ID
+//             JOIN 
+//                 category c ON c.Category_ID = a.Category_ID -- Join with the category table
+//             JOIN 
+//                 publisher d ON d.Publisher_ID = a.Publisher_ID -- Join with the publisher table
+//             WHERE 
+//                 a.Title_ID = ?
+
+//         `;
+
+//         const [book] = await connection.query(sql, [id]);
+
+//         if (book.length === 0) {
+//             return res.status(404).json({ message: "Book not found." });
+//         }
+
+//         res.status(200).json(book[0]); // Return the single book object
+
+//     } catch (err) {
+//         console.error("Error fetching book:", err.message);
+//         res.status(500).json({ error: "Failed to fetch book." });
+//     } finally {
+//         connection.release();
+//     }
+// });
+
+// // Express route to edit a book
+// app.put('/editBook/:id', async (req, res) => {
+//     const connection = await pool.promise().getConnection();
+//     const { id } = req.params; // Title_ID
+//     const {
+//         bookName,   // New book title
+//         author,    // New author ID
+//         category,  // New category ID
+//         isbn, // New publisher ID
+//         publisher,
+//         pages,
+//         copies,
+//         Img_url      // New image URL
+//     } = req.body;    // Assume these details come from the frontend
+
+//     try {
+//         // SQL query to update book details
+//         const sql = `
+//             UPDATE book_title
+//             SET 
+//                 Title_name = ?, 
+//                 Author_ID = (SELECT Author_ID FROM author WHERE Name = ?), 
+//                 Category_ID = (SELECT Category_ID FROM category WHERE Category_name = ?), 
+//                 Publisher_ID = (SELECT Publisher_ID FROM publisher WHERE Name = ?),
+//                 ISBN_Number = ?,
+//                 NoOfPages = ?,
+//                 No_of_copies = ?,
+//                 Img_url = ?
+//             WHERE 
+//                 Title_ID = ?
+//         `;
+
+//         const values = [bookName, author, category, publisher, isbn, pages,copies,Img_url,id];
 
-        const [result] = await connection.query(sql, values);
+//         const [result] = await connection.query(sql, values);
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Book not found." });
-        }
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ message: "Book not found." });
+//         }
 
-        res.status(200).json({ message: "Book updated successfully." });
+//         res.status(200).json({ message: "Book updated successfully." });
 
-    } catch (err) {
-        console.error("Error updating book:", err.message);
-        res.status(500).json({ error: "Failed to update book." });
-    } finally {
-        connection.release();
-    }
-});
+//     } catch (err) {
+//         console.error("Error updating book:", err.message);
+//         res.status(500).json({ error: "Failed to update book." });
+//     } finally {
+//         connection.release();
+//     }
+// });
 
-
-app.delete('/deleteBook/:id', async (req, res) => {
-    const { id } = req.params; // Book Title ID
+
+// app.delete('/deleteBook/:id', async (req, res) => {
+//     const { id } = req.params; // Book Title ID
 
-    const connection = await pool.promise().getConnection();
+//     const connection = await pool.promise().getConnection();
 
-    try {
-        // Begin transaction
-        await connection.beginTransaction();
-
-        // Step 1: Delete the record from the `book_title` table
-        const deleteBookTitleSql = 'DELETE FROM book_title WHERE Title_ID = ?';
-        const [deleteResult] = await connection.query(deleteBookTitleSql, [id]);
-
-        // Step 2: Delete the records from the `book` table where the Title_ID matches
-        const deleteBooksSql = 'DELETE FROM book WHERE Title_ID = ?';
-        await connection.query(deleteBooksSql, [id]);
-
-
-        if (deleteResult.affectedRows === 0) {
-            // If no rows were affected, the book was not found
-            await connection.rollback();
-            return res.status(404).json({ message: "Book not found." });
-        }
-
-        // Commit the transaction
-        await connection.commit();
-
-        // Respond with success
-        res.status(200).json({ message: "Book deleted successfully." });
-
-    } catch (err) {
-        // Rollback the transaction in case of error
-        await connection.rollback();
-        console.error("Error deleting book:", err.message);
-        res.status(500).json({ error: "Failed to delete book." });
-    } finally {
-        // Release the connection
-        connection.release();
-    }
-});
-
-//app.use('/books',booksRout)
-//app.use('/authors',authorsRout)
-//app.use('/publishers',publishersRout)
-
-app.post('/addAuthor', async (req, res) => {
-    const { authorName ,country,Img_url } = req.body;  // Assuming you get the author's name from the request body
-
-    const connection = await pool.promise().getConnection();
-
-    try {
-        // Begin transaction
-        await connection.beginTransaction();
-
-        // Step 1: Insert the author or update if it already exists
-        const [authorResult] = await connection.query(
-            'INSERT INTO author (Name,Country,Img_url) VALUES (?,?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
-            [authorName,country,Img_url]
-        );
-        const authorId = authorResult.insertId || authorResult.Author_ID;
-
-        // Commit the transaction
-        await connection.commit();
-
-        // Respond with success
-        res.status(201).json({ message: "Author added successfully", authorId });
-
-    } catch (err) {
-        // Rollback the transaction in case of error
-        await connection.rollback();
-        console.error("Error adding author:", err.message);
-        res.status(500).json({ error: "Failed to add author" });
-    } finally {
-        // Release the connection
-        connection.release();
-    }
-});
-
-app.delete('/deleteAuthor/:id', async (req, res) => {
-    const { id } = req.params; // Author ID
-
-    const connection = await pool.promise().getConnection();
-
-    try {
-        // Begin transaction
-        await connection.beginTransaction();
-
-        // Step 1: Delete the record from the `author` table
-        const deleteAuthorSql = 'DELETE FROM author WHERE Author_ID = ?';
-        const [deleteResult] = await connection.query(deleteAuthorSql, [id]);
-
-        if (deleteResult.affectedRows === 0) {
-            // If no rows were affected, the author was not found
-            await connection.rollback();
-            return res.status(404).json({ message: "Author not found." });
-        }
-
-        // Commit the transaction
-        await connection.commit();
-
-        // Respond with success
-        res.status(200).json({ message: "Author deleted successfully." });
-
-    } catch (err) {
-        // Rollback the transaction in case of error
-        await connection.rollback();
-        console.error("Error deleting author:", err.message);
-        res.status(500).json({ error: "Failed to delete author." });
-    } finally {
-        // Release the connection
-        connection.release();
-    }
-});
-
-
-app.get('/getAuthors', async (req, res) => {
-    const connection = await pool.promise().getConnection();
-
-    try {
-        const sql = `
-            SELECT 
-                Img_url,
-                Author_ID,
-                Country,
-                Name
-            FROM author
-        `;
-
-        const [authors] = await connection.query(sql);
-
-        if (authors.length === 0) {
-            return res.status(404).json({ message: "No authors found." });
-        }
-
-        res.status(200).json(authors);
-
-    } catch (err) {
-        console.error("Error fetching authors:", err.message);
-        res.status(500).json({ error: "Failed to fetch authors." });
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/getAuthor/:id', async (req, res) => {
-    const { id } = req.params; // Extract the Title_ID from the route parameters
-    const connection = await pool.promise().getConnection();
-
-    try {
-        const sql = `
-           SELECT 
-                Author_ID,
-                Name,
-                Country,
-                Img_url
-
-            FROM 
-                author
-            WHERE 
-                Author_ID = ?
-
-        `;
-
-        const [author] = await connection.query(sql, [id]);
-
-        if (author.length === 0) {
-            return res.status(404).json({ message: "Author not found." });
-        }
-
-        res.status(200).json(author[0]); // Return the single book object
-
-    } catch (err) {
-        console.error("Error fetching author:", err.message);
-        res.status(500).json({ error: "Failed to fetch author." });
-    } finally {
-        connection.release();
-    }
-});
-
-// Express route to edit an author
-app.put('/editAuthor/:id', async (req, res) => { 
-    const connection = await pool.promise().getConnection();
-    const { id } = req.params; // Author_ID
-    const { authorName, country,Img_url } = req.body; // New author name and country from frontend
-
-    try {
-        // SQL query to update author details
-        const sql = `
-            UPDATE author
-            SET 
-                Name = ?, 
-                Country = ?,
-                Img_url = ?
-            WHERE 
-                Author_ID = ?
-        `;
-
-        const values = [authorName, country,Img_url, id];
-
-        const [result] = await connection.query(sql, values);
-
-        // Check if any rows were affected
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Author not found." });
-        }
-
-        // If author updated successfully
-        res.status(200).json({ message: "Author updated successfully." });
-
-    } catch (err) {
-        // Handle any errors during the update process
-        console.error("Error updating author:", err.message);
-        res.status(500).json({ error: "Failed to update author." });
-    } finally {
-        // Release the connection back to the pool
-        connection.release();
-    }
-});
-
-
-app.post('/addPublisher', async (req, res) => {
-    const { publisherName,location } = req.body;  // Assuming you get the publisher's name from the request body
-
-    const connection = await pool.promise().getConnection();
-
-    try {
-        // Begin transaction
-        await connection.beginTransaction();
-
-        // Step 1: Insert the publisher or update if it already exists
-        const [publisherResult] = await connection.query(
-            'INSERT INTO publisher (Name,Location) VALUES (?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
-            [publisherName,location]
-        );
-        const publisherId = publisherResult.insertId || publisherResult.Publisher_ID;
-
-        // Commit the transaction
-        await connection.commit();
-
-        // Respond with success
-        res.status(201).json({ message: "Publisher added successfully", publisherId });
-
-    } catch (err) {
-        // Rollback the transaction in case of error
-        await connection.rollback();
-        console.error("Error adding publisher:", err.message);
-        res.status(500).json({ error: "Failed to add publisher" });
-    } finally {
-        // Release the connection
-        connection.release();
-    }
-});
-
-app.delete('/deletePublisher/:id', async (req, res) => {
-    const { id } = req.params; // Publisher ID
-
-    const connection = await pool.promise().getConnection();
-
-    try {
-        // Begin transaction
-        await connection.beginTransaction();
-
-        // Step 1: Delete the record from the `publisher` table
-        const deletePublisherSql = 'DELETE FROM publisher WHERE Publisher_ID = ?';
-        const [deleteResult] = await connection.query(deletePublisherSql, [id]);
-
-        if (deleteResult.affectedRows === 0) {
-            // If no rows were affected, the publisher was not found
-            await connection.rollback();
-            return res.status(404).json({ message: "Publisher not found." });
-        }
-
-        // Commit the transaction
-        await connection.commit();
-
-        // Respond with success
-        res.status(200).json({ message: "Publisher deleted successfully." });
-
-    } catch (err) {
-        // Rollback the transaction in case of error
-        await connection.rollback();
-        console.error("Error deleting publisher:", err.message);
-        res.status(500).json({ error: "Failed to delete publisher." });
-    } finally {
-        // Release the connection
-        connection.release();
-    }
-});
-
-app.get('/getPublishers', async (req, res) => {
-    const connection = await pool.promise().getConnection();
-
-    try {
-        const sql = `
-            SELECT 
-                Publisher_ID,
-                Location,
-                Name 
-            FROM publisher
-        `;
-
-        const [publishers] = await connection.query(sql);
-
-        if (publishers.length === 0) {
-            return res.status(404).json({ message: "No publishers found." });
-        }
-
-        res.status(200).json(publishers);
-
-    } catch (err) {
-        console.error("Error fetching publishers:", err.message);
-        res.status(500).json({ error: "Failed to fetch publishers." });
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/getPublisher/:id', async (req, res) => {
-    const { id } = req.params; // Extract the Title_ID from the route parameters
-    const connection = await pool.promise().getConnection();
-
-    try {
-        const sql = `
-           SELECT 
-                Publisher_ID,
-                Name,
-                Location
-            FROM 
-                publisher
-            WHERE 
-                Publisher_ID = ?
-
-        `;
-
-        const [publisher] = await connection.query(sql, [id]);
-
-        if (publisher.length === 0) {
-            return res.status(404).json({ message: "Publisher not found." });
-        }
-
-        res.status(200).json(publisher[0]); // Return the single book object
-
-    } catch (err) {
-        console.error("Error fetching publisher:", err.message);
-        res.status(500).json({ error: "Failed to fetch publisher." });
-    } finally {
-        connection.release();
-    }
-});
-
-app.put('/editPublisher/:id', async (req, res) => { 
-    const connection = await pool.promise().getConnection();
-    const { id } = req.params; // Publisher_ID
-    const { publisherName, location} = req.body; // New publisher details from frontend
-
-    try {
-        // SQL query to update publisher details
-        const sql = `
-            UPDATE publisher
-            SET 
-                Name = ?, 
-                Location = ?
-            WHERE 
-                Publisher_ID = ?
-        `;
-
-        const values = [publisherName, location, id];
-
-        const [result] = await connection.query(sql, values);
-
-        // Check if any rows were affected
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Publisher not found." });
-        }
-
-        // If publisher updated successfully
-        res.status(200).json({ message: "Publisher updated successfully." });
-
-    } catch (err) {
-        // Handle any errors during the update process
-        console.error("Error updating publisher:", err.message);
-        res.status(500).json({ error: "Failed to update publisher." });
-    } finally {
-        // Release the connection back to the pool
-        connection.release();
-    }
-});
+//     try {
+//         // Begin transaction
+//         await connection.beginTransaction();
+
+//         // Step 1: Delete the record from the `book_title` table
+//         const deleteBookTitleSql = 'DELETE FROM book_title WHERE Title_ID = ?';
+//         const [deleteResult] = await connection.query(deleteBookTitleSql, [id]);
+
+//         // Step 2: Delete the records from the `book` table where the Title_ID matches
+//         const deleteBooksSql = 'DELETE FROM book WHERE Title_ID = ?';
+//         await connection.query(deleteBooksSql, [id]);
+
+
+//         if (deleteResult.affectedRows === 0) {
+//             // If no rows were affected, the book was not found
+//             await connection.rollback();
+//             return res.status(404).json({ message: "Book not found." });
+//         }
+
+//         // Commit the transaction
+//         await connection.commit();
+
+//         // Respond with success
+//         res.status(200).json({ message: "Book deleted successfully." });
+
+//     } catch (err) {
+//         // Rollback the transaction in case of error
+//         await connection.rollback();
+//         console.error("Error deleting book:", err.message);
+//         res.status(500).json({ error: "Failed to delete book." });
+//     } finally {
+//         // Release the connection
+//         connection.release();
+//     }
+// });
+
+// //app.use('/books',booksRout)
+// //app.use('/authors',authorsRout)
+// //app.use('/publishers',publishersRout)
+
+// app.post('/addAuthor', async (req, res) => {
+//     const { authorName ,country,Img_url } = req.body;  // Assuming you get the author's name from the request body
+
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         // Begin transaction
+//         await connection.beginTransaction();
+
+//         // Step 1: Insert the author or update if it already exists
+//         const [authorResult] = await connection.query(
+//             'INSERT INTO author (Name,Country,Img_url) VALUES (?,?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+//             [authorName,country,Img_url]
+//         );
+//         const authorId = authorResult.insertId || authorResult.Author_ID;
+
+//         // Commit the transaction
+//         await connection.commit();
+
+//         // Respond with success
+//         res.status(201).json({ message: "Author added successfully", authorId });
+
+//     } catch (err) {
+//         // Rollback the transaction in case of error
+//         await connection.rollback();
+//         console.error("Error adding author:", err.message);
+//         res.status(500).json({ error: "Failed to add author" });
+//     } finally {
+//         // Release the connection
+//         connection.release();
+//     }
+// });
+
+// app.delete('/deleteAuthor/:id', async (req, res) => {
+//     const { id } = req.params; // Author ID
+
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         // Begin transaction
+//         await connection.beginTransaction();
+
+//         // Step 1: Delete the record from the `author` table
+//         const deleteAuthorSql = 'DELETE FROM author WHERE Author_ID = ?';
+//         const [deleteResult] = await connection.query(deleteAuthorSql, [id]);
+
+//         if (deleteResult.affectedRows === 0) {
+//             // If no rows were affected, the author was not found
+//             await connection.rollback();
+//             return res.status(404).json({ message: "Author not found." });
+//         }
+
+//         // Commit the transaction
+//         await connection.commit();
+
+//         // Respond with success
+//         res.status(200).json({ message: "Author deleted successfully." });
+
+//     } catch (err) {
+//         // Rollback the transaction in case of error
+//         await connection.rollback();
+//         console.error("Error deleting author:", err.message);
+//         res.status(500).json({ error: "Failed to delete author." });
+//     } finally {
+//         // Release the connection
+//         connection.release();
+//     }
+// });
+
+
+// app.get('/getAuthors', async (req, res) => {
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         const sql = `
+//             SELECT 
+//                 Img_url,
+//                 Author_ID,
+//                 Country,
+//                 Name
+//             FROM author
+//         `;
+
+//         const [authors] = await connection.query(sql);
+
+//         if (authors.length === 0) {
+//             return res.status(404).json({ message: "No authors found." });
+//         }
+
+//         res.status(200).json(authors);
+
+//     } catch (err) {
+//         console.error("Error fetching authors:", err.message);
+//         res.status(500).json({ error: "Failed to fetch authors." });
+//     } finally {
+//         connection.release();
+//     }
+// });
+
+// app.get('/getAuthor/:id', async (req, res) => {
+//     const { id } = req.params; // Extract the Title_ID from the route parameters
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         const sql = `
+//            SELECT 
+//                 Author_ID,
+//                 Name,
+//                 Country,
+//                 Img_url
+
+//             FROM 
+//                 author
+//             WHERE 
+//                 Author_ID = ?
+
+//         `;
+
+//         const [author] = await connection.query(sql, [id]);
+
+//         if (author.length === 0) {
+//             return res.status(404).json({ message: "Author not found." });
+//         }
+
+//         res.status(200).json(author[0]); // Return the single book object
+
+//     } catch (err) {
+//         console.error("Error fetching author:", err.message);
+//         res.status(500).json({ error: "Failed to fetch author." });
+//     } finally {
+//         connection.release();
+//     }
+// });
+
+// // Express route to edit an author
+// app.put('/editAuthor/:id', async (req, res) => { 
+//     const connection = await pool.promise().getConnection();
+//     const { id } = req.params; // Author_ID
+//     const { authorName, country,Img_url } = req.body; // New author name and country from frontend
+
+//     try {
+//         // SQL query to update author details
+//         const sql = `
+//             UPDATE author
+//             SET 
+//                 Name = ?, 
+//                 Country = ?,
+//                 Img_url = ?
+//             WHERE 
+//                 Author_ID = ?
+//         `;
+
+//         const values = [authorName, country,Img_url, id];
+
+//         const [result] = await connection.query(sql, values);
+
+//         // Check if any rows were affected
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ message: "Author not found." });
+//         }
+
+//         // If author updated successfully
+//         res.status(200).json({ message: "Author updated successfully." });
+
+//     } catch (err) {
+//         // Handle any errors during the update process
+//         console.error("Error updating author:", err.message);
+//         res.status(500).json({ error: "Failed to update author." });
+//     } finally {
+//         // Release the connection back to the pool
+//         connection.release();
+//     }
+// });
+
+
+// app.post('/addPublisher', async (req, res) => {
+//     const { publisherName,location } = req.body;  // Assuming you get the publisher's name from the request body
+
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         // Begin transaction
+//         await connection.beginTransaction();
+
+//         // Step 1: Insert the publisher or update if it already exists
+//         const [publisherResult] = await connection.query(
+//             'INSERT INTO publisher (Name,Location) VALUES (?,?) ON DUPLICATE KEY UPDATE Name=VALUES(Name)',
+//             [publisherName,location]
+//         );
+//         const publisherId = publisherResult.insertId || publisherResult.Publisher_ID;
+
+//         // Commit the transaction
+//         await connection.commit();
+
+//         // Respond with success
+//         res.status(201).json({ message: "Publisher added successfully", publisherId });
+
+//     } catch (err) {
+//         // Rollback the transaction in case of error
+//         await connection.rollback();
+//         console.error("Error adding publisher:", err.message);
+//         res.status(500).json({ error: "Failed to add publisher" });
+//     } finally {
+//         // Release the connection
+//         connection.release();
+//     }
+// });
+
+// app.delete('/deletePublisher/:id', async (req, res) => {
+//     const { id } = req.params; // Publisher ID
+
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         // Begin transaction
+//         await connection.beginTransaction();
+
+//         // Step 1: Delete the record from the `publisher` table
+//         const deletePublisherSql = 'DELETE FROM publisher WHERE Publisher_ID = ?';
+//         const [deleteResult] = await connection.query(deletePublisherSql, [id]);
+
+//         if (deleteResult.affectedRows === 0) {
+//             // If no rows were affected, the publisher was not found
+//             await connection.rollback();
+//             return res.status(404).json({ message: "Publisher not found." });
+//         }
+
+//         // Commit the transaction
+//         await connection.commit();
+
+//         // Respond with success
+//         res.status(200).json({ message: "Publisher deleted successfully." });
+
+//     } catch (err) {
+//         // Rollback the transaction in case of error
+//         await connection.rollback();
+//         console.error("Error deleting publisher:", err.message);
+//         res.status(500).json({ error: "Failed to delete publisher." });
+//     } finally {
+//         // Release the connection
+//         connection.release();
+//     }
+// });
+
+// app.get('/getPublishers', async (req, res) => {
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         const sql = `
+//             SELECT 
+//                 Publisher_ID,
+//                 Location,
+//                 Name 
+//             FROM publisher
+//         `;
+
+//         const [publishers] = await connection.query(sql);
+
+//         if (publishers.length === 0) {
+//             return res.status(404).json({ message: "No publishers found." });
+//         }
+
+//         res.status(200).json(publishers);
+
+//     } catch (err) {
+//         console.error("Error fetching publishers:", err.message);
+//         res.status(500).json({ error: "Failed to fetch publishers." });
+//     } finally {
+//         connection.release();
+//     }
+// });
+
+// app.get('/getPublisher/:id', async (req, res) => {
+//     const { id } = req.params; // Extract the Title_ID from the route parameters
+//     const connection = await pool.promise().getConnection();
+
+//     try {
+//         const sql = `
+//            SELECT 
+//                 Publisher_ID,
+//                 Name,
+//                 Location
+//             FROM 
+//                 publisher
+//             WHERE 
+//                 Publisher_ID = ?
+
+//         `;
+
+//         const [publisher] = await connection.query(sql, [id]);
+
+//         if (publisher.length === 0) {
+//             return res.status(404).json({ message: "Publisher not found." });
+//         }
+
+//         res.status(200).json(publisher[0]); // Return the single book object
+
+//     } catch (err) {
+//         console.error("Error fetching publisher:", err.message);
+//         res.status(500).json({ error: "Failed to fetch publisher." });
+//     } finally {
+//         connection.release();
+//     }
+// });
+
+// app.put('/editPublisher/:id', async (req, res) => { 
+//     const connection = await pool.promise().getConnection();
+//     const { id } = req.params; // Publisher_ID
+//     const { publisherName, location} = req.body; // New publisher details from frontend
+
+//     try {
+//         // SQL query to update publisher details
+//         const sql = `
+//             UPDATE publisher
+//             SET 
+//                 Name = ?, 
+//                 Location = ?
+//             WHERE 
+//                 Publisher_ID = ?
+//         `;
+
+//         const values = [publisherName, location, id];
+
+//         const [result] = await connection.query(sql, values);
+
+//         // Check if any rows were affected
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ message: "Publisher not found." });
+//         }
+
+//         // If publisher updated successfully
+//         res.status(200).json({ message: "Publisher updated successfully." });
+
+//     } catch (err) {
+//         // Handle any errors during the update process
+//         console.error("Error updating publisher:", err.message);
+//         res.status(500).json({ error: "Failed to update publisher." });
+//     } finally {
+//         // Release the connection back to the pool
+//         connection.release();
+//     }
+// });
 
 
 app.post('/logout', (req, res) => {
@@ -882,66 +747,6 @@ app.post('/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
     // .status(200)
   });
-
-/////////////////////////////
-// import express from 'express'
-// import mysql from 'mysql2'
-// import cors from 'cors'
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
-
-// const db = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "ILMS",
-//     database: "library_system"
-// })
-
-// // Check MySQL connection
-// {/*
-// db.connect((err) => {
-//     if (err) {
-//         console.error('Error connecting to the database:', err);
-//         return;
-//     }
-//     console.log('Connected to MySQL database');
-// });
-// */}
-
-// commented
-// app.get('/user/:id', async(req, res) => {
-//     const connection = await pool.promise().getConnection();
-//     try{
-//         const sql = "SELECT * FROM admin WHERE Admin_ID = ? AND role = 'user'";
-//         const id = req.params.id;
-//         const [user] = await connection.query(sql,[id]);
-    
-//     if (user.length === 0) {
-//         return res.status(404).json({ message: "No publishers found." });
-//     }
-
-//     res.status(200).json(user[0]);
-
-//     } catch (err) {
-//         console.error("Error fetching user:", err.message);
-//         res.status(500).json({ error: "Failed to fetch user." });
-//     } finally {
-//         connection.release();
-//     }
-    
-// })
-
-// app.get('/book/:id', (req, res) => {
-//     const sql = "SELECT * FROM book title INNER JOIN author ON book title.Author_ID = author.Author_ID WHERE book title.Title_ID = ?";
-//     const id = req.params.id;
-    
-//     db.query(sql, [id], (err, result) => {
-//         if(err) return res.json({Message: "Error inside server"});
-//         return res.json(result);
-//     })
-// })
 
 app.get('/issueDetails', async(req, res) => {
     const connection = await pool.promise().getConnection();
@@ -1551,3 +1356,4 @@ app.get("/borrowed/:id", async(req, res) => {
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");
 });
+
