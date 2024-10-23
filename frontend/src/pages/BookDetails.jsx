@@ -327,6 +327,9 @@ function BookDetails() {
   const storedUser = localStorage.getItem('user');
   const member = storedUser ? JSON.parse(storedUser).userId : null;
 
+
+  //test
+  // const [bookDetails, setBookDetails] = useState([]);
   // Fetch book details for the book with the given id from the database
   useEffect(() => {
     const fetchBook = async (title_id) => {
