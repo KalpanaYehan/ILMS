@@ -11,7 +11,9 @@ export const getUserById = async (req, res) => {
         First_name,
         Last_name,
         Email,
-        Contact_No
+        Contact_No,
+        Role
+        
       FROM 
         member
       WHERE 
