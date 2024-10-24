@@ -78,8 +78,8 @@ const AddBook = () => {
         enqueueSnackbar(error.message, { variant: 'error' }); // Display error message
         console.log(error);
       });
-      console.log(formData);
-      window.alert("Book Added");
+      // console.log(formData);
+      // window.alert("Book Added");
       setFormData({
         bookName: '',
         author: '',
