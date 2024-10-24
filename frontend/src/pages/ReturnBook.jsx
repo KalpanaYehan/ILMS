@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
@@ -26,6 +26,17 @@ function ReturnBook() {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    // Code to run when the component mounts or updates
+    if (recordDetails) {
+      detailsRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // return () => {
+    //   // Optional cleanup function (runs when component unmounts)
+    // };
+  }, [recordDetails]); // dependencies array
+
   // const Admin_ID = userData.id;
 
   const handleSubmit = async (e) => {
@@ -37,7 +48,7 @@ function ReturnBook() {
     setError(null);
 
     await axios
-      .get("http://localhost:8081/user/" + userId)
+      .get("http://localhost:8081/users/user/" + userId)
       .then((res) => {
         if (res.data.length > 0) {
           setUserDetails(res.data[0]);
@@ -48,7 +59,7 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     await axios
-      .get("http://localhost:8081/book/" + bookId)
+      .get("http://localhost:8081/users/book/" + bookId)
       .then((res) => {
         if (res.data.length > 0) {
           setBookDetails(res.data[0]);
@@ -59,7 +70,7 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     await axios
-      .get("http://localhost:8081/issueDetails", {
+      .get("http://localhost:8081/users/issue", {
         params: {
           userId, // Replace with the actual userId
           bookId, // Replace with the actual bookId
@@ -75,16 +86,16 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     // Scroll to details section if all details are found
-    if (recordDetails) {
-      detailsRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    // if (recordDetails) {
+    //   detailsRef.current.scrollIntoView({ behavior: "smooth" });
+    // }
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
 
     await axios
-      .post("http://localhost:8081/returnbook/", { bookId, userId })
+      .post("http://localhost:8081/users/return/", { bookId, userId })
       .then((res) => {
         // window.alert(res.data.Message);
         enqueueSnackbar(res.data.Message, { variant: "success" });

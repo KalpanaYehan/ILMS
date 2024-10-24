@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
@@ -27,6 +27,17 @@ function GiveBook() {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    // Code to run when the component mounts or updates
+    if (bookDetails && userDetails) {
+      detailsRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // return () => {
+    //   // Optional cleanup function (runs when component unmounts)
+    // };
+  }, [bookDetails, userDetails]); // dependencies array
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,7 +47,7 @@ function GiveBook() {
 
     try {
       await axios
-        .get("http://localhost:8081/book/" + bookId)
+        .get("http://localhost:8081/users/book/" + bookId)
         .then((res) => {
           if (res.data.length > 0) {
             // console.log(res.data);
@@ -55,7 +66,7 @@ function GiveBook() {
 
     try {
       await axios
-        .get("http://localhost:8081/user/" + userId)
+        .get("http://localhost:8081/users/user/" + userId)
         .then((res) => {
           if (res.data.length > 0) {
             setUserDetails(res.data[0]);
@@ -72,16 +83,16 @@ function GiveBook() {
     }
 
     // Scroll to details section if both user and book are found
-    if (userDetails && bookDetails) {
-      detailsRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    // if (userDetails && bookDetails) {
+    //   detailsRef.current.scrollIntoView({ behavior: "smooth" });
+    // }
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
 
     await axios
-      .post("http://localhost:8081/issue", {
+      .post("http://localhost:8081/users/issue", {
         Admin_ID,
         userId,
         bookId,

@@ -12,7 +12,7 @@ import reviewsRout from "./routes/reviewsRout.js";
 import dashboardRout from "./routes/dashboardRout.js";
 import popularRout from "./routes/popularRout.js";
 import userRout from "./routes/userRout.js";
-import bookRoute from "./routes/bookRoute.js";
+
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
@@ -54,8 +54,7 @@ app.use("/books/publishers", publishersRout);
 app.use("/reviews", reviewsRout);
 app.use("/dashboard", dashboardRout);
 app.use("/popular", popularRout);
-app.use("/user", userRout);
-app.use("/book", bookRoute);
+app.use("/users", userRout);
 
 pool.getConnection((err, connection) => {
   if (err) {
@@ -783,54 +782,54 @@ app.post("/logout", (req, res) => {
   // .status(200)
 });
 
-app.get("/issueDetails", async (req, res) => {
-  const connection = await pool.promise().getConnection();
-  try {
-    const sql =
-      "SELECT * FROM issuebook WHERE Member_ID = ? AND Book_ID = ? AND Returned_Date IS NULL";
-    const userId = req.query.userId; // Get userId from query parameters
-    const bookId = req.query.bookId; // Get bookId from query parameters
-    const [result] = await connection.query(sql, [userId, bookId]);
-    res.json(result);
-  } catch (err) {
-    console.error("Error fetching issued books:", err.message);
-    res.status(500).json({ error: "Failed to fetch issued books." });
-  } finally {
-    connection.release();
-  }
-});
+// app.get("/issueDetails", async (req, res) => {
+//   const connection = await pool.promise().getConnection();
+//   try {
+//     const sql =
+//       "SELECT * FROM issuebook WHERE Member_ID = ? AND Book_ID = ? AND Returned_Date IS NULL";
+//     const userId = req.query.userId; // Get userId from query parameters
+//     const bookId = req.query.bookId; // Get bookId from query parameters
+//     const [result] = await connection.query(sql, [userId, bookId]);
+//     res.json(result);
+//   } catch (err) {
+//     console.error("Error fetching issued books:", err.message);
+//     res.status(500).json({ error: "Failed to fetch issued books." });
+//   } finally {
+//     connection.release();
+//   }
+// });
 
-app.post("/issue", async (req, res) => {
-  const connection = await pool.promise().getConnection();
-  try {
-    const { Admin_ID, userId, bookId } = req.body;
-    const sql =
-      "INSERT INTO issuebook (`Admin_ID`, `Member_ID`, `Book_ID`) VALUES (?, ?, ?)";
-    const [result] = await connection.query(sql, [Admin_ID, userId, bookId]);
-    res.json({ Message: "Book issued", data: result });
-  } catch (err) {
-    console.error("Error fetching user:", err.message);
-    res.status(500).json({ error: "Failed to fetch user." });
-  } finally {
-    connection.release();
-  }
-});
+// app.post("/issue", async (req, res) => {
+//   const connection = await pool.promise().getConnection();
+//   try {
+//     const { Admin_ID, userId, bookId } = req.body;
+//     const sql =
+//       "INSERT INTO issuebook (`Admin_ID`, `Member_ID`, `Book_ID`) VALUES (?, ?, ?)";
+//     const [result] = await connection.query(sql, [Admin_ID, userId, bookId]);
+//     res.json({ Message: "Book issued", data: result });
+//   } catch (err) {
+//     console.error("Error fetching user:", err.message);
+//     res.status(500).json({ error: "Failed to fetch user." });
+//   } finally {
+//     connection.release();
+//   }
+// });
 
-app.post("/returnbook", async (req, res) => {
-  const connection = await pool.promise().getConnection();
-  try {
-    const { bookId, userId } = req.body;
-    // console.log(req.body);
-    const sql = "CALL UpdateReturnedDate(?, ?)";
-    const [result] = await connection.query(sql, [bookId, userId]);
-    res.json({ Message: "Book returned", data: result });
-  } catch (err) {
-    console.error("Error returning book", err.message);
-    res.status(500).json({ error: "Failed to return book" });
-  } finally {
-    connection.release();
-  }
-});
+// app.post("/returnbook", async (req, res) => {
+//   const connection = await pool.promise().getConnection();
+//   try {
+//     const { bookId, userId } = req.body;
+//     // console.log(req.body);
+//     const sql = "CALL UpdateReturnedDate(?, ?)";
+//     const [result] = await connection.query(sql, [bookId, userId]);
+//     res.json({ Message: "Book returned", data: result });
+//   } catch (err) {
+//     console.error("Error returning book", err.message);
+//     res.status(500).json({ error: "Failed to return book" });
+//   } finally {
+//     connection.release();
+//   }
+// });
 
 // app.get("/book/:id", (req, res) => {
 //   const sql =

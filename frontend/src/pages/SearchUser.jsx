@@ -20,7 +20,7 @@ function SearchUser() {
     setError(null);
 
     try {
-      const res = await axios.get("http://localhost:8081/user/" + userId);
+      const res = await axios.get("http://localhost:8081/users/user/" + userId);
 
       // Check if user data is returned
       if (res.data.length > 0) {
