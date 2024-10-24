@@ -24,6 +24,7 @@ import AddAuthor from './pages/AddAuthor'
 import AddPublisher from './pages/AddPublisher'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
+import AddAdmin from './pages/AddAdmin'
 
 
 
@@ -55,6 +56,7 @@ const App = () => {
           <Route path='/help' element={<AddBook/>}></Route>
           <Route path='/dashboard' element={<Dashboard/>}></Route>
           <Route path='/profile' element={<Profile/>}></Route>
+          <Route path='/admin' element={<AddAdmin/>}></Route>
         </Routes>
       </AuthProvider>
     </div>
