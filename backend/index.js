@@ -46,13 +46,13 @@ export const pool = mysql.createPool({
     port: process.env.DB_PORT,
 });
 
-app.use('/books/books',booksRout)
-app.use('/books/authors',authorsRout)
-app.use('/books/publishers',publishersRout)
-app.use('/reviews',reviewsRout)
-app.use('/dashboard',dashboardRout)
-app.use('/popular',popularRout)
-app.use('/user',userRout )
+app.use('/books/books',verifyUser,booksRout)
+app.use('/books/authors',verifyUser,authorsRout)
+app.use('/books/publishers',verifyUser,publishersRout)
+app.use('/reviews',verifyUser,reviewsRout)
+app.use('/dashboard',verifyUser,dashboardRout)
+app.use('/popular',verifyUser,popularRout)
+app.use('/user',verifyUser,userRout )
 
 pool.getConnection((err, connection) => {
   if (err) {
@@ -757,6 +757,7 @@ app.get('/home', verifyUser, async (req, res) => {
 app.post('/logout', (req, res) => {
     // Clear HttpOnly cookies by setting them to expire in the past
     res.cookie('refreshtoken', '', { expires: new Date(0), httpOnly: true, path: '/' });
+    //res.clearCookie('accesstoken', { path: '/' })
     // Send a response indicating successful logout
     res.json({ message: 'Logged out successfully' });
     // .status(200)

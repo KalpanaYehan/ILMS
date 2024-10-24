@@ -122,7 +122,7 @@ function Publishers() {
               className="w-full p-2 border border-gray-300 rounded-md"
             >
               <option value="Name">Name</option>
-              <option value="Country">Country</option>
+              <option value="Location">Country</option>
             </select>
           </div>
           <div className="mb-4">

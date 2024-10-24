@@ -1,7 +1,8 @@
 //const {getAuthors} = require("../controllers/authorsController.js")
 //const {pool} = require('../index.js');
 //const app = require("../index.js")
-import app from "../index"
+import app from "../index.js"; // Add the .js extension
+import request from 'supertest'; // Ensure you import supertest as well
 
 describe("/login", () => {
   test("It should respond with a valid token when enter correct credentials", async () => {
@@ -13,6 +14,7 @@ describe("/login", () => {
     expect(response.body).toHaveProperty("token");
   });
 });
+
 
 // describe("POST /auth/login", () => {
 //   test("It should respond with error status code when enter incorrect credentials", async () => {

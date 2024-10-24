@@ -22,7 +22,7 @@ const Menu = [
 ];
 
 const Navbar = () => {
-    const { user } = useContext(AuthContext);
+    const { user,setUser } = useContext(AuthContext);
     const navigate = useNavigate();
     const [dropDownOpen, setDropDownOpen] = useState(false);
     axios.defaults.withCredentials = true;
@@ -36,10 +36,12 @@ const Navbar = () => {
             .post('http://localhost:8081/logout')
             .then((res) => {
                 if (res.data.message === "Logged out successfully") {
-                    document.cookie = 'accesstoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    document.cookie = 'accesstoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
                     localStorage.removeItem('user');
+                    setUser(null);
                     navigate('/');
                 }
+                
             })
             .catch((err) => {
                 console.log(err);

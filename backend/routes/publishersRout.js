@@ -5,8 +5,8 @@ import { verifyUser } from '../middlewares/verifyUser.js'
 
 const router = express.Router()
 
-router.post('/',addPublisher)
-router.get('/',getPublishers)
+router.post('/',verifyUser,addPublisher)
+router.get('/',verifyUser,getPublishers)
 router.get('/:id',getPublisherById)
 router.put('/:id',editPublisher)
 router.delete('/:id',deletePublisher)

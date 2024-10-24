@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Validation from '../components/Validation';
+import { useSnackbar } from 'notistack';
 
 const AddAdmin = () => {
 
@@ -20,6 +21,7 @@ const AddAdmin = () => {
   
     const [errors, setErrors] = useState({});  // State for validation errors
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
   
   
     const handleChange = (e) => {
@@ -48,7 +50,7 @@ const AddAdmin = () => {
           .catch(err => console.log(err));
   
         console.log(formData);
-        window.alert("Account created");
+        enqueueSnackbar('Account created successfully', { variant: 'success' });
   
         // Reset form data after successful submission
         setFormData({
