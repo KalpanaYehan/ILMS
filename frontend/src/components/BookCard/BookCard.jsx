@@ -5,7 +5,7 @@ const BookCard = ({ bookDetails }) => {
       <div className="flex-shrink-0">
         <img
           className="h-28 w-28 object-cover rounded-lg"
-          src={bookDetails.img}
+          src={bookDetails.Img_url}
           alt={bookDetails.title}
         />
       </div>
@@ -20,7 +20,23 @@ const BookCard = ({ bookDetails }) => {
           </div>
           <div className="flex">
             <p className="text-gray-600 font-medium w-32">Author:</p>
-            <p className="text-gray-800">{bookDetails.Name}</p>
+            <p className="text-gray-800">{bookDetails.Author_name}</p>
+          </div>
+          <div className="flex">
+            <p className="text-gray-600 font-medium w-32">Category:</p>
+            <p className="text-gray-800">{bookDetails.Category_name}</p>
+          </div>
+          <div className="flex">
+            <p className="text-gray-600 font-medium w-32">Publisher:</p>
+            <p className="text-gray-800">{bookDetails.Publisher_name}</p>
+          </div>
+          <div className="flex">
+            <p className="text-gray-600 font-medium w-32">Pages:</p>
+            <p className="text-gray-800">{bookDetails.NoOfPages}</p>
+          </div>
+          <div className="flex">
+            <p className="text-gray-600 font-medium w-32">Availability:</p>
+            <p className="text-gray-800">{bookDetails.Status ? "Yes" : "No"}</p>
           </div>
         </div>
       </div>

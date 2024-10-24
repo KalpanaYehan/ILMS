@@ -35,6 +35,7 @@ function GiveBook() {
         .get("http://localhost:8081/book/" + bookId)
         .then((res) => {
           if (res.data.length > 0) {
+            console.log(res.data);
             setBookDetails(res.data[0]);
           } else {
             setError("Book not found");
