@@ -778,10 +778,10 @@ app.get("/issueDetails", async (req, res) => {
   try {
     const sql =
       "SELECT * FROM issuebook WHERE Member_ID = ? AND Book_ID = ? AND Returned_Date IS NULL";
-    const customerId = req.query.customerId;
-    const bookId = req.query.bookId;
-    const [result] = await connection.query(sql, [customerId, bookId]);
-    res.json(result[0]);
+    const userId = req.query.userId; // Get userId from query parameters
+    const bookId = req.query.bookId; // Get bookId from query parameters
+    const [result] = await connection.query(sql, [userId, bookId]);
+    res.json(result);
   } catch (err) {
     console.error("Error fetching issued books:", err.message);
     res.status(500).json({ error: "Failed to fetch issued books." });
@@ -810,6 +810,7 @@ app.post("/returnbook", async (req, res) => {
   const connection = await pool.promise().getConnection();
   try {
     const { bookId, userId } = req.body;
+    // console.log(req.body);
     const sql = "CALL UpdateReturnedDate(?, ?)";
     const [result] = await connection.query(sql, [bookId, userId]);
     res.json({ Message: "Book returned", data: result });

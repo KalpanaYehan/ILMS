@@ -6,6 +6,7 @@ import axios from "axios";
 import UserCard from "../components/UserCard/UserCard";
 import BookCard from "../components/BookCard/BookCard";
 import RecordCard from "../components/RecordCard/RecordCard";
+import { useSnackbar } from "notistack";
 
 function ReturnBook() {
   const location = useLocation();
@@ -22,6 +23,8 @@ function ReturnBook() {
 
   // Reference for the details section
   const detailsRef = useRef(null);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   // const Admin_ID = userData.id;
 
@@ -56,7 +59,7 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     await axios
-      .get("http://localhost:8081/return", {
+      .get("http://localhost:8081/issueDetails", {
         params: {
           userId, // Replace with the actual userId
           bookId, // Replace with the actual bookId
@@ -83,7 +86,8 @@ function ReturnBook() {
     await axios
       .post("http://localhost:8081/returnbook/", { bookId, userId })
       .then((res) => {
-        window.alert(res.data.Message);
+        // window.alert(res.data.Message);
+        enqueueSnackbar(res.data.Message, { variant: "success" });
       })
       .catch((err) => console.log(err));
   };
