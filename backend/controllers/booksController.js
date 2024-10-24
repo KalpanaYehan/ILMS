@@ -46,8 +46,8 @@ export const addBook = async (req, res) => {
         const titleId = bookResult.insertId;
 
         // Step 5: Insert into the `book` table to track copies
-        const inventorySql = 'INSERT INTO book (Title_ID) VALUES (?)';
-        await connection.query(inventorySql, [titleId]);
+        // const inventorySql = 'INSERT INTO book (Title_ID) VALUES (?)';
+        // await connection.query(inventorySql, [titleId]);
 
         // Commit the transaction
         await connection.commit();
@@ -74,8 +74,9 @@ export const getBooks = async (req, res) => {
             
                 a.Title_name,
                 b.Name AS Author,
-               a.Title_ID,
-                a.Img_url
+                a.Title_ID,
+                a.Img_url,
+                a.Status
             FROM book_title a
             JOIN author b ON b.Author_ID = a.Author_ID
             order by a.Title_ID

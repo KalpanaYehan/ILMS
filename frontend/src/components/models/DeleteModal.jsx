@@ -12,7 +12,7 @@ const DeleteModal = ({open,onclose,bookId,refreshBooks}) => {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      await axios.delete(`http://localhost:8081/deleteBook/${bookId}`);
+      await axios.delete(`http://localhost:8081/books/books/${bookId}`);
 
       // Refresh the book list after successful deletion
       refreshBooks();

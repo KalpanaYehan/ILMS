@@ -159,13 +159,13 @@ function RemoveBook() {
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{book.Title_name}</h2>
                   <p className="text-gray-700 text-xl">{book.Author}</p>
-                  {book.availability==="true"? (
+                  {book.Status=== 1 ? (
                     <button className="text-xs mt-2 px-2 py-1 bg-green-600 text-white rounded-full">
                       Available
                     </button>
                     ) : (
-                    <button className="text-xs mt-2 px-2 py-1 bg-green-600 text-white rounded-full">
-                      Available
+                    <button className="text-xs mt-2 px-2 py-1 bg-red-600 text-white rounded-full">
+                      Not Available
                     </button>
                   )}
                   <Link to={`/books/details/${book.Title_ID}`} className="text-xs mt-2 px-2 py-1 bg-secondary text-white rounded-lg hover:bg-secondary/90 hover:scale-105">
