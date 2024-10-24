@@ -48,7 +48,7 @@ const Navbar = () => {
 
     return (
         <div className='text-white bg-gray-900 bg-gradient-to-r from-secondary/70 to-secondary/20'>
-            <div className='mx-auto max-w-7xl py-2'>
+            <div className='py-2 mx-auto max-w-7xl'>
                 <div className='flex items-center justify-between pl-10 pr-10'>
                     {/* Logo section */}
                     <div data-aos='fade-down' data-aos-once='true'>
@@ -100,11 +100,11 @@ const Navbar = () => {
                             </button>
                             {dropDownOpen && (
                                 <div className='absolute right-0 z-20 w-48 py-2 mt-1 bg-white rounded-md shadow-lg'>
-                                    {user && user.role === 'user' && (
+                                (
                                         <a href="/profile" className='block px-4 py-2 text-gray-800 hover:bg-gray-200'>
                                             Profile
                                         </a>
-                                    )}
+                                    )
                                     <button className='block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-200' onClick={handleLogout}>
                                         Logout
                                     </button>

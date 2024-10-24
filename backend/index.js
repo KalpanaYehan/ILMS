@@ -65,9 +65,10 @@ pool.getConnection((err, connection) => {
 
 app.post('/register', async (req, res) => {
   const { firstName, lastName, email, phoneNumber, password, role } = req.body;
-  let connection;
+  const connection = await pool.promise().getConnection(); // Get a connection from the pool
+
   try {
-      connection = await pool.promise().getConnection(); // Get a connection from the pool
+      
 
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 5);

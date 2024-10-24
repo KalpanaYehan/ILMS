@@ -1,19 +1,51 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CountUp from "react-countup";
+import axios from "axios";
 
 const Count = () => {
+  const [totalBooks, setTotalBooks] = useState(0);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [error, setError] = useState(null); // Define the error state
+
   const stats = [
     {
       id: 1,
       label: "Books Available",
-      count: 400,
+      count: totalBooks, // Directly reference the state variable
     },
     {
       id: 2,
       label: "Registered Members",
-      count: 50,
+      count: totalMembers, // Directly reference the state variable
     },
   ];
+
+  useEffect(() => {
+    fetchTotalBooks();
+    fetchTotalMembers();
+  }, []);
+
+  const fetchTotalBooks = () => {
+    axios
+      .get("http://localhost:8081/dashboard/total-books")
+      .then((response) => {
+        setTotalBooks(response.data.totalBooks);
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+  };
+
+  const fetchTotalMembers = () => {
+    axios
+      .get("http://localhost:8081/dashboard/total-users")
+      .then((response) => {
+        setTotalMembers(response.data.totalMembers);
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+  };
 
   return (
     <div className="flex justify-center mt-10 space-x-8">
@@ -31,6 +63,7 @@ const Count = () => {
           <p className="mt-2 text-lg font-medium text-gray-700">{stat.label}</p>
         </div>
       ))}
+      {error && <p className="text-red-500">{error}</p>} {/* Display error message if any */}
     </div>
   );
 };
