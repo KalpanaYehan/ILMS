@@ -335,7 +335,7 @@ function BookDetails() {
     const fetchBook = async (title_id) => {
       try {
         await axios.get(
-          `http://localhost:8081/books/${id} `,
+          `http://localhost:8081/books/books/bookdata/${id} `,
         ).then((response) => {
           setBookDetails(response.data[0]);
           setSubImages([response.data[0].Image1, response.data[0].Image2 , response.data[0].Image3, response.data[0].Image4 , response.data[0].Image5 ]); 

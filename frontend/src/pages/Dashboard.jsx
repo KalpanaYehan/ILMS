@@ -64,7 +64,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     axios
-    .get("http://localhost:8081/categories/book-count")
+    .get("http://localhost:8081/dashboard/categories/book-count")
     .then((response) => {
       const formattedData = response.data
         .filter((category) => category.BookCount !== null)
@@ -82,7 +82,7 @@ const Dashboard = () => {
     });
      
     axios
-      .get("http://localhost:8081/overdue-books")
+      .get("http://localhost:8081/dashboard/overdue-books")
       .then((response) => {
         setOverdueBooksData(response.data);
       })
@@ -99,7 +99,7 @@ const Dashboard = () => {
 
   const fetchBookAcquisitionData = (year) => {
     axios
-      .get(`http://localhost:8081/book-acquisition?year=${year}`)
+      .get(`http://localhost:8081/dashboard/book-acquisition?year=${year}`)
       .then((response) => {
         const months = Array.from({ length: 12 }, (_, i) =>
           new Date(0, i).toLocaleString("default", { month: "long" })
@@ -126,7 +126,7 @@ const Dashboard = () => {
 
   const fetchTotalBooks = () => {
     axios
-      .get("http://localhost:8081/total-books")
+      .get("http://localhost:8081/dashboard/total-books")
       .then((response) => {
         setTotalBooks(response.data.totalBooks);
       })
@@ -137,7 +137,7 @@ const Dashboard = () => {
 
   const fetchTotalMembers = () => {
     axios
-      .get("http://localhost:8081/total-members")
+      .get("http://localhost:8081/dashboard/total-users")
       .then((response) => {
         setTotalMembers(response.data.totalMembers);
       })
@@ -148,7 +148,7 @@ const Dashboard = () => {
 
   const fetchPopularCategories = (period) => {
     axios
-      .get(`http://localhost:8081/popular-categories/${period}`)
+      .get(`http://localhost:8081/popular/popular-categories/${period}`)
       .then((response) => {
         setPopularCategoriesData(response.data);
       })
@@ -159,7 +159,7 @@ const Dashboard = () => {
 
   const fetchPopularAuthors = (period) => {
     axios
-      .get(`http://localhost:8081/popular-authors/${period}`)
+      .get(`http://localhost:8081/popular/popular-authors/${period}`)
       .then((response) => {
         setPopularAuthorsData(response.data);
       })

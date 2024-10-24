@@ -48,7 +48,7 @@ console.log(userID);
 
   const fetchUserReviews = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/review/${userId}`, { withCredentials: true });
+      const response = await axios.get(`http://localhost:8081/reviews/review/${userId}`, { withCredentials: true });
       setReviews(response.data);
     } catch (err) {
       setError(err.message);
@@ -57,7 +57,7 @@ console.log(userID);
 
   const fetchBorrowedBooks = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/borrowed/${userId}`, { withCredentials: true });
+      const response = await axios.get(`http://localhost:8081/books/books/borrowed/${userId}`, { withCredentials: true });
       setBorrowedBooks(response.data);
     } catch (err) {
       setError(err.message);
