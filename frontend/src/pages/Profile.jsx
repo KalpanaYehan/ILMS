@@ -1,4 +1,3 @@
-
 // import React, { useEffect, useState } from 'react';
 // import axios from 'axios';
 // import { useNavigate } from 'react-router-dom';
@@ -17,7 +16,7 @@
 //   const [rating, setRating] = useState(0);
 //   const [reviewText, setReviewText] = useState('');
 //   const [showDeletePopup, setShowDeletePopup] = useState(false); // State to manage delete confirmation popup
-//   const navigate = useNavigate();  // Hook to navigate to other pages 
+//   const navigate = useNavigate();  // Hook to navigate to other pages
 
 //   useEffect(() => {
 //     const storedUser = localStorage.getItem('user');
@@ -102,20 +101,19 @@
 //         // Update existing review
 //         await axios.put(`http://localhost:8081/reviews/${currentReview.Review_ID}`, data);
 //         console.log("Review updated successfully");
-        
+
 //       } else {
 //         // Add new review
 //         await axios.post(`http://localhost:8081/reviews`, data);
 //         console.log("Review added successfully");
 //       }
-      
+
 //       fetchUserReviews(userID);
 //       handleCloseReviewModal();
 //     } catch (err) {
 //       console.error("Error submitting review:", err.message);
 //     }
 //   };
-  
 
 //   const handleCloseDeletePopup = () => {
 //     setShowDeletePopup(false);
@@ -130,7 +128,7 @@
 //       <Navbar />
 //       <div className="min-h-screen bg-gray-100">
 //         <div className="container p-4 mx-auto">
-        
+
 //           <div className="flex p-6 mb-6 bg-white rounded-lg shadow-md">
 //             <img src={User2} alt="member" className='duration-200 rounded-full cursor-pointer w-60 hover:scale-105' />
 //             <div className='px-20 py-10 text-xl '>
@@ -282,16 +280,14 @@
 
 // export default Profile;
 
-
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import Navbar from '../components/Navbar/Navbar';
-import Footer from '../components/Footer/Footer';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
 import User2 from "../assets/website/member1.jpg";
 //import AddAdmin from './AddAdmin';
-import { useSnackbar } from 'notistack';
-
+import { useSnackbar } from "notistack";
 
 const Profile = () => {
   const [userDetails, setUserDetails] = useState({});
@@ -302,27 +298,29 @@ const Profile = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [currentReview, setCurrentReview] = useState(null); // State to store the review being edited
   const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
+  const [reviewText, setReviewText] = useState("");
   const [showDeletePopup, setShowDeletePopup] = useState(false); // State to manage delete confirmation popup
-  const navigate = useNavigate();  // Hook to navigate to other pages 
-  const {enqueueSnackbar} = useSnackbar()
+  const navigate = useNavigate(); // Hook to navigate to other pages
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);
       fetchUserDetails(user.userId);
       fetchUserReviews(user.userId);
       fetchBorrowedBooks(user.userId);
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   }, [navigate]);
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/user/${userId}`, { withCredentials: true });
-      setUserDetails(response.data);
+      const response = await axios.get(`http://localhost:8081/user/${userId}`, {
+        withCredentials: true,
+      });
+      setUserDetails(response.data[0]);
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -330,13 +328,16 @@ const Profile = () => {
     }
   };
 
-const storedUser = localStorage.getItem('user');
-const userID = storedUser ? JSON.parse(storedUser).userId: null;
-console.log(userID);
+  const storedUser = localStorage.getItem("user");
+  const userID = storedUser ? JSON.parse(storedUser).userId : null;
+  console.log(userID);
 
   const fetchUserReviews = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/reviews/review/${userId}`, { withCredentials: true });
+      const response = await axios.get(
+        `http://localhost:8081/reviews/review/${userId}`,
+        { withCredentials: true }
+      );
       setReviews(response.data);
     } catch (err) {
       setError(err.message);
@@ -345,7 +346,10 @@ console.log(userID);
 
   const fetchBorrowedBooks = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/books/books/borrowed/${userId}`, { withCredentials: true });
+      const response = await axios.get(
+        `http://localhost:8081/books/books/borrowed/${userId}`,
+        { withCredentials: true }
+      );
       setBorrowedBooks(response.data);
     } catch (err) {
       setError(err.message);
@@ -354,14 +358,16 @@ console.log(userID);
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      await axios.delete(`http://localhost:8081/reviews/${reviewId}`, { withCredentials: true });
+      await axios.delete(`http://localhost:8081/reviews/${reviewId}`, {
+        withCredentials: true,
+      });
       // setShowDeletePopup(true); // Show delete confirmation popup
-      enqueueSnackbar("Review deleted successfully",{variant : "success"})
-      handleCloseDeletePopup()
+      enqueueSnackbar("Review deleted successfully", { variant: "success" });
+      handleCloseDeletePopup();
     } catch (err) {
       setError(err.message);
-      enqueueSnackbar("Unsuccess",{variant : "error"})
-      handleCloseDeletePopup()
+      enqueueSnackbar("Unsuccess", { variant: "error" });
+      handleCloseDeletePopup();
     }
   };
 
@@ -376,7 +382,7 @@ console.log(userID);
     setShowReviewModal(false);
     setCurrentReview(null); // Clear the current review
     setRating(0);
-    setReviewText('');
+    setReviewText("");
   };
 
   const handleSubmitReview = async (e) => {
@@ -386,28 +392,29 @@ console.log(userID);
       //Member_ID: userDetails.Member_ID,
       Rating: rating,
       Review_Text: reviewText,
-      Review_Date: new Date().toLocaleDateString('en-CA'), // Format the date as 'YYYY-MM-DD'
+      Review_Date: new Date().toLocaleDateString("en-CA"), // Format the date as 'YYYY-MM-DD'
     };
 
     try {
       if (currentReview) {
         // Update existing review
-        await axios.put(`http://localhost:8081/reviews/${currentReview.Review_ID}`, data);
+        await axios.put(
+          `http://localhost:8081/reviews/${currentReview.Review_ID}`,
+          data
+        );
         console.log("Review updated successfully");
-        
       } else {
         // Add new review
         await axios.post(`http://localhost:8081/reviews`, data);
         console.log("Review added successfully");
       }
-      
+
       fetchUserReviews(userID);
       handleCloseReviewModal();
     } catch (err) {
       console.error("Error submitting review:", err.message);
     }
   };
-  
 
   const handleCloseDeletePopup = () => {
     //setShowDeletePopup(false);
@@ -422,46 +429,74 @@ console.log(userID);
       <Navbar />
       <div className="min-h-screen bg-gray-100 ">
         <div className="container p-4 mx-auto ">
-        <h1 className="mt-5 mb-5 ml-32 text-2xl font-bold text-red-950 lg:ml-32">Personal Details</h1>
+          <h1 className="mt-5 mb-5 ml-32 text-2xl font-bold text-red-950 lg:ml-32">
+            Personal Details
+          </h1>
           {/* <div className="items-center p-6 mb-6 bg-white rounded-lg shadow-md"> */}
-          <div className='flex mb-6 '>
-  <img src={User2} alt="member" className='mt-5 duration-200 rounded-full cursor-pointer hover:scale-105 h-60' />
-  <div className='px-20 py-10 text-xl'> 
-              <p className="mb-4 font-semibold"><strong>Member ID:</strong> {userID} </p>
-              <p className="mb-4 font-semibold"><strong>First Name:</strong> {userDetails.First_name}</p>
-              <p className="mb-4 font-semibold"><strong>Last Name:</strong> {userDetails.Last_name} </p>
-              <p className="mb-4 font-semibold"><strong>Email:</strong> {userDetails.Email}</p>
-              <p className="mb-4 font-semibold"><strong>Contact No:</strong> {userDetails.Contact_No}</p>
-              {userDetails.Role === 'admin' && (
-                <Link to={`/Admin`} className="p-2 font-bold text-white bg-yellow-950 hover:bg-yellow-900 rounded-2xl">
+          <div className="flex mb-6 ">
+            <img
+              src={User2}
+              alt="member"
+              className="mt-5 duration-200 rounded-full cursor-pointer hover:scale-105 h-60"
+            />
+            <div className="px-20 py-10 text-xl">
+              <p className="mb-4 font-semibold">
+                <strong>Member ID:</strong> {userID}{" "}
+              </p>
+              <p className="mb-4 font-semibold">
+                <strong>First Name:</strong> {userDetails.First_name}
+              </p>
+              <p className="mb-4 font-semibold">
+                <strong>Last Name:</strong> {userDetails.Last_name}{" "}
+              </p>
+              <p className="mb-4 font-semibold">
+                <strong>Email:</strong> {userDetails.Email}
+              </p>
+              <p className="mb-4 font-semibold">
+                <strong>Contact No:</strong> {userDetails.Contact_No}
+              </p>
+              {userDetails.Role === "admin" && (
+                <Link
+                  to={`/Admin`}
+                  className="p-2 font-bold text-white bg-yellow-950 hover:bg-yellow-900 rounded-2xl"
+                >
                   Add Admin
                 </Link>
               )}
             </div>
-</div>
-           
-                   
+          </div>
+
           {/* </div> */}
 
           {reviews.length > 0 && (
             <div className="p-6 mb-6 bg-white rounded-lg shadow-md">
-              <h1 className="mb-4 text-2xl font-bold text-red-950">My Reviews</h1>
+              <h1 className="mb-4 text-2xl font-bold text-red-950">
+                My Reviews
+              </h1>
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
                     <th className="px-4 py-2 text-left border-b">Book Title</th>
                     <th className="px-4 py-2 text-left border-b">Review</th>
-                    <th className="px-4 py-2 text-left border-b">Review Date</th>
+                    <th className="px-4 py-2 text-left border-b">
+                      Review Date
+                    </th>
                     <th className="px-4 py-2 text-left border-b">Rating</th>
                     <th className="px-4 py-2 text-left border-b">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {reviews.map(review => (
+                  {reviews.map((review) => (
                     <tr key={review.Review_ID}>
-                      <td className="px-4 py-2 border-b">{review.Title_name}</td>
-                      <td className="px-4 py-2 border-b">{review.Review_Text}</td>
-                      <td className="px-4 py-2 border-b">{review.Review_Date}</td>
+                      <td className="px-4 py-2 border-b">
+                        {review.Title_name}
+                      </td>
+                      <td className="px-4 py-2 border-b">
+                        {review.Review_Text}
+                      </td>
+                      <td className="px-4 py-2 border-b">
+                        {review.Review_Date}
+                      </td>
                       <td className="px-4 py-2 border-b">{review.Rating}</td>
                       <td className="flex px-4 py-2 border-b">
                         <button
@@ -486,23 +521,31 @@ console.log(userID);
 
           {borrowedBooks.length > 0 && (
             <div className="p-6 bg-white rounded-lg shadow-md">
-              <h1 className="mb-4 text-2xl font-bold text-red-950">My Borrowed Books</h1>
+              <h1 className="mb-4 text-2xl font-bold text-red-950">
+                My Borrowed Books
+              </h1>
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
                     <th className="px-4 py-2 text-left border-b">Book Title</th>
                     <th className="px-4 py-2 text-left border-b">Author</th>
-                    <th className="px-4 py-2 text-left border-b">Issued Date</th>
-                    <th className="px-4 py-2 text-left border-b">Return Date</th>
+                    <th className="px-4 py-2 text-left border-b">
+                      Issued Date
+                    </th>
+                    <th className="px-4 py-2 text-left border-b">
+                      Return Date
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {borrowedBooks.map(book => (
+                  {borrowedBooks.map((book) => (
                     <tr key={book.Book_ID}>
                       <td className="px-4 py-2 border-b">{book.Title_name}</td>
                       <td className="px-4 py-2 border-b">{book.Author}</td>
                       <td className="px-4 py-2 border-b">{book.Issued_Date}</td>
-                      <td className="px-4 py-2 border-b">{book.Returned_Date}</td>
+                      <td className="px-4 py-2 border-b">
+                        {book.Returned_Date}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -515,10 +558,14 @@ console.log(userID);
       {showReviewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="mb-4 text-2xl font-bold text-center">{currentReview ? 'Update Review' : 'Enter Review'}</h2>
+            <h2 className="mb-4 text-2xl font-bold text-center">
+              {currentReview ? "Update Review" : "Enter Review"}
+            </h2>
             <form onSubmit={handleSubmitReview}>
               <div className="mb-4">
-                <label htmlFor="reviewText" className="block font-medium">Review:</label>
+                <label htmlFor="reviewText" className="block font-medium">
+                  Review:
+                </label>
                 <textarea
                   id="reviewText"
                   value={reviewText}
@@ -529,7 +576,9 @@ console.log(userID);
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="rating" className="block font-medium">Rating:</label>
+                <label htmlFor="rating" className="block font-medium">
+                  Rating:
+                </label>
                 <input
                   type="number"
                   id="rating"
@@ -554,7 +603,7 @@ console.log(userID);
                   type="submit"
                   className="px-4 py-2 text-white transition duration-200 bg-blue-400 rounded hover:bg-blue-700"
                 >
-                  {currentReview ? 'Update' : 'Submit'}
+                  {currentReview ? "Update" : "Submit"}
                 </button>
               </div>
             </form>
@@ -565,7 +614,9 @@ console.log(userID);
       {showDeletePopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="mb-4 text-2xl font-bold text-center">Review Deleted Successfully</h2>
+            <h2 className="mb-4 text-2xl font-bold text-center">
+              Review Deleted Successfully
+            </h2>
             <div className="flex justify-end">
               <button
                 onClick={handleCloseDeletePopup}
