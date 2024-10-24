@@ -42,7 +42,7 @@ function GiveBook() {
         })
         .catch((err) => {
           console.error(err); // Log the error for debugging
-          setError("An error occurred while fetching user details."); // Set a user-friendly error message
+          setError("An error occurred while fetching book details."); // Set a user-friendly error message
         });
     } catch {
       (err) => console.log(err);
