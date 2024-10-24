@@ -479,7 +479,7 @@ function BookDetails() {
                 </div>
                 <div className="grid justify-center mt-4">
                   <button
-                    className="px-10 py-2 mt-2 ml-auto text-white transition-transform duration-300 bg-blue-600 rounded-full hover:bg-blue-700 hover:scale-105"
+                    className="px-4 py-2 mt-2 text-white bg-yellow-950 hover:bg-yellow-900 rounded-2xl"
                     onClick={() => {
                       setShowModal(true);
                       setImage(subImages);
@@ -502,7 +502,7 @@ function BookDetails() {
         </div>
         <div className="p-6 text-center">
           <button
-            className="px-10 py-2 mt-2 ml-auto text-white transition-transform duration-300 bg-blue-600 rounded-full hover:bg-blue-700 hover:scale-105"
+            className="px-4 py-2 mt-2 text-white bg-yellow-950 hover:bg-yellow-900 rounded-2xl"
             onClick= {handleAddReviewClick}
           >
             Add review

@@ -466,13 +466,13 @@ console.log(userID);
                       <td className="flex px-4 py-2 border-b">
                         <button
                           onClick={() => handleDeleteReview(review.Review_ID)}
-                          className="px-3 py-1 mr-2 text-white bg-red-500 rounded"
+                          className="px-4 py-2 mx-1 mt-2 text-xs text-white bg-red-700 rounded-lg hover:bg-red-800 hover:scale-105"
                         >
                           Delete
                         </button>
                         <button
                           onClick={() => handleUpdateReview(review)}
-                          className="px-3 py-1 text-white bg-blue-500 rounded"
+                          className="px-4 py-2 mt-2 text-xs text-white bg-green-700 rounded-lg hover:bg-green-800 hover:scale-105"
                         >
                           Edit
                         </button>
