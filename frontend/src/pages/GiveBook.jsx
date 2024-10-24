@@ -1,14 +1,15 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import axios from "axios";
 import UserCard from "../components/UserCard/UserCard";
 import BookCard from "../components/BookCard/BookCard";
+import { AuthContext } from "../context/AuthContext";
 
 function GiveBook() {
-  const location = useLocation();
-  const { userType, userData } = location.state || {};
+  const { user } = useContext(AuthContext);
+  // console.log(user);
 
   const [userId, setUserId] = useState("");
   const [userDetails, setUserDetails] = useState(null);
@@ -18,7 +19,7 @@ function GiveBook() {
 
   const [error, setError] = useState(null);
 
-  //   const Admin_ID = userData.id;
+  const Admin_ID = user.userId;
 
   // Create a reference for the details section
   const detailsRef = useRef(null);
@@ -88,7 +89,7 @@ function GiveBook() {
 
   return (
     <>
-      <Navbar type={userType} data={userData} />
+      <Navbar />
       <div className="relative mx-auto max-w-5xl text-center my-5">
         <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
           Issue a Book

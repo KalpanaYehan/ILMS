@@ -43,7 +43,7 @@ function SearchUser() {
 
   return (
     <>
-      <Navbar type={userType} data={userData} />
+      <Navbar />
 
       <div className="relative mx-auto max-w-5xl text-center my-5">
         <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">

@@ -4,7 +4,7 @@ const BookCard = ({ bookDetails }) => {
     <div className="flex shadow-md rounded-lg p-6 my-4 bg-white">
       <div className="flex-shrink-0">
         <img
-          className="h-28 w-28 object-cover rounded-lg"
+          className="h-60 w-40 object-cover rounded-lg"
           src={bookDetails.Img_url}
           alt={bookDetails.title}
         />

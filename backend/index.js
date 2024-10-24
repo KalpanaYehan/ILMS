@@ -793,14 +793,10 @@ app.get("/issueDetails", async (req, res) => {
 app.post("/issue", async (req, res) => {
   const connection = await pool.promise().getConnection();
   try {
-    const { Admin_ID, customerId, bookId } = req.body;
+    const { Admin_ID, userId, bookId } = req.body;
     const sql =
       "INSERT INTO issuebook (`Admin_ID`, `Member_ID`, `Book_ID`) VALUES (?, ?, ?)";
-    const [result] = await connection.query(sql, [
-      Admin_ID,
-      customerId,
-      bookId,
-    ]);
+    const [result] = await connection.query(sql, [Admin_ID, userId, bookId]);
     res.json({ Message: "Book issued", data: result });
   } catch (err) {
     console.error("Error fetching user:", err.message);
@@ -854,7 +850,7 @@ app.get("/book/:id", (req, res) => {
       console.log("Book not found");
       return res.status(404).json({ message: "Book not found" });
     }
-    console.log(result);
+    // console.log(result);
 
     return res.status(200).json(result);
   });
