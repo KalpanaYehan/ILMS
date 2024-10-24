@@ -75,7 +75,7 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     // Scroll to details section if all details are found
-    if (userDetails && bookDetails && recordDetails) {
+    if (recordDetails) {
       detailsRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
@@ -106,7 +106,7 @@ function ReturnBook() {
         className="w-full max-w-2xl mx-auto rounded-xl h-auto"
         alt="Books"
       />
-      <div className="min-h-screen flex justify-center bg-white">
+      <div className="min-h-screen flex justify-center bg-white pt-5">
         <div className="w-full max-w-2xl p-6">
           <form
             onSubmit={handleSubmit}

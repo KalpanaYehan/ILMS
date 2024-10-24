@@ -35,8 +35,15 @@ const BookCard = ({ bookDetails }) => {
             <p className="text-gray-800">{bookDetails.NoOfPages}</p>
           </div>
           <div className="flex">
-            <p className="text-gray-600 font-medium w-32">Availability:</p>
-            <p className="text-gray-800">{bookDetails.Status ? "Yes" : "No"}</p>
+            {bookDetails.Status ? (
+              <span className="px-4 py-2 text-white bg-green-600 rounded-full">
+                Available
+              </span>
+            ) : (
+              <span className="px-4 py-2 text-white bg-red-600 rounded-full">
+                Not available
+              </span>
+            )}
           </div>
         </div>
       </div>
