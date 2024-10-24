@@ -6,6 +6,7 @@ import axios from "axios";
 import UserCard from "../components/UserCard/UserCard";
 import BookCard from "../components/BookCard/BookCard";
 import { AuthContext } from "../context/AuthContext";
+import { useSnackbar } from "notistack";
 
 function GiveBook() {
   const { user } = useContext(AuthContext);
@@ -24,6 +25,8 @@ function GiveBook() {
   // Create a reference for the details section
   const detailsRef = useRef(null);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,7 +39,7 @@ function GiveBook() {
         .get("http://localhost:8081/book/" + bookId)
         .then((res) => {
           if (res.data.length > 0) {
-            console.log(res.data);
+            // console.log(res.data);
             setBookDetails(res.data[0]);
           } else {
             setError("Book not found");
@@ -83,7 +86,10 @@ function GiveBook() {
         userId,
         bookId,
       })
-      .then((res) => window.alert(res.data.Message))
+      .then((res) => {
+        // window.alert(res.data.Message);
+        enqueueSnackbar(res.data.Message, { variant: "success" });
+      })
       .catch((err) => console.log(err));
   };
 
