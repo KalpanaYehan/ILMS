@@ -290,6 +290,7 @@ import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import User2 from "../assets/website/member1.jpg";
 //import AddAdmin from './AddAdmin';
+import { useSnackbar } from 'notistack';
 
 
 const Profile = () => {
@@ -304,6 +305,7 @@ const Profile = () => {
   const [reviewText, setReviewText] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false); // State to manage delete confirmation popup
   const navigate = useNavigate();  // Hook to navigate to other pages 
+  const {enqueueSnackbar} = useSnackbar()
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -353,9 +355,13 @@ console.log(userID);
   const handleDeleteReview = async (reviewId) => {
     try {
       await axios.delete(`http://localhost:8081/reviews/${reviewId}`, { withCredentials: true });
-      setShowDeletePopup(true); // Show delete confirmation popup
+      // setShowDeletePopup(true); // Show delete confirmation popup
+      enqueueSnackbar("Review deleted successfully",{variant : "success"})
+      handleCloseDeletePopup()
     } catch (err) {
       setError(err.message);
+      enqueueSnackbar("Unsuccess",{variant : "error"})
+      handleCloseDeletePopup()
     }
   };
 
@@ -404,7 +410,7 @@ console.log(userID);
   
 
   const handleCloseDeletePopup = () => {
-    setShowDeletePopup(false);
+    //setShowDeletePopup(false);
     fetchUserReviews(userID); // Refresh the reviews list
   };
 

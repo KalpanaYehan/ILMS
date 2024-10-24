@@ -78,8 +78,8 @@ const AddBook = () => {
         enqueueSnackbar(error.message, { variant: 'error' }); // Display error message
         console.log(error);
       });
-      console.log(formData);
-      window.alert("Book Added");
+      // console.log(formData);
+      // window.alert("Book Added");
       setFormData({
         bookName: '',
         author: '',
@@ -96,13 +96,13 @@ const AddBook = () => {
   return (
     <>
     <Navbar/>
-    <div className="min-h-screen flex items-center justify-center bg-customYellow">
+    <div className="flex items-center justify-center min-h-screen bg-customYellow">
       <div className="w-full max-w-md">
-        <h2 className="font-bold text-gray-900 text-center text-xl">Add Book</h2>
+        <h2 className="text-xl font-bold text-center text-gray-900">Add Book</h2>
        
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="bookName">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="bookName">
               Book Name
             </label>
             <input
@@ -112,12 +112,12 @@ const AddBook = () => {
               placeholder='Enter Book Name'
               value={formData.bookName}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="author">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="author">
               Author
             </label>
             <input
@@ -127,12 +127,12 @@ const AddBook = () => {
               placeholder='Enter Author Name'
               value={formData.author}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="category">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="category">
               Category
             </label>
             <input
@@ -142,12 +142,12 @@ const AddBook = () => {
               placeholder='Enter Category Name'
               value={formData.category}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="publisher">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="publisher">
               Publisher
             </label>
             <input
@@ -157,12 +157,12 @@ const AddBook = () => {
               placeholder='Enter Publisher Name'
               value={formData.publisher}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="isbn">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="isbn">
               ISBN 
             </label>
             <input
@@ -172,11 +172,11 @@ const AddBook = () => {
               placeholder='Enter ISBN number'
               value={formData.isbn}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="pages">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="pages">
               No of Pages
             </label>
             <input
@@ -186,11 +186,11 @@ const AddBook = () => {
               placeholder='Enter Number of Pages'
               value={formData.pages}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="copies">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="copies">
               No of Copies
             </label>
             <input
@@ -200,12 +200,12 @@ const AddBook = () => {
               placeholder='Enter Number of Copies'
               value={formData.copies}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="Img_url">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="Img_url">
               Image URL
             </label>
             <input
@@ -215,7 +215,7 @@ const AddBook = () => {
               placeholder='Enter Image URL'
               value={formData.Img_url}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
           </div>
          
