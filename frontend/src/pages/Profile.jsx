@@ -317,7 +317,7 @@ const Profile = () => {
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/user/${userId}`, {
+      const response = await axios.get(`http://localhost:8081/users/user/${userId}`, {
         withCredentials: true,
       });
       setUserDetails(response.data[0]);
