@@ -106,21 +106,23 @@ function SearchUser() {
                   className="w-32 h-32 rounded-full shadow-lg"
                 />
               </div> */}
-              <div className="my-5 mx-2 pt-5 text-gray-700 text-md font-semibold mb-2 grid grid-cols-1 gap-4">
+              <div
+                className="my-5 mx-2 pt-5 text-gray-700 text-md font-semibold mb-2 grid grid-cols-1 gap-4"
+                ref={userDetailsRef}
+              >
                 {/* Data Fields with Aligned Layout */}
-
+                <h1 className="text-3xl text-center font-bold text-gray-900 mt-5 mb-5">
+                  {userDetails.Role === "user"
+                    ? "User Details"
+                    : "Admin Details"}
+                </h1>
                 <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
                   <p className="font-semibold text-gray-900 text-lg mb-1">
                     <strong>User ID:</strong>
                   </p>
                   <p className="text-gray-800">{userDetails.Member_ID}</p>
                 </div>
-                <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
-                  <p className="font-semibold text-gray-900 text-lg mb-1">
-                    <strong>User Type:</strong>
-                  </p>
-                  <p className="text-gray-800">{userDetails.Role}</p>
-                </div>
+
                 <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
                   <p className="font-semibold text-gray-900 text-lg mb-1">
                     <strong>First Name:</strong>

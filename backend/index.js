@@ -937,7 +937,7 @@ app.get("/user/:id", async (req, res) => {
         `;
 
     const [user] = await connection.query(sql, [id]);
-    console.log(user);
+    // console.log(user);
 
     if (user.length === 0) {
       return res.status(404).json({ message: "User not found" });
