@@ -928,6 +928,7 @@ app.get("/user/:id", async (req, res) => {
                 Last_name,
                 Email,
                 Contact_No,
+                Role,
                 Img_url
             FROM 
                 member
