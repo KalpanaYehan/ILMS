@@ -7,6 +7,7 @@ import Footer from '../components/Footer/Footer'
 import DeleteModal from '../components/models/DeleteModal';
 import { AuthContext } from '../context/AuthContext'
 import BackButton from '../components/BackButton';
+import { useSnackbar } from 'notistack';
 //import Trash from './icons/trash.jpg'
 
 function RemoveBook() {
@@ -19,34 +20,36 @@ function RemoveBook() {
   const [open,setOpen] = useState(false)
   const [selectedBookId, setSelectedBookId] = useState(null);
   const{user} =useContext(AuthContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(()=>{
     // setLoading(true)
     axios
         .get('http://localhost:8081/books/books')
         .then((response)=>{
-            // if(response.data.message !== "success") {
-            //     // navigate('/login');
-            //     console.log(response.data)
-            // }else{
-                setPost(response.data)
-                setBook(response.data)
+            if(response.data.message !== "success") {
+              enqueueSnackbar(result.data.message, { variant: 'error' })
+              navigate('/');
+                
+            }else{
+                setPost(response.data.books)
+                setBook(response.data.books)
                 // setLoading(false)
-                console.log(response.data)
-            
+                console.log(response.data.books)
+            } 
         })
         .catch((error)=>{
             console.log(error)
             // setLoading(false)
-            // navigate('/login')
+            navigate('/')
         })
 
 },[])
 
   const refreshBooks = async () => {
     const response = await axios.get("http://localhost:8081/books/books"); // Fetch the updated list of books
-    setPost(response.data)
-    setBook(response.data)
+    setPost(response.data.books)
+    setBook(response.data.books)
   };
 
   const handleDeleteClick = (bookId) => {
@@ -159,13 +162,13 @@ function RemoveBook() {
                 <div className='w-[70%] flex flex-col items-start'>
                   <h2 className="text-2xl font-bold">{book.Title_name}</h2>
                   <p className="text-gray-700 text-xl">{book.Author}</p>
-                  {book.availability==="true"? (
+                  {book.Status=== 1 ? (
                     <button className="text-xs mt-2 px-2 py-1 bg-green-600 text-white rounded-full">
                       Available
                     </button>
                     ) : (
-                    <button className="text-xs mt-2 px-2 py-1 bg-green-600 text-white rounded-full">
-                      Available
+                    <button className="text-xs mt-2 px-2 py-1 bg-red-600 text-white rounded-full">
+                      Not Available
                     </button>
                   )}
                   <Link to={`/books/details/${book.Title_ID}`} className="text-xs mt-2 px-2 py-1 bg-secondary text-white rounded-lg hover:bg-secondary/90 hover:scale-105">

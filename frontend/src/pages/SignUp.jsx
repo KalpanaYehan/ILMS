@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Validation from '../components/Validation';  // Import validation
+import { useSnackbar } from 'notistack';
 
 
 const SignUp = () => {
@@ -23,6 +24,7 @@ const SignUp = () => {
 
   const [errors, setErrors] = useState({});  // State for validation errors
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
 
   const handleChange = (e) => {
@@ -46,12 +48,24 @@ const SignUp = () => {
       axios.post("http://localhost:8081/register", formData)
         .then(result => {
           console.log(result);
-          navigate('/');
+          if (result.data.message === "User registered successfully"){
+            enqueueSnackbar('Account Created successfully', { variant: 'success' })
+            navigate('/')
+          }else {
+            enqueueSnackbar(result.data.message, { variant: 'error' })
+          }
         })
-        .catch(err => console.log(err));
+        .catch(err =>{
+          if (err.response && err.response.data) {
+            enqueueSnackbar(err.response.data.message,{ variant: 'error'});
+          } else {
+            enqueueSnackbar('An unexpected error occurred.', { variant: 'error' })
+          }
+          console.log(err)
+        });
 
-      console.log(formData);
-      window.alert("Account created");
+      //console.log(formData);
+      //window.alert("Account created");
 
       // Reset form data after successful submission
       setFormData({
@@ -77,18 +91,18 @@ const SignUp = () => {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="w-full max-w-md">
-        <h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Welcome to NexLib</h1>
-        <h2 className="font-semibold text-gray-900 text-center">Create Account</h2>
+        <h1 className='mt-3 mb-4 text-4xl font-bold text-center text-gray-900'>Welcome to NexLib</h1>
+        <h2 className="font-semibold text-center text-gray-900">Create Account</h2>
         <img
           alt="NexLib Logo"
           src={Logo}
-          className="mx-auto h-40 w-auto"
+          className="w-auto h-40 mx-auto"
         />
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="fname">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="fname">
               First Name
             </label>
             <input
@@ -98,12 +112,12 @@ const SignUp = () => {
               placeholder='Enter Your First Name'
               value={formData.firstName}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
-            {errors.firstName && <p className="text-red-600 font-light">{errors.firstName}</p>}
+            {errors.firstName && <p className="font-light text-red-600">{errors.firstName}</p>}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="sname">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="sname">
               Last Name
             </label>
             <input
@@ -113,12 +127,12 @@ const SignUp = () => {
               placeholder='Enter Your Second Name'
               value={formData.lastName}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
-            {errors.lastName && <p className="text-red-600 font-light">{errors.lastName}</p>}
+            {errors.lastName && <p className="font-light text-red-600">{errors.lastName}</p>}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="phoneNumber">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="phoneNumber">
 
               Phone Number
             </label>
@@ -129,13 +143,13 @@ const SignUp = () => {
               placeholder='0123456789'
               value={formData.phoneNumber}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
 
-            {errors.phoneNumber && <p className="text-red-600 font-light">{errors.phoneNumber}</p>}
+            {errors.phoneNumber && <p className="font-light text-red-600">{errors.phoneNumber}</p>}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="email">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="email">
 
               E-mail
             </label>
@@ -146,13 +160,13 @@ const SignUp = () => {
               placeholder='yourname@gmail.com'
               value={formData.email}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
 
-            {errors.email && <p className="text-red-600 font-light">{errors.email}</p>}
+            {errors.email && <p className="font-light text-red-600">{errors.email}</p>}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
+            <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="password">
 
               Password
             </label>
@@ -162,13 +176,13 @@ const SignUp = () => {
               id="password"
               value={formData.password}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
 
-            {errors.password && <p className="text-red-600 font-light">{errors.password}</p>}
+            {errors.password && <p className="font-light text-red-600">{errors.password}</p>}
           </div>
-          {/* <div className="mb-4 flex items-center">
-            <div className="text-gray-700 text-sm font-semibold mr-5">Sign up as</div>
+          {/* <div className="flex items-center mb-4">
+            <div className="mr-5 text-sm font-semibold text-gray-700">Sign up as</div>
             <div>
               <button
                 type="button"
@@ -196,9 +210,9 @@ const SignUp = () => {
             </button>
           </div>
         </form>
-        <p className="mb-10 text-center text-md text-gray-500">
+        <p className="mb-10 text-center text-gray-500 text-md">
           Already have an account?{' '}<br/>
-          <Link to="/" className="text-yellow-950 hover:text-yellow-900 font-bold">Sign in to your account</Link>
+          <Link to="/" className="font-bold text-yellow-950 hover:text-yellow-900">Sign in to your account</Link>
         </p>
 
       </div>

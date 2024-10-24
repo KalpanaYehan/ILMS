@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 
 const AddPublisher = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const AddPublisher = () => {
   });
 
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,17 +29,18 @@ const AddPublisher = () => {
     axios
       .post('http://localhost:8081/books/publishers', formData) // Assuming the POST endpoint for adding a publisher
       .then((res) => {
-        if (res.data.message === 'Publisher successfully added') {
+        if (res.data.message === 'Publisher added successfully') {
           console.log(res.data.message);
+          enqueueSnackbar('Publisher added successfully', { variant: 'success' });
           navigate('/books/publishers'); // Navigate back to the list of publishers
-        } else if (res.data.message === 'send all required fields') {
-          console.log(res.data.message);
         } else {
+          enqueueSnackbar(res.data.message, { variant: 'error' })
           console.log(res.data.message);
           navigate('/books/publishers');
         }
       })
       .catch((error) => {
+        enqueueSnackbar(error.message, { variant: 'error' })
         console.log('Error adding publisher:', error);
       });
   };

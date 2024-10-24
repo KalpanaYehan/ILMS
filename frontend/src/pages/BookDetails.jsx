@@ -335,7 +335,7 @@ function BookDetails() {
     const fetchBook = async (title_id) => {
       try {
         await axios.get(
-          `http://localhost:8081/books/${id} `,
+          `http://localhost:8081/books/books/bookdata/${id} `,
         ).then((response) => {
           setBookDetails(response.data[0]);
           setSubImages([response.data[0].Image1, response.data[0].Image2 , response.data[0].Image3, response.data[0].Image4 , response.data[0].Image5 ]); 
@@ -479,7 +479,7 @@ function BookDetails() {
                 </div>
                 <div className="grid justify-center mt-4">
                   <button
-                    className="px-10 py-2 mt-2 ml-auto text-white transition-transform duration-300 bg-blue-600 rounded-full hover:bg-blue-700 hover:scale-105"
+                    className="px-4 py-2 mt-2 text-white bg-yellow-950 hover:bg-yellow-900 rounded-2xl"
                     onClick={() => {
                       setShowModal(true);
                       setImage(subImages);
@@ -502,7 +502,7 @@ function BookDetails() {
         </div>
         <div className="p-6 text-center">
           <button
-            className="px-10 py-2 mt-2 ml-auto text-white transition-transform duration-300 bg-blue-600 rounded-full hover:bg-blue-700 hover:scale-105"
+            className="px-4 py-2 mt-2 text-white bg-yellow-950 hover:bg-yellow-900 rounded-2xl"
             onClick= {handleAddReviewClick}
           >
             Add review

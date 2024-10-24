@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -124,6 +125,7 @@ const PopularBooks = () => {
           <Slider {...settings}>
             {books.map((book) => (
               <div key={book.Title_ID} className="mb-16">
+                <Link to={`/books/details/${book.Title_ID}`} className="no-underline">
                 <div className="flex flex-col gap-4 shadow-lg py-8 px-6 mx-4 rounded-xl  bg-primary/20 relative h-[450px]">
                   <div className="mb-2 h-[300px]">
                     <img
@@ -144,6 +146,7 @@ const PopularBooks = () => {
                   </div>
                   
                 </div>
+                </Link>
               </div>
             ))}
           </Slider>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
-// import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 
 const UpdateAuthor = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const UpdateAuthor = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get the author ID from the route
-//   const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Fetch the author details on component mount
   useEffect(() => {
@@ -31,7 +31,7 @@ const UpdateAuthor = () => {
       })
       .catch((error) => {
         setLoading(false);
-        // enqueueSnackbar('Error fetching author details', { variant: 'error' });
+        enqueueSnackbar('Error fetching author details', { variant: 'error' });
         console.log(error);
       });
   }, [id]);
@@ -52,30 +52,31 @@ const UpdateAuthor = () => {
     axios
       .put(`http://localhost:8081/books/authors/${id}`, formData) // Assuming a PUT endpoint for updating an author
       .then((res) => {
-        if (res.data.message === 'Author successfully updated') {
+        if (res.data.message === 'Author updated successfully.') {
           setLoading(false);
           console.log(res.data.message)
-        //   enqueueSnackbar('Author updated successfully', { variant: 'success' });
+          enqueueSnackbar('Author updated successfully', { variant: 'success' });
           navigate('/books/authors'); // Navigate back to the list of authors
+
         } else if (res.data.message === 'author not found') {
           setLoading(false);
           console.log(res.data.message)
-        //   enqueueSnackbar('Author not found', { variant: 'error' });
+          enqueueSnackbar('Author not found', { variant: 'error' });
           navigate('/books/authors');
         } else if (res.data.message === 'send all required fields') {
           setLoading(false);
           console.log(res.data.message)
-        //   enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
+          enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
         } else {
           setLoading(false);
           console.log(res.data.message)
-        //   enqueueSnackbar('Update unsuccessful', { variant: 'error' });
+          enqueueSnackbar('Update unsuccessful', { variant: 'error' });
           navigate('/books/authors');
         }
       })
       .catch((error) => {
         setLoading(false);
-        // enqueueSnackbar('Error updating author', { variant: 'error' });
+        enqueueSnackbar('Error updating author', { variant: 'error' });
         console.log(error);
       });
   };

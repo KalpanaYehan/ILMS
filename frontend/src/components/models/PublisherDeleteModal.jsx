@@ -1,19 +1,24 @@
 //import {X} from react-feather;
 import { useState } from "react";
 import axios from "axios";
+import { useSnackbar } from 'notistack';
 
 const PublisherDeleteModal = ({open,onclose,bookId,refreshBooks}) => {
 
     const [isDeleting, setIsDeleting] = useState(false);
-
+    const { enqueueSnackbar } = useSnackbar();
   // Function to handle the delete operation
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      await axios.delete(`http://localhost:8081/deletePublisher/${bookId}`);
-
+      const res = await axios.delete(`http://localhost:8081/books/publishers/${bookId}`);
+      if (res.data.message === 'Publisher deleted successfully.') {
+        enqueueSnackbar('Publisher deleted successfully.', { variant: 'success' });
+      }else if (res.data.message === 'Publisher not found.') {
+        enqueueSnackbar('Publisher not found.', { variant: 'error' });
+      }
       // Refresh the book list after successful deletion
       refreshBooks();
 
@@ -21,7 +26,7 @@ const PublisherDeleteModal = ({open,onclose,bookId,refreshBooks}) => {
       onclose();
     } catch (error) {
       console.error("Error deleting book:", error.message);
-      alert("Failed to delete the book.");
+      enqueueSnackbar("Failed to delete publisher. Existing book entries depend on this publisher.", { variant: 'error' });
     } finally {
       setIsDeleting(false);
     }

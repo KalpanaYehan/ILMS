@@ -26,7 +26,7 @@ export const addPublisher = async (req, res) => {
         // Rollback the transaction in case of error
         await connection.rollback();
         console.error("Error adding publisher:", err.message);
-        res.status(500).json({ error: "Failed to add publisher" });
+        res.status(500).json({ message: "Failed to add publisher" });
     } finally {
         // Release the connection
         connection.release();
