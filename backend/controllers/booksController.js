@@ -65,6 +65,7 @@ export const addBook = async (req, res) => {
         connection.release();
     }
 }
+
 export const getBooks = async (req, res) => {
     const connection = await pool.promise().getConnection();
 
@@ -97,6 +98,7 @@ export const getBooks = async (req, res) => {
         connection.release();
     }
 }
+
 export const getBookById = async (req, res) => {
     const { id } = req.params; // Extract the Title_ID from the route parameters
     const connection = await pool.promise().getConnection();
@@ -142,6 +144,7 @@ export const getBookById = async (req, res) => {
         connection.release();
     }
 }
+
 export const editBook = async (req, res) => {
     const connection = await pool.promise().getConnection();
     const { id } = req.params; // Title_ID
@@ -190,6 +193,7 @@ export const editBook = async (req, res) => {
         connection.release();
     }
 }
+
 export const deleteBook = async (req, res) => {
     const { id } = req.params; // Book Title ID
 
@@ -230,3 +234,85 @@ export const deleteBook = async (req, res) => {
         connection.release();
     }
 }
+
+// Endpoint to get book borrowed details for a specific user
+export const borrowedBooksbyUser = async (req, res) => {
+    const { id } = req.params;
+    const connection = await pool.promise().getConnection();
+  
+    try {
+      const sql = `
+        SELECT 
+          book_title.Title_name,
+          author.Name AS Author,
+          DATE_FORMAT(issuebook.Issued_Date, '%Y-%m-%d') AS Issued_Date,
+          DATE_FORMAT(issuebook.Returned_Date, '%Y-%m-%d') AS Returned_Date
+        FROM issuebook
+        JOIN book ON issuebook.Book_ID = book.Book_ID
+        JOIN book_title ON book.Title_ID = book_title.Title_ID
+        JOIN author ON book_title.Author_ID = author.Author_ID
+        WHERE issuebook.Member_ID = ?
+      `;
+      const [result] = await connection.query(sql, [id]);
+  
+      if (result.length === 0) {
+        return res.status(200).json({ message: "No books borrowed." });
+      }
+  
+      res.status(200).json(result);
+    } catch (err) {
+      console.error("Error fetching borrowed books:", err.message);
+      res.status(500).json({ error: "Failed to fetch borrowed books." });
+    } finally {
+      connection.release();
+    }
+  };
+
+  // Endpoint to get book data by title ID
+export const getBookDataById = async (req, res) => {
+    const { id } = req.params;
+    const connection = await pool.promise().getConnection();
+  
+    try {
+      const sql = `
+        SELECT 
+          bt.Title_name AS 'book_title',
+          a.Name AS 'AuthorName',
+          c.Category_name AS 'CategoryName',
+          p.Name AS 'PublisherName',
+          bt.ISBN_Number AS 'ISBNNumber',
+          bt.Status AS 'Status',
+          bt.NoOfPages AS 'NoOfPages',
+          bt.Ave_Rate AS 'AverageRating',
+          bt.Des AS 'Description',
+          bt.Img_url AS 'ImageURL', 
+          bt.im1 AS 'Image1',
+          bt.im2 AS 'Image2',
+          bt.im3 AS 'Image3',
+          bt.im4 AS 'Image4',
+          bt.im5 AS 'Image5'
+        FROM 
+          book_title bt
+        JOIN 
+          author a ON bt.Author_ID = a.Author_ID
+        JOIN 
+          category c ON bt.category_ID = c.category_ID
+        JOIN 
+          publisher p ON bt.Publisher_ID = p.Publisher_ID
+        WHERE 
+          bt.Title_ID = ?
+      `;
+      const [result] = await connection.query(sql, [id]);
+  
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+  
+      res.status(200).json(result);
+    } catch (err) {
+      console.error("Error fetching book data:", err.message);
+      res.status(500).json({ error: "Failed to fetch book data" });
+    } finally {
+      connection.release();
+    }
+  };

@@ -327,12 +327,15 @@ function BookDetails() {
   const storedUser = localStorage.getItem('user');
   const member = storedUser ? JSON.parse(storedUser).userId : null;
 
+
+  //test
+  // const [bookDetails, setBookDetails] = useState([]);
   // Fetch book details for the book with the given id from the database
   useEffect(() => {
     const fetchBook = async (title_id) => {
       try {
         await axios.get(
-          `http://localhost:8081/books/books/${id} `,
+          `http://localhost:8081/books/books/bookdata/${id} `,
         ).then((response) => {
           setBookDetails(response.data[0]);
           setSubImages([response.data[0].Image1, response.data[0].Image2 , response.data[0].Image3, response.data[0].Image4 , response.data[0].Image5 ]); 
