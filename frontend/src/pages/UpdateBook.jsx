@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
-// import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 
 const UpdateBook = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ const UpdateBook = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get the book ID from the route
-//   const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Fetch the book details on component mount
   useEffect(() => {
@@ -41,7 +41,7 @@ const UpdateBook = () => {
       })
       .catch((error) => {
         setLoading(false);
-        // enqueueSnackbar('Error fetching book details', { variant: 'error' });
+        enqueueSnackbar('Error fetching book details', { variant: 'error' });
         console.log(error);
       });
   }, [id]);
@@ -62,26 +62,26 @@ const UpdateBook = () => {
     axios
       .put(`http://localhost:8081/books/books/${id}`, formData) // Assuming a PUT endpoint for updating a book
       .then((res) => {
-        if (res.data.message === 'successfully updated') {
+        if (res.data.message === 'Book updated successfully.') {
           setLoading(false);
-        //   enqueueSnackbar('Book updated successfully', { variant: 'success' });
+          enqueueSnackbar('Book updated successfully', { variant: 'success' });
           navigate('/books/books'); // Navigate back to the list of books
-        } else if (res.data.message === 'book not found') {
+        } else if (res.data.message === 'Book not found.') {
           setLoading(false);
-        //   enqueueSnackbar('Book not found', { variant: 'error' });
+          enqueueSnackbar('Book not found', { variant: 'error' });
           navigate('/books/books');
         } else if (res.data.message === 'send all required fields') {
           setLoading(false);
-        //   enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
+          enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
         } else {
           setLoading(false);
-        //   enqueueSnackbar('Update unsuccessful', { variant: 'error' });
+          enqueueSnackbar('Update unsuccessful', { variant: 'error' });
           navigate('/books/books');
         }
       })
       .catch((error) => {
         setLoading(false);
-        // enqueueSnackbar('Error updating book', { variant: 'error' });
+        enqueueSnackbar('Error updating book', { variant: 'error' });
         console.log(error);
       });
   };

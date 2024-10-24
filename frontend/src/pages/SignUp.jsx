@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Validation from '../components/Validation';  // Import validation
+import { useSnackbar } from 'notistack';
 
 
 const SignUp = () => {
@@ -23,6 +24,7 @@ const SignUp = () => {
 
   const [errors, setErrors] = useState({});  // State for validation errors
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
 
   const handleChange = (e) => {
@@ -46,12 +48,24 @@ const SignUp = () => {
       axios.post("http://localhost:8081/register", formData)
         .then(result => {
           console.log(result);
-          navigate('/');
+          if (result.data.message === "User registered successfully"){
+            enqueueSnackbar('Account Created successfully', { variant: 'success' })
+            navigate('/')
+          }else {
+            enqueueSnackbar(result.data.message, { variant: 'error' })
+          }
         })
-        .catch(err => console.log(err));
+        .catch(err =>{
+          if (err.response && err.response.data) {
+            enqueueSnackbar(err.response.data.message,{ variant: 'error'});
+          } else {
+            enqueueSnackbar('An unexpected error occurred.', { variant: 'error' })
+          }
+          console.log(err)
+        });
 
-      console.log(formData);
-      window.alert("Account created");
+      //console.log(formData);
+      //window.alert("Account created");
 
       // Reset form data after successful submission
       setFormData({

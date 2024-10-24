@@ -4,6 +4,7 @@ import Logo from "../assets/website/newLogo.jpg"
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { useSnackbar } from 'notistack';
 
 const Login = () => {
 
@@ -13,6 +14,7 @@ const Login = () => {
   });
   
   const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar();
   const{setUser} = useContext(AuthContext)
   axios.defaults.withCredentials =true
   
@@ -37,19 +39,21 @@ const Login = () => {
           // Store the token and update the user context
           localStorage.setItem('user', JSON.stringify(user));
           setUser(user);
-          alert("logged in successfully")
+          enqueueSnackbar("logged in successfully", { variant: 'success' })
           // Redirect to the cars page
            navigate('/home');
          }else {
-          alert(result.data.message)
+          enqueueSnackbar(result.data.message, { variant: 'error' })
         }
        })
        .catch(err => {
         // Check if the error response exists and handle accordingly
         if (err.response && err.response.data) {
-          alert(`Error: ${err.response.data.message}`);
+          enqueueSnackbar(err.response.data.message, { variant: 'error' })
+          //alert(`Error: ${err.response.data.message}`);
         } else {
-          alert('An unexpected error occurred.');
+          enqueueSnackbar('An unexpected error occurred.', { variant: 'error' })
+          //alert('An unexpected error occurred.');
         }
         console.log(err); // For debugging
       });

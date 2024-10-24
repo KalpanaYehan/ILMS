@@ -1,18 +1,24 @@
 //import {X} from react-feather;
 import { useState } from "react";
 import axios from "axios";
+import { useSnackbar } from 'notistack';
 
 const AuthorDeleteModel = ({open,onclose,bookId,refreshBooks}) => {
 
     const [isDeleting, setIsDeleting] = useState(false);
-
+    const { enqueueSnackbar } = useSnackbar();
   // Function to handle the delete operation
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      await axios.delete(`http://localhost:8081/books/authors/${bookId}`);
+      const res = await axios.delete(`http://localhost:8081/books/authors/${bookId}`);
+      if (res.data.message === 'Author deleted successfully.') {
+        enqueueSnackbar('Author deleted successfully', { variant: 'success' });
+      }else if (res.data.message === 'Author not found.') {
+        enqueueSnackbar('Author not found', { variant: 'error' });
+      }
 
       // Refresh the book list after successful deletion
       refreshBooks();
@@ -21,7 +27,7 @@ const AuthorDeleteModel = ({open,onclose,bookId,refreshBooks}) => {
       onclose();
     } catch (error) {
       console.error("Error deleting author:", error.message);
-      alert("Failed to delete the author.");
+      enqueueSnackbar("Failed to delete author. Existing book entries depend on this author.", { variant: 'error' });
     } finally {
       setIsDeleting(false);
     }

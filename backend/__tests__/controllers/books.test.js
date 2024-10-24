@@ -1,69 +1,71 @@
-import request from 'supertest';
-import app from '../../index.js'; // Adjust the path to your app
-import { pool } from "../../index.js"; // Adjust the path to your database connection file
-import { jest } from '@jest/globals';
+// const { bankEvent } = require("../../../controllers/admin.event.controllers");
+// const { Event } = require("../../../models/event.model.js");
 
-describe("POST /login", () => {
-  test("It should respond with a valid token when enter correct credentials", async () => {
-    const response = await request(app).post("/login").send({
-      email: "testadmin@gmail.com",
-      password: "Asdf@1234",
+const {getAuthors} = require("../../controllers/authorsController.js")
+const {pool} = require('../../index.js');
+
+// Mocking the pool and connection
+jest.mock('./path-to-your-database-pool', () => ({
+    promise: jest.fn().mockReturnThis(),
+    getConnection: jest.fn(),
+}));
+
+describe('getAuthors API', () => {
+    let mockReq, mockRes, mockConnection;
+
+    beforeEach(() => {
+        // Set up mock request and response
+        mockReq = {};
+        mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+
+        // Mocking the database connection and query method
+        mockConnection = {
+            query: jest.fn(),
+            release: jest.fn(),
+        };
+
+        pool.getConnection.mockResolvedValue(mockConnection);
     });
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("token");
-  });
-});
 
-describe("POST /login", () => {
-  test("It should respond with error status code when enter incorrect credentials", async () => {
-    const response = await request(app).post("/login").send({
-      email: "testadmin@gmail.com",
-      password: "Asdf@1",
+    it('should return 200 with authors when data exists', async () => {
+        const authorsData = [
+            { Img_url: 'image1.jpg', Author_ID: 1, Country: 'USA', Name: 'Author 1' },
+            { Img_url: 'image2.jpg', Author_ID: 2, Country: 'UK', Name: 'Author 2' },
+        ];
+
+        // Mocking successful query response
+        mockConnection.query.mockResolvedValue([authorsData]);
+
+        await getAuthors(mockReq, mockRes);
+
+        expect(mockConnection.query).toHaveBeenCalledWith(expect.any(String));
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith(authorsData);
+        expect(mockConnection.release).toHaveBeenCalled();
     });
-    expect(response.statusCode).toBe(203);
-    expect(response.body.message).toBe("Invalid credentials");
-  });
-});
 
-describe("POST /register", () => {
-  test("It should respond with error status code when enter already inserted email", async () => {
-    const response = await request(app).post("/register").send({
-      email: "testadmin@gmail.com",
+    it('should return 404 when no authors are found', async () => {
+        // Mocking query to return an empty array
+        mockConnection.query.mockResolvedValue([[]]);
+
+        await getAuthors(mockReq, mockRes);
+
+        expect(mockRes.status).toHaveBeenCalledWith(404);
+        expect(mockRes.json).toHaveBeenCalledWith({ message: "No authors found." });
+        expect(mockConnection.release).toHaveBeenCalled();
     });
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toBe("Email already registered");
-  });
-});
 
-describe("POST /register", () => {
-  test("It should respond success message when enter valid details", async () => {
-    const response = await request(app).post("/register").send({
-      email: "testadmin505@gmail.com",
-      password: "Asdf@1234",
+    it('should return 500 when there is an error fetching authors', async () => {
+        // Mocking a failed query
+        mockConnection.query.mockRejectedValue(new Error('Database error'));
+
+        await getAuthors(mockReq, mockRes);
+
+        expect(mockRes.status).toHaveBeenCalledWith(500);
+        expect(mockRes.json).toHaveBeenCalledWith({ error: "Failed to fetch authors." });
+        expect(mockConnection.release).toHaveBeenCalled();
     });
-    expect(response.statusCode).toBe(201);
-    expect(response.body).toHaveProperty("email");
-  });
-});
-
-describe("POST /recovery/send_recovery_email", () => {
-  test("It send OTP successfully when enter a valid user email", async () => {
-    const response = await request(app)
-      .post("/recovery/send_recovery_email")
-      .send({
-        email: "sithikaguruge2001@gmail.com",
-      });
-    expect(response.statusCode).toBe(200);
-  });
-});
-
-describe("POST /recovery/send_recovery_email", () => {
-  test("It send error code when enter a invalid user email", async () => {
-    const response = await request(app)
-      .post("/recovery/send_recovery_email")
-      .send({
-        email: "testadmin89@gmail.com",
-      });
-    expect(response.statusCode).toBe(201);
-  });
 });

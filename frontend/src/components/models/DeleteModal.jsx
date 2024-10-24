@@ -1,10 +1,12 @@
 //import {X} from react-feather;
 import { useState } from "react";
 import axios from "axios";
+import { useSnackbar } from 'notistack';
 
 const DeleteModal = ({open,onclose,bookId,refreshBooks}) => {
 
     const [isDeleting, setIsDeleting] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
   // Function to handle the delete operation
   const handleDelete = async () => {
@@ -12,8 +14,12 @@ const DeleteModal = ({open,onclose,bookId,refreshBooks}) => {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      await axios.delete(`http://localhost:8081/books/books/${bookId}`);
-
+      const res = await axios.delete(`http://localhost:8081/books/books/${bookId}`);
+      if (res.data.message === 'Book deleted successfully.') {
+        enqueueSnackbar('Book deleted successfully.', { variant: 'success' });
+      }else if (res.data.message === 'Book not found.') {
+        enqueueSnackbar('Book not found.', { variant: 'error' });
+      }
       // Refresh the book list after successful deletion
       refreshBooks();
 
@@ -21,7 +27,7 @@ const DeleteModal = ({open,onclose,bookId,refreshBooks}) => {
       onclose();
     } catch (error) {
       console.error("Error deleting book:", error.message);
-      alert("Failed to delete the book.");
+      enqueueSnackbar("Failed to delete the Book.", { variant: 'error' });
     } finally {
       setIsDeleting(false);
     }

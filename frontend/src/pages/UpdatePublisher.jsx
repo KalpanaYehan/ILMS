@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
-// import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 
 const UpdatePublisher = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ const UpdatePublisher = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get the publisher ID from the route
-//   const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Fetch the publisher details on component mount
   useEffect(() => {
@@ -29,7 +29,7 @@ const UpdatePublisher = () => {
       })
       .catch((error) => {
         setLoading(false);
-        // enqueueSnackbar('Error fetching publisher details', { variant: 'error' });
+        enqueueSnackbar('Error fetching publisher details', { variant: 'error' });
         console.log(error);
       });
   }, [id]);
@@ -50,26 +50,26 @@ const UpdatePublisher = () => {
     axios
       .put(`http://localhost:8081/books/publishers/${id}`, formData) // Assuming a PUT endpoint for updating a publisher
       .then((res) => {
-        if (res.data.message === 'successfully updated') {
+        if (res.data.message === 'Publisher updated successfully.') {
           setLoading(false);
-        //   enqueueSnackbar('Publisher updated successfully', { variant: 'success' });
+          enqueueSnackbar('Publisher updated successfully', { variant: 'success' });
           navigate('/books/publishers'); // Navigate back to the list of publishers
-        } else if (res.data.message === 'publisher not found') {
+        } else if (res.data.message === 'Publisher not found.') {
           setLoading(false);
-        //   enqueueSnackbar('Publisher not found', { variant: 'error' });
+          enqueueSnackbar('Publisher not found', { variant: 'error' });
           navigate('/books/publishers');
         } else if (res.data.message === 'send all required fields') {
           setLoading(false);
-        //   enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
+          enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
         } else {
           setLoading(false);
-        //   enqueueSnackbar('Update unsuccessful', { variant: 'error' });
+          enqueueSnackbar('Update unsuccessful', { variant: 'error' });
           navigate('/books/publishers');
         }
       })
       .catch((error) => {
         setLoading(false);
-        // enqueueSnackbar('Error updating publisher', { variant: 'error' });
+        enqueueSnackbar('Error updating publisher', { variant: 'error' });
         console.log(error);
       });
   };

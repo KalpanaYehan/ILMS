@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
 import DeleteModal from '../components/models/DeleteModal';
 import AuthorDeleteModel from '../components/models/AuthorDeleteModal';
+import { useSnackbar } from 'notistack';
 //import Trash from './icons/trash.jpg'
 
 function Authors() {
@@ -17,6 +18,7 @@ function Authors() {
   const [result, setResult] = useState();
   const [open,setOpen] = useState(false)
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(()=>{
     // setLoading(true)

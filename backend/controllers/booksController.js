@@ -59,7 +59,7 @@ export const addBook = async (req, res) => {
         // Rollback the transaction in case of error
         await connection.rollback();
         console.error("Error adding book:", err.message);
-        res.status(500).json({ error: "Failed to add book" });
+        res.status(500).json({ message: "Failed to add book" });
     } finally {
         // Release the connection
         connection.release();
@@ -89,7 +89,7 @@ export const getBooks = async (req, res) => {
             return res.status(404).json({ message: "No books found." });
         }
 
-        res.status(200).json(books);
+        res.status(200).json({books,message:"success"});
 
     } catch (err) {
         console.error("Error fetching books:", err.message);

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
-// import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 
 const AddAuthor = () => {
   const navigate = useNavigate()
@@ -21,6 +21,7 @@ const AddAuthor = () => {
     });
   };
 
+  const { enqueueSnackbar } = useSnackbar();
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -28,26 +29,23 @@ const AddAuthor = () => {
     axios
       .post(`http://localhost:8081/books/authors`, formData) // Assuming a PUT endpoint for updating an author
       .then((res) => {
-        if (res.data.message === 'Author successfully added') {
+        if (res.data.message === 'Author added successfully') {
           console.log(res.data.message)
-        //   enqueueSnackbar('Author updated successfully', { variant: 'success' });
+          enqueueSnackbar('Author added successfully', { variant: 'success' });
           navigate('/books/authors'); // Navigate back to the list of authors
-        } else if (res.data.message === 'send all required fields') {
-          console.log(res.data.message)
-        //   enqueueSnackbar('Please fill in all required fields', { variant: 'error' });
         } else {
           console.log(res.data.message)
-        //   enqueueSnackbar('Update unsuccessful', { variant: 'error' });
+          enqueueSnackbar('Update unsuccessful', { variant: 'error' });
           navigate('/books/authors');
         }
       })
       .catch((error) => {
         // setLoading(false);
-        // enqueueSnackbar('Error updating author', { variant: 'error' });
+        enqueueSnackbar('Error updating author', { variant: 'error' });
         console.log(error);
       });
-      console.log(formData);
-      window.alert("Author Added");
+      // console.log(formData);
+      // window.alert("Author Added");
       setFormData({
         authorName: '',
         country: '',

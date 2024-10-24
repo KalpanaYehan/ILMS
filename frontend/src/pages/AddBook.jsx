@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios'
+import { useSnackbar } from 'notistack';
 
 const AddBook = () => {
 
   const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
     bookName: '',
     author: '',
@@ -57,13 +59,14 @@ const AddBook = () => {
         // Handle different response cases
         if (res.data.message === 'success') {
           // setLoading(false); // Stop loading
-          // enqueueSnackbar('Book added successfully', { variant: 'success' });
+          enqueueSnackbar('Book added successfully', { variant: 'success' });
           navigate('/books/books'); // Navigate to the books list page
-        } else if (res.data.message === 'unsuccess') {
+        } else {
           // setLoading(false); // Stop loading
           // enqueueSnackbar('Failed to add book. Please log in.', { variant: 'error' });
+          enqueueSnackbar(res.data.message, { variant: 'error' })
           console.log(res.data)
-          navigate('/login'); // Redirect to login if not authorized
+          navigate('/'); // Redirect to login if not authorized
         }
         // } else {
         //   setLoading(false); // Stop loading
@@ -72,7 +75,7 @@ const AddBook = () => {
       })
       .catch((error) => {
         // setLoading(false); // Stop loading on error
-        // enqueueSnackbar(error.message, { variant: 'error' }); // Display error message
+        enqueueSnackbar(error.message, { variant: 'error' }); // Display error message
         console.log(error);
       });
       console.log(formData);
