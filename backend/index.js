@@ -1,21 +1,20 @@
-import express from 'express';
-import mysql from 'mysql2';
-import cors from 'cors';
-import bcrypt from 'bcrypt';
-import cookieParser from 'cookie-parser';
-import jwt from 'jsonwebtoken';
-import {verifyUser} from './middlewares/verifyUser.js';
-import authorsRout from './routes/authorsRout.js';
-import booksRout from './routes/booksRout.js';
-import publishersRout from './routes/publishersRout.js'
-import reviewsRout from './routes/reviewsRout.js'
-import dashboardRout from './routes/dashboardRout.js'
-import popularRout from './routes/popularRout.js'
-import userRout from './routes/userRout.js'
-import path from 'path';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
-
+import express from "express";
+import mysql from "mysql2";
+import cors from "cors";
+import bcrypt from "bcrypt";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
+import { verifyUser } from "./middlewares/verifyUser.js";
+import authorsRout from "./routes/authorsRout.js";
+import booksRout from "./routes/booksRout.js";
+import publishersRout from "./routes/publishersRout.js";
+import reviewsRout from "./routes/reviewsRout.js";
+import dashboardRout from "./routes/dashboardRout.js";
+import popularRout from "./routes/popularRout.js";
+import userRout from "./routes/userRout.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -48,15 +47,13 @@ export const pool = mysql.createPool({
   port: process.env.DB_PORT,
 });
 
-
-app.use('/books/books',booksRout)
-app.use('/books/authors',authorsRout)
-app.use('/books/publishers',publishersRout)
-app.use('/reviews',reviewsRout)
-app.use('/dashboard',dashboardRout)
-app.use('/popular',popularRout)
-app.use('/user',userRout )
-
+app.use("/books/books", booksRout);
+app.use("/books/authors", authorsRout);
+app.use("/books/publishers", publishersRout);
+app.use("/reviews", reviewsRout);
+app.use("/dashboard", dashboardRout);
+app.use("/popular", popularRout);
+app.use("/user", userRout);
 
 pool.getConnection((err, connection) => {
   if (err) {
@@ -70,10 +67,6 @@ pool.getConnection((err, connection) => {
 app.post("/register", async (req, res) => {
   const { firstName, lastName, email, phoneNumber, password, role } = req.body;
   const connection = await pool.promise().getConnection(); // Get a connection from the pool
-
-
-  const connection = await pool.promise().getConnection(); // Get a connection from the pool
-
 
   try {
     // Hash the password
@@ -964,42 +957,43 @@ app.get("/books/:id", (req, res) => {
   });
 });
 // getting user details according to the id
-app.get("/user/:id", async (req, res) => {
-  const { id } = req.params; // Extract the user ID from the route parameters
-  const connection = await pool.promise().getConnection();
+// app.get("/user/:id", async (req, res) => {
+//   const { id } = req.params; // Extract the user ID from the route parameters
+//   const connection = await pool.promise().getConnection();
 
-  try {
-    const sql = `
-            SELECT 
-                Member_ID,
-                First_name,
-                Last_name,
-                Email,
-                Contact_No,
-                Role,
-                Img_url
-            FROM 
-                member
-            WHERE 
-                Member_ID = ?
-        `;
+//   try {
+//     const sql = `
+//             SELECT
+//                 Member_ID,
+//                 First_name,
+//                 Last_name,
+//                 Email,
+//                 Contact_No,
+//                 Role,
+//                 Img_url
+//             FROM
+//                 member
+//             WHERE
+//                 Member_ID = ?
+//         `;
 
-    const [user] = await connection.query(sql, [id]);
-    // console.log(user);
+//     const [user] = await connection.query(sql, [id]);
+//     console.log(user);
 
-    if (user.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
+//     if (user.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ message: "User not found in the database" });
+//     }
 
-    res.status(200).json(user); // Return the single user object
-  } catch (err) {
-    console.error("Error fetching user details:", err.message);
-    res.status(500).json({ error: "Failed to fetch user details" });
-  } finally {
-    connection.release();
-  }
-});
-
+//     res.status(200).json(user); // Return the single user object
+//   } catch (err) {
+//     console.error("Error fetching user details:", err.message);
+//     res.status(500).json({ error: "Failed to fetch user details" });
+//   } finally {
+//     connection.release();
+//   }
+// });
 
 // app.get("/bookdata/:id", (req, res) => {
 //     // get the title id from the request
@@ -1014,36 +1008,36 @@ app.get("/user/:id", async (req, res) => {
 //               bt.NoOfPages AS 'NoOfPages',
 //               bt.Ave_Rate AS 'AverageRating',
 //               bt.Des AS 'Description',
-//               bt.Img_url AS 'ImageURL', 
+//               bt.Img_url AS 'ImageURL',
 //               bt.im1 AS 'Image1',
 //               bt.im2 as 'Image2',
 //                 bt.im3 as 'Image3',
 //                 bt.im4 as 'Image4',
 //                 bt.im5 as 'Image5'
-//           FROM 
+//           FROM
 //               book_title bt
-//           JOIN 
+//           JOIN
 //               author a ON bt.Author_ID = a.Author_ID
-//           JOIN 
+//           JOIN
 //               category c ON bt.category_ID = c.category_ID
-//           JOIN 
+//           JOIN
 //               publisher p ON bt.Publisher_ID = p.Publisher_ID
-//           WHERE 
+//           WHERE
 //               bt.Title_ID = ?`;
-  
+
 //     // execute the sql query
 //     pool.query(sql, [titleId], (err, result) => {
 //       if (err) {
 //         console.log(err)
 //         return res.status(500).json({ message: "Internal server error" });
 //       }
-  
+
 //       if (result.length === 0) {
 //         console.log("Book not found")
 //         return res.status(404).json({ message: "Book not found" });
 //       }
 //       console.log(result)
-  
+
 //       return res.status(200).json(result);
 //     });
 //   });
@@ -1054,14 +1048,14 @@ app.get("/user/:id", async (req, res) => {
 
 //     try {
 //         const sql = `
-//             SELECT 
+//             SELECT
 //                 First_name,
 //                 Last_name,
 //                 Email,
 //                 Contact_No
-//             FROM 
+//             FROM
 //                 member
-//             WHERE 
+//             WHERE
 //                 Member_ID = ?
 //         `;
 
@@ -1080,89 +1074,89 @@ app.get("/user/:id", async (req, res) => {
 //         connection.release();
 //     }
 // });
-  
-  //getting all the reviews
-  // app.get("/reviews", (req, res) => {
-  //   pool.query("SELECT * FROM review", (err, result) => {
-  //     if (err) {
-  //       console.error("Error getting reviews:", err.message);
-  //       res.status(500).send("Error getting reviews");
-  //       return;
-  //     }
-  //     res.json(result);
-  //   });
-  // });
-  
-  // getting review with title id
-  // app.get("/reviews/:title_id", (req, res) => {
-  //   pool.query(
-  //     `SELECT review.*, member.First_Name, member.Last_Name,
-  //      DATE_FORMAT(review.Review_Date, '%Y-%m-%d') AS Review_date
-  //      FROM review
-  //      JOIN member ON review.Member_ID = member.Member_ID
-  //      WHERE review.Title_ID = ?`,
-  //     [req.params.title_id],
-  //     (err, result) => {
-  //       if (err) {
-  //         console.error("Error getting reviews:", err.message);
-  //         res.status(500).send("Error getting reviews");
-  //         return;
-  //       }
-  //       res.json(result);
-  //     }
-  //   );
-  // });
-  
-  // POST endpoint to add a review
-  // app.post("/reviews", (req, res) => {
-  //   const { Title_ID, Member_ID, Rating, Review_Text, Review_Date } = req.body;
-  
-  //   const query = `INSERT INTO review (Title_ID, Member_ID, Rating, Review_Text, Review_Date) 
-  //                  VALUES (?, ?, ?, ?, ?)`;
-  //   console.log(query);
-  
-  //   const values = [Title_ID, Member_ID, Rating, Review_Text, Review_Date];
-  
-  //   pool.execute(query, values, (err, result) => {
-  //     if (err) {
-  //       console.error("Error adding review:", err);
-  //       return res.status(500).json({ message: "Error adding review" });
-  //     }
-  
-  //     // Return success response
-  //     console.log("Review added successfully");
-  //     res
-  //       .status(201)
-  //       .json({
-  //         message: "Review added successfully",
-  //         reviewId: result.insertId,
-  //       });
-  //   });
-  // });
-  
-  //deleting a review
-  // app.delete("/reviews/:review_id", (req, res) => {
-  //   pool.query(
-  //     "DELETE FROM review WHERE review_id = ?",
-  //     [req.params.review_id],
-  //     (err, result) => {
-  //       if (err) {
-  //         console.error("Error deleting review:", err.message);
-  //         res.status(500).send("Error deleting review");
-  //         return;
-  //       }
-  //       res.json(result);
-  //     }
-  //   );
-  // });
-  
+
+//getting all the reviews
+// app.get("/reviews", (req, res) => {
+//   pool.query("SELECT * FROM review", (err, result) => {
+//     if (err) {
+//       console.error("Error getting reviews:", err.message);
+//       res.status(500).send("Error getting reviews");
+//       return;
+//     }
+//     res.json(result);
+//   });
+// });
+
+// getting review with title id
+// app.get("/reviews/:title_id", (req, res) => {
+//   pool.query(
+//     `SELECT review.*, member.First_Name, member.Last_Name,
+//      DATE_FORMAT(review.Review_Date, '%Y-%m-%d') AS Review_date
+//      FROM review
+//      JOIN member ON review.Member_ID = member.Member_ID
+//      WHERE review.Title_ID = ?`,
+//     [req.params.title_id],
+//     (err, result) => {
+//       if (err) {
+//         console.error("Error getting reviews:", err.message);
+//         res.status(500).send("Error getting reviews");
+//         return;
+//       }
+//       res.json(result);
+//     }
+//   );
+// });
+
+// POST endpoint to add a review
+// app.post("/reviews", (req, res) => {
+//   const { Title_ID, Member_ID, Rating, Review_Text, Review_Date } = req.body;
+
+//   const query = `INSERT INTO review (Title_ID, Member_ID, Rating, Review_Text, Review_Date)
+//                  VALUES (?, ?, ?, ?, ?)`;
+//   console.log(query);
+
+//   const values = [Title_ID, Member_ID, Rating, Review_Text, Review_Date];
+
+//   pool.execute(query, values, (err, result) => {
+//     if (err) {
+//       console.error("Error adding review:", err);
+//       return res.status(500).json({ message: "Error adding review" });
+//     }
+
+//     // Return success response
+//     console.log("Review added successfully");
+//     res
+//       .status(201)
+//       .json({
+//         message: "Review added successfully",
+//         reviewId: result.insertId,
+//       });
+//   });
+// });
+
+//deleting a review
+// app.delete("/reviews/:review_id", (req, res) => {
+//   pool.query(
+//     "DELETE FROM review WHERE review_id = ?",
+//     [req.params.review_id],
+//     (err, result) => {
+//       if (err) {
+//         console.error("Error deleting review:", err.message);
+//         res.status(500).send("Error deleting review");
+//         return;
+//       }
+//       res.json(result);
+//     }
+//   );
+// });
+
 // Endpoint to get all reviews for a specific user
 // app.get("/review/:id", async(req, res) => {
 //     const {id} = req.params;
 //     const connection = await pool.promise().getConnection();
 //     try{
 //         const sql =
-//         `SELECT 
+//         `SELECT
 //         review.Review_ID,
 //         review.Rating,
 //         review.Review_Text,
@@ -1172,8 +1166,8 @@ app.get("/user/:id", async (req, res) => {
 //        JOIN book_title ON review.Title_ID = book_title.Title_ID
 //        WHERE review.Member_ID = ?`;
 //          const [result] = await connection.query(sql, [id]);
-    
-//       if (result.length === 0) {    
+
+//       if (result.length === 0) {
 //         return res.status(200).json({ message: "No reviews found." });
 //         }
 //         res.status(200).json(result);
@@ -1186,41 +1180,38 @@ app.get("/user/:id", async (req, res) => {
 //     });
 
 // Endpoint to update a review
-app.put("/reviews/:id", (req, res) => {
-  const { id } = req.params;
-  const { Rating, Review_Text, Review_Date } = req.body;
+// app.put("/reviews/:id", (req, res) => {
+//   const { id } = req.params;
+//   const { Rating, Review_Text, Review_Date } = req.body;
 
+// Endpoint to update a review
+// app.put("/reviews/:id", (req, res) => {
+//     const { id } = req.params;
+//     const { Rating, Review_Text, Review_Date } = req.body;
 
- 
+//     const query = `
+//       UPDATE review
+//       SET
+//         Rating = ?,
+//         Review_Text = ?,
+//         Review_Date = ?
+//       WHERE Review_ID = ?`;
 
-    // Endpoint to update a review
-    // app.put("/reviews/:id", (req, res) => {
-    //     const { id } = req.params;
-    //     const { Rating, Review_Text, Review_Date } = req.body;
-      
-    //     const query = `
-    //       UPDATE review
-    //       SET 
-    //         Rating = ?,
-    //         Review_Text = ?,
-    //         Review_Date = ?
-    //       WHERE Review_ID = ?`;
-      
-    //     const values = [Rating, Review_Text, Review_Date, id];
-      
-    //     pool.execute(query, values, (err, result) => {
-    //       if (err) {
-    //         console.error("Error updating review:", err);
-    //         return res.status(500).json({ message: "Error updating review" });
-    //       }
-      
-    //       if (result.affectedRows === 0) {
-    //         return res.status(404).json({ message: "Review not found" });
-    //       }
-      
-    //       res.status(200).json({ message: "Review updated successfully" });
-    //     });
-    //   });
+//     const values = [Rating, Review_Text, Review_Date, id];
+
+//     pool.execute(query, values, (err, result) => {
+//       if (err) {
+//         console.error("Error updating review:", err);
+//         return res.status(500).json({ message: "Error updating review" });
+//       }
+
+//       if (result.affectedRows === 0) {
+//         return res.status(404).json({ message: "Review not found" });
+//       }
+
+//       res.status(200).json({ message: "Review updated successfully" });
+//     });
+//   });
 
 // Endpoint to get book borrowed details for a specific user
 // app.get("/borrowed/:id", async(req, res) => {
@@ -1228,7 +1219,7 @@ app.put("/reviews/:id", (req, res) => {
 //     const connection = await pool.promise().getConnection();
 //     try{
 //         const sql =
-//         `SELECT 
+//         `SELECT
 //         book_title.Title_name,
 //         author.Name AS Author,
 //         DATE_FORMAT(issuebook.Issued_Date, '%Y-%m-%d') AS Issued_Date,
@@ -1239,8 +1230,8 @@ app.put("/reviews/:id", (req, res) => {
 //        JOIN author ON book_title.Author_ID = author.Author_ID
 //        WHERE issuebook.Member_ID = ?`;
 //          const [result] = await connection.query(sql, [id]);
-    
-//       if (result.length === 0) {    
+
+//       if (result.length === 0) {
 //         return res.status(200).json({ message: "No books borrowed." });
 //         }
 //         res.status(200).json(result);
@@ -1252,274 +1243,269 @@ app.put("/reviews/:id", (req, res) => {
 //     }
 //     });
 
-  // Endpoint to get the number of books in each category
-  // app.get("/categories/book-count", (req, res) => {
-  //   const query = `
-  //     SELECT c.Category_name AS CategoryName, SUM(bt.No_of_copies) AS BookCount
-  //     FROM category c
-  //     LEFT JOIN book_title bt ON c.Category_ID = bt.Category_ID
-  //     GROUP BY c.Category_name
-  //   `;
-  
-  //   pool.query(query, (err, result) => {
-  //     if (err) {
-  //       console.error("Error getting book count by category:", err.message);
-  //       res.status(500).send("Error getting book count by category");
-  //       return;
-  //     }
-  //     res.json(result);
-  //   });
-  // });
-  
-  
-    // Endpoint to get overdue books
-    // app.get("/overdue-books", (req, res) => {
-    //   const query = `
-    //     SELECT 
-    //       m.First_Name AS MemberFirstName,
-    //       m.Last_Name AS MemberLastName,
-    //       bt.Title_name AS BookTitle,
-    //       c.Category_name AS BookCategory,
-    //       ib.Issued_Date AS IssuedDate,
-    //       DATEDIFF(CURDATE(), ib.Issued_Date) - 14 AS OverdueDays
-    //     FROM 
-    //       issuebook ib
-    //     JOIN 
-    //       member m ON ib.Member_ID = m.Member_ID
-    //     JOIN 
-    //       book b ON ib.Book_ID = b.Book_ID
-    //     JOIN 
-    //       book_title bt ON b.Title_ID = bt.Title_ID
-    //     JOIN 
-    //       category c ON bt.Category_ID = c.Category_ID
-    //     WHERE 
-    //       ib.Returned_Date IS NULL
-    //       AND DATEDIFF(CURDATE(), ib.Issued_Date) > 14
-    //   `;
-    
-    //   pool.query(query, (err, result) => {
-    //     if (err) {
-    //       console.error("Error getting overdue books:", err.message);
-    //       res.status(500).send("Error getting overdue books");
-    //       return;
-    //     }
-    //     res.json(result);
-    //   });
-    // });
-  
-  // Endpoint to get the total number of books issued according to year
-  // app.get('/book-acquisition', (req, res) => {
-  //   const { year } = req.query;
-  
-  //   const query = `
-  //     SELECT MONTH(Issued_Date) AS month, COUNT(*) AS total
-  //     FROM issuebook
-  //     WHERE YEAR(Issued_Date) = ?
-  //     GROUP BY MONTH(Issued_Date)
-  //     ORDER BY MONTH(Issued_Date)
-  //   `;
-  
-  //   pool.query(query, [year], (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
-  
-  // // Endpoint to get the total number of books in the library
-  // app.get('/total-books', (req, res) => {
-  //   const query = `
-  //     SELECT SUM(No_of_copies) AS totalBooks
-  //     FROM book_title
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results[0]);
-  //   });
-  // }); 
-  
-  // // Endpoint to get the total number of members where role is equal to user
-  // app.get('/total-members', (req, res) => {
-  //   const query = `
-  //     SELECT COUNT(*) AS totalMembers
-  //     FROM member
-  //     WHERE Role = 'user'
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results[0]);
-  //   });
-  // });
-  
-  
-  
-  // // Endpoint to get the most popular categories within the nearest year
-  // app.get('/popular-categories/year', (req, res) => {
-  //   const query = `
-  //     SELECT c.Category_name, COUNT(*) AS borrowCount
-  //     FROM issuebook ib
-  //     JOIN book b ON ib.Book_ID = b.Book_ID
-  //     JOIN book_title bt ON b.Title_ID = bt.Title_ID
-  //     JOIN category c ON bt.Category_ID = c.Category_ID
-  //     WHERE ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-  //     GROUP BY c.Category_name
-  //     ORDER BY borrowCount DESC
-  //     LIMIT 10
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
-  
-  // // Endpoint to get the most popular categories within the nearest month
-  // app.get('/popular-categories/month', (req, res) => {
-  //   const query = `
-  //     SELECT c.Category_name, COUNT(*) AS borrowCount
-  //     FROM issuebook ib
-  //     JOIN book b ON ib.Book_ID = b.Book_ID
-  //     JOIN book_title bt ON b.Title_ID = bt.Title_ID
-  //     JOIN category c ON bt.Category_ID = c.Category_ID
-  //     WHERE ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-  //     GROUP BY c.Category_name
-  //     ORDER BY borrowCount DESC
-  //     LIMIT 10
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
-  
-  // // Endpoint to get the most popular categories within the nearest week
-  // app.get('/popular-categories/week', (req, res) => {
-  //   const query = `
-  //     SELECT c.Category_name, COUNT(*) AS borrowCount
-  //     FROM issuebook ib
-  //     JOIN book b ON ib.Book_ID = b.Book_ID
-  //     JOIN book_title bt ON b.Title_ID = bt.Title_ID
-  //     JOIN category c ON bt.Category_ID = c.Category_ID
-  //     WHERE ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
-  //     GROUP BY c.Category_name
-  //     ORDER BY borrowCount DESC
-  //     LIMIT 10
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
-  
-  
-  // // Endpoint to get the top 6 popular authors within the nearest year
-  // app.get('/popular-authors/year', (req, res) => {
-  //   const query = `
-  //     SELECT 
-  //       a.Name AS AuthorName,
-  //       COUNT(DISTINCT ib.Issue_ID) AS IssuedBooks,
-  //       COUNT(DISTINCT rb.Reservation_ID) AS ReservedBooks
-  //     FROM author a
-  //     LEFT JOIN book_title bt ON a.Author_ID = bt.Author_ID
-  //     LEFT JOIN book b ON bt.Title_ID = b.Title_ID
-  //     LEFT JOIN issuebook ib ON b.Book_ID = ib.Book_ID AND ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-  //     LEFT JOIN reservedbook rb ON b.Book_ID = rb.Book_ID AND rb.Reserved_Date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-  //     GROUP BY a.Name
-  //     ORDER BY IssuedBooks DESC, ReservedBooks DESC
-  //     LIMIT 6
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
-  
-  // // Endpoint to get the top 6 popular authors within the nearest month
-  // app.get('/popular-authors/month', (req, res) => {
-  //   const query = `
-  //     SELECT 
-  //       a.Name AS AuthorName,
-  //       COUNT(DISTINCT ib.Issue_ID) AS IssuedBooks,
-  //       COUNT(DISTINCT rb.Reservation_ID) AS ReservedBooks
-  //     FROM author a
-  //     LEFT JOIN book_title bt ON a.Author_ID = bt.Author_ID
-  //     LEFT JOIN book b ON bt.Title_ID = b.Title_ID
-  //     LEFT JOIN issuebook ib ON b.Book_ID = ib.Book_ID AND ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-  //     LEFT JOIN reservedbook rb ON b.Book_ID = rb.Book_ID AND rb.Reserved_Date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-  //     GROUP BY a.Name
-  //     ORDER BY IssuedBooks DESC, ReservedBooks DESC
-  //     LIMIT 6
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
-  
-  // // Endpoint to get the top 6 popular authors within the nearest week
-  // app.get('/popular-authors/week', (req, res) => {
-  //   const query = `
-  //     SELECT 
-  //       a.Name AS AuthorName,
-  //       COUNT(DISTINCT ib.Issue_ID) AS IssuedBooks,
-  //       COUNT(DISTINCT rb.Reservation_ID) AS ReservedBooks
-  //     FROM author a
-  //     LEFT JOIN book_title bt ON a.Author_ID = bt.Author_ID
-  //     LEFT JOIN book b ON bt.Title_ID = b.Title_ID
-  //     LEFT JOIN issuebook ib ON b.Book_ID = ib.Book_ID AND ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
-  //     LEFT JOIN reservedbook rb ON b.Book_ID = rb.Book_ID AND rb.Reserved_Date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
-  //     GROUP BY a.Name
-  //     ORDER BY IssuedBooks DESC, ReservedBooks DESC
-  //     LIMIT 6
-  //   `;
-  
-  //   pool.query(query, (err, results) => {
-  //     if (err) {
-  //       console.error('Error executing query:', err.message);
-  //       res.status(500).send('Error executing query');
-  //       return;
-  //     }
-  //     res.json(results);
-  //   });
-  // });
+// Endpoint to get the number of books in each category
+// app.get("/categories/book-count", (req, res) => {
+//   const query = `
+//     SELECT c.Category_name AS CategoryName, SUM(bt.No_of_copies) AS BookCount
+//     FROM category c
+//     LEFT JOIN book_title bt ON c.Category_ID = bt.Category_ID
+//     GROUP BY c.Category_name
+//   `;
 
+//   pool.query(query, (err, result) => {
+//     if (err) {
+//       console.error("Error getting book count by category:", err.message);
+//       res.status(500).send("Error getting book count by category");
+//       return;
+//     }
+//     res.json(result);
+//   });
+// });
+
+// Endpoint to get overdue books
+// app.get("/overdue-books", (req, res) => {
+//   const query = `
+//     SELECT
+//       m.First_Name AS MemberFirstName,
+//       m.Last_Name AS MemberLastName,
+//       bt.Title_name AS BookTitle,
+//       c.Category_name AS BookCategory,
+//       ib.Issued_Date AS IssuedDate,
+//       DATEDIFF(CURDATE(), ib.Issued_Date) - 14 AS OverdueDays
+//     FROM
+//       issuebook ib
+//     JOIN
+//       member m ON ib.Member_ID = m.Member_ID
+//     JOIN
+//       book b ON ib.Book_ID = b.Book_ID
+//     JOIN
+//       book_title bt ON b.Title_ID = bt.Title_ID
+//     JOIN
+//       category c ON bt.Category_ID = c.Category_ID
+//     WHERE
+//       ib.Returned_Date IS NULL
+//       AND DATEDIFF(CURDATE(), ib.Issued_Date) > 14
+//   `;
+
+//   pool.query(query, (err, result) => {
+//     if (err) {
+//       console.error("Error getting overdue books:", err.message);
+//       res.status(500).send("Error getting overdue books");
+//       return;
+//     }
+//     res.json(result);
+//   });
+// });
+
+// Endpoint to get the total number of books issued according to year
+// app.get('/book-acquisition', (req, res) => {
+//   const { year } = req.query;
+
+//   const query = `
+//     SELECT MONTH(Issued_Date) AS month, COUNT(*) AS total
+//     FROM issuebook
+//     WHERE YEAR(Issued_Date) = ?
+//     GROUP BY MONTH(Issued_Date)
+//     ORDER BY MONTH(Issued_Date)
+//   `;
+
+//   pool.query(query, [year], (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
+
+// // Endpoint to get the total number of books in the library
+// app.get('/total-books', (req, res) => {
+//   const query = `
+//     SELECT SUM(No_of_copies) AS totalBooks
+//     FROM book_title
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results[0]);
+//   });
+// });
+
+// // Endpoint to get the total number of members where role is equal to user
+// app.get('/total-members', (req, res) => {
+//   const query = `
+//     SELECT COUNT(*) AS totalMembers
+//     FROM member
+//     WHERE Role = 'user'
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results[0]);
+//   });
+// });
+
+// // Endpoint to get the most popular categories within the nearest year
+// app.get('/popular-categories/year', (req, res) => {
+//   const query = `
+//     SELECT c.Category_name, COUNT(*) AS borrowCount
+//     FROM issuebook ib
+//     JOIN book b ON ib.Book_ID = b.Book_ID
+//     JOIN book_title bt ON b.Title_ID = bt.Title_ID
+//     JOIN category c ON bt.Category_ID = c.Category_ID
+//     WHERE ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+//     GROUP BY c.Category_name
+//     ORDER BY borrowCount DESC
+//     LIMIT 10
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
+
+// // Endpoint to get the most popular categories within the nearest month
+// app.get('/popular-categories/month', (req, res) => {
+//   const query = `
+//     SELECT c.Category_name, COUNT(*) AS borrowCount
+//     FROM issuebook ib
+//     JOIN book b ON ib.Book_ID = b.Book_ID
+//     JOIN book_title bt ON b.Title_ID = bt.Title_ID
+//     JOIN category c ON bt.Category_ID = c.Category_ID
+//     WHERE ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+//     GROUP BY c.Category_name
+//     ORDER BY borrowCount DESC
+//     LIMIT 10
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
+
+// // Endpoint to get the most popular categories within the nearest week
+// app.get('/popular-categories/week', (req, res) => {
+//   const query = `
+//     SELECT c.Category_name, COUNT(*) AS borrowCount
+//     FROM issuebook ib
+//     JOIN book b ON ib.Book_ID = b.Book_ID
+//     JOIN book_title bt ON b.Title_ID = bt.Title_ID
+//     JOIN category c ON bt.Category_ID = c.Category_ID
+//     WHERE ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+//     GROUP BY c.Category_name
+//     ORDER BY borrowCount DESC
+//     LIMIT 10
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
+
+// // Endpoint to get the top 6 popular authors within the nearest year
+// app.get('/popular-authors/year', (req, res) => {
+//   const query = `
+//     SELECT
+//       a.Name AS AuthorName,
+//       COUNT(DISTINCT ib.Issue_ID) AS IssuedBooks,
+//       COUNT(DISTINCT rb.Reservation_ID) AS ReservedBooks
+//     FROM author a
+//     LEFT JOIN book_title bt ON a.Author_ID = bt.Author_ID
+//     LEFT JOIN book b ON bt.Title_ID = b.Title_ID
+//     LEFT JOIN issuebook ib ON b.Book_ID = ib.Book_ID AND ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+//     LEFT JOIN reservedbook rb ON b.Book_ID = rb.Book_ID AND rb.Reserved_Date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+//     GROUP BY a.Name
+//     ORDER BY IssuedBooks DESC, ReservedBooks DESC
+//     LIMIT 6
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
+
+// // Endpoint to get the top 6 popular authors within the nearest month
+// app.get('/popular-authors/month', (req, res) => {
+//   const query = `
+//     SELECT
+//       a.Name AS AuthorName,
+//       COUNT(DISTINCT ib.Issue_ID) AS IssuedBooks,
+//       COUNT(DISTINCT rb.Reservation_ID) AS ReservedBooks
+//     FROM author a
+//     LEFT JOIN book_title bt ON a.Author_ID = bt.Author_ID
+//     LEFT JOIN book b ON bt.Title_ID = b.Title_ID
+//     LEFT JOIN issuebook ib ON b.Book_ID = ib.Book_ID AND ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+//     LEFT JOIN reservedbook rb ON b.Book_ID = rb.Book_ID AND rb.Reserved_Date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+//     GROUP BY a.Name
+//     ORDER BY IssuedBooks DESC, ReservedBooks DESC
+//     LIMIT 6
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
+
+// // Endpoint to get the top 6 popular authors within the nearest week
+// app.get('/popular-authors/week', (req, res) => {
+//   const query = `
+//     SELECT
+//       a.Name AS AuthorName,
+//       COUNT(DISTINCT ib.Issue_ID) AS IssuedBooks,
+//       COUNT(DISTINCT rb.Reservation_ID) AS ReservedBooks
+//     FROM author a
+//     LEFT JOIN book_title bt ON a.Author_ID = bt.Author_ID
+//     LEFT JOIN book b ON bt.Title_ID = b.Title_ID
+//     LEFT JOIN issuebook ib ON b.Book_ID = ib.Book_ID AND ib.Issued_Date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+//     LEFT JOIN reservedbook rb ON b.Book_ID = rb.Book_ID AND rb.Reserved_Date >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+//     GROUP BY a.Name
+//     ORDER BY IssuedBooks DESC, ReservedBooks DESC
+//     LIMIT 6
+//   `;
+
+//   pool.query(query, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err.message);
+//       res.status(500).send('Error executing query');
+//       return;
+//     }
+//     res.json(results);
+//   });
+// });
 
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");

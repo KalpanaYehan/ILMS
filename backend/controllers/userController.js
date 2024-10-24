@@ -7,18 +7,19 @@ export const getUserById = async (req, res) => {
 
   try {
     const sql = `
-      SELECT 
-        First_name,
-        Last_name,
-        Email,
-        Contact_No,
-        Role
-        
-      FROM 
-        member
-      WHERE 
-        Member_ID = ?
-    `;
+            SELECT 
+                Member_ID,
+                First_name,
+                Last_name,
+                Email,
+                Contact_No,
+                Role,
+                Img_url
+            FROM 
+                member
+            WHERE 
+                Member_ID = ?
+        `;
 
     const [user] = await connection.query(sql, [id]);
 
@@ -26,8 +27,7 @@ export const getUserById = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user[0]); // Return the single user object
-
+    res.status(200).json(user); // Return the single user object
   } catch (err) {
     console.error("Error fetching user details:", err.message);
     res.status(500).json({ error: "Failed to fetch user details" });
