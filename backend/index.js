@@ -48,13 +48,13 @@ export const pool = mysql.createPool({
   port: process.env.DB_PORT,
 });
 
-app.use("/books/books", booksRout);
-app.use("/books/authors", authorsRout);
-app.use("/books/publishers", publishersRout);
-app.use("/reviews", reviewsRout);
+app.use("/books/books", verifyUser, booksRout);
+app.use("/books/authors", verifyUser, authorsRout);
+app.use("/books/publishers", verifyUser, publishersRout);
+app.use("/reviews", verifyUser, reviewsRout);
 app.use("/dashboard", dashboardRout);
 app.use("/popular", popularRout);
-app.use("/users", userRout);
+app.use("/users", verifyUser, userRout);
 
 pool.getConnection((err, connection) => {
   if (err) {
@@ -777,10 +777,14 @@ app.post("/logout", (req, res) => {
     httpOnly: true,
     path: "/",
   });
+  //res.clearCookie('accesstoken', { path: '/' })
   // Send a response indicating successful logout
   res.json({ message: "Logged out successfully" });
   // .status(200)
 });
+// Send a response indicating successful logout
+// res.json({ message: "Logged out successfully" });
+// .status(200)
 
 // app.get("/issueDetails", async (req, res) => {
 //   const connection = await pool.promise().getConnection();

@@ -1,5 +1,5 @@
 
-import { React, useState,useContext} from 'react'
+import { React, useState,useContext,useEffect} from 'react'
 import Logo from "../assets/website/newLogo.jpg"
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -15,9 +15,16 @@ const Login = () => {
   
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar();
-  const{setUser} = useContext(AuthContext)
+  const{user,setUser} = useContext(AuthContext)
   axios.defaults.withCredentials =true
   
+  useEffect(() => {
+    // Check if user is already logged in
+    if (user) {
+      enqueueSnackbar('You are already logged in!', { variant: 'info' });
+      navigate('/home');  // Redirect if user is logged in
+    }
+  }, [user, navigate, enqueueSnackbar]);//user, navigate, enqueueSnackbar
 
   const handleChange = (e) => {
     const { name, value } = e.target;
