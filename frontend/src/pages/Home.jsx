@@ -12,21 +12,21 @@ const Home = () => {
   const navigate = useNavigate();
   axios.defaults.withCredentials = true; 
 
-  useEffect(() => {
+  // useEffect(() => {
     
-    axios
-      .get('https://ilms.vercel.app/home')
-      .then((response) => {
-        console.log(response.data); 
-        if (response.data.message !== "success") {
-          navigate('/'); 
-        }
-      })
-      .catch((error) => {
-        console.error(error); 
-        navigate('/');
-      });
-  }, []); // Include `navigate` as a dependency
+  //   axios
+  //     .get('https://ilms.vercel.app/home')
+  //     .then((response) => {
+  //       console.log(response.data); 
+  //       if (response.data.message !== "success") {
+  //         navigate('/'); 
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error(error); 
+  //       navigate('/');
+  //     });
+  // }, []); // Include `navigate` as a dependency
 
   return (
     <>
