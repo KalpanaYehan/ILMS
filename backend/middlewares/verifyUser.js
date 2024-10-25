@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: "",
+    origin: "https://ilms-mbf1.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT"]
 }));
