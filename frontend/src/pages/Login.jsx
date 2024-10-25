@@ -37,7 +37,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    axios.post("https://vercel.com/api/toolbar/link/ilms.vercel.app?via=deployment-domains-list&p=1&page=/login", { userEmail:formData.userEmail, password:formData.password })
+    axios.post("https://vercel.com/api/toolbar/link/ilms.vercel.app/login", { userEmail:formData.userEmail, password:formData.password })
        .then(result => {
          console.log(result);
          if (result.data.message === 'success') {
