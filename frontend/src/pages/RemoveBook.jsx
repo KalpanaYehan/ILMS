@@ -123,9 +123,7 @@ function RemoveBook() {
           }}
         >
           {/* <h2 className="font-bold text-center text-2xl text-white">Search Book</h2> */}
-          <div className="flex justify-start mx-[3%] mt-14">
-            <BackButton url={"/books"} />
-          </div>
+          <div className="flex justify-start mx-[3%] mt-14"></div>
           <div className="mb-4 w-[30%]">
             <span className="block text-lg font-bold mb-2 text-white">
               Search
