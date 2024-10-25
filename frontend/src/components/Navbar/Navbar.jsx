@@ -98,7 +98,11 @@ const Navbar = () => {
                         </ul>
                         <div className="relative">
                             <button onClick={toggleDropdown} href='#' className='flex items-center justify-center gap-2 text-2xl font-bold tracking-wider sm:text-3xl'>
-                                <img src={User2} alt="user" className='duration-200 rounded-full cursor-pointer w-14 hover:scale-105' />
+                                <img       
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6KL23_akt_SZpwASF21jjgBbuHSV52G5E-uz2AVFuBWwOY2IRXadWB0XXBBupBkLUL1c&usqp=CAU"
+                                    alt="user" 
+                                    className='duration-200 rounded-full  cursor-pointer w-14 hover:scale-105' 
+                                />
                             </button>
                             {dropDownOpen && (
                                 <div className='absolute right-0 z-20 w-48 py-2 mt-1 bg-white rounded-md shadow-lg'>

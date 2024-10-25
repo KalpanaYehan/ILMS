@@ -425,8 +425,13 @@ console.log(userID);
         <h1 className="mt-5 mb-5 ml-32 text-2xl font-bold text-red-950 lg:ml-32">Personal Details</h1>
           {/* <div className="items-center p-6 mb-6 bg-white rounded-lg shadow-md"> */}
           <div className='flex mb-6 '>
-  <img src={User2} alt="member" className='mt-5 duration-200 rounded-full cursor-pointer hover:scale-105 h-60' />
-  <div className='px-20 py-10 text-xl'> 
+          <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6KL23_akt_SZpwASF21jjgBbuHSV52G5E-uz2AVFuBWwOY2IRXadWB0XXBBupBkLUL1c&usqp=CAU"
+          alt="member"
+          className="mt-5 duration-200 rounded-full cursor-pointer hover:scale-105 h-60"
+        />
+
+          <div className='px-20 py-10 text-xl'> 
               <p className="mb-4 font-semibold"><strong>Member ID:</strong> {userID} </p>
               <p className="mb-4 font-semibold"><strong>First Name:</strong> {userDetails.First_name}</p>
               <p className="mb-4 font-semibold"><strong>Last Name:</strong> {userDetails.Last_name} </p>

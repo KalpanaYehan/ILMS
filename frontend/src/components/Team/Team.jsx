@@ -4,8 +4,8 @@ import TeamMember from "./TeamMember";
 const Team = () => {
   const teamMembers = [
     {
-      name: "John Doe",
-      image: "../../../public/peopleImage1.jpeg",
+      name: "Kalpana",
+      image: '../../../public/kalpana.jpg',
       
       
       
@@ -14,15 +14,15 @@ const Team = () => {
       facebook: "#",
     },
     {
-      name: "Jane Smith",
-      image: "../../../public/peopleImage2.jpeg",
+      name: "Prabodha",
+      image: '../../../public/prabodha.jpg',
       linkedin: "#",
       instagram: "#",
       facebook: "#",
     },
     {
-      name: "Emily Johnson",
-      image: "../../../public/peopleImage3.jpg",
+      name: "Sageeth",
+      image: "../../../public/sageeth.jpg",
       linkedin: "#",
       instagram: "#",
       facebook: "#",
