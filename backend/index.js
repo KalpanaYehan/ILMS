@@ -52,8 +52,8 @@ app.use('/books/books',verifyUser,booksRout)
 app.use('/books/authors',verifyUser,authorsRout)
 app.use('/books/publishers',verifyUser,publishersRout)
 app.use('/reviews',verifyUser,reviewsRout)
-app.use('/dashboard',verifyUser,dashboardRout)
-app.use('/popular',verifyUser,popularRout)
+app.use('/dashboard',dashboardRout)
+app.use('/popular',popularRout)
 app.use('/users',verifyUser,userRout )
 
 pool.getConnection((err, connection) => {
