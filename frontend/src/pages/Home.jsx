@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
     
     axios
-      .get('https://vercel.com/api/toolbar/link/ilms.vercel.app/home')
+      .get('https://ilms.vercel.app/home')
       .then((response) => {
         console.log(response.data); 
         if (response.data.message !== "success") {
