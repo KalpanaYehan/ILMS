@@ -1,7 +1,7 @@
 import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import { verifyUser } from "./middlewares/verifyUser.js";
