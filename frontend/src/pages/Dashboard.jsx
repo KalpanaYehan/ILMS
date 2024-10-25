@@ -40,7 +40,7 @@ const COLORS = [
   "#FF69B4",
   "#8A2BE2",
 ];
-
+// dashboard component
 const Dashboard = () => {
   const [bookCategoriesData, setBookCategoriesData] = useState([]);
   const [overdueBooksData, setOverdueBooksData] = useState([]);
