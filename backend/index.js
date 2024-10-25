@@ -139,7 +139,7 @@ app.post("/login", async (req, res) => {
         res.cookie("refreshtoken", refreshtoken, {
           maxAge: 86400000,
           secure: true,
-          sameSite: "strict",
+          sameSite: "none",
         });
 
         // Respond with the user details and access token
