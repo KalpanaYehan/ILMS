@@ -1,130 +1,167 @@
-
-import React, { useState, useRef,useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import Navbar from '../components/Navbar/Navbar';
-import Footer from '../components/Footer/Footer';
-import axios from 'axios'
-//import { AuthContext } from '../context/AuthContext';
+import React, { useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
+import axios from "axios";
 
 function SearchUser() {
-  //const location = useLocation();
-  //const { userType, userData } = location.state || {};
-  const [userId, setUserId] = useState('');
-  // const [userDetails, setUserDetails] = useState(null);
+  const location = useLocation();
+  const { userType, userData } = location.state || {};
+  const [userId, setUserId] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [error, setError] = useState(null);
   const userDetailsRef = useRef(null); // Create a reference
-  const [user, setUser] = useState(null);
-  //const{user} =useContext(AuthContext);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Dummy user data
-  {/*}
+    // Clear previous user details and error messages
+    setUserDetails(null);
+    setError(null);
 
-  const users = [
-    { id: '1001U', firstName: 'Emily', lastName: 'Johnson', email: 'emily.johnson@example.com', phoneNumber: '555-1234',password: '1234',nic: '1100', img: 'https://themesbrand.com/velzon/html/corporate/assets/images/users/avatar-4.jpg' },
-    { id: '1002U', firstName: 'John', lastName: 'Smith', email: 'john.smith@example.com', phoneNumber: '555-5678',password: '5678',nic: '1200', img: 'https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=2189' },
-    { id: '1003U', firstName: 'Michael', lastName: 'Brown', email: 'michael.brown@example.com', phoneNumber: '555-8765',password: '2468',nic: '1300', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUs73Mz3FqhV8uy2F5TGw_jGvFdzGirConJA&s' },
-  ];
-*/}
+    try {
+      const res = await axios.get("http://localhost:8081/users/user/" + userId);
 
-  const handleSubmit = (e) => {
-      e.preventDefault();
-      
-      // Clear previous user details and error messages
-      // setUserDetails(null);
-      setError(null);
+      // Check if user data is returned
+      if (res.data.length > 0) {
+        const user = res.data[0]; // Get the first user from the response
 
-      // Find the user based on userId
-      //const user = users.find((user) => user.id === userId);
+        setUserDetails(user); // Update the state with user details
 
-      axios.get('http://localhost:8081/user/' + userId)
-        .then(res => setUser(res.data[0])    
-        )
-        .catch(err => console.log(err));
-
-      // if (user) {
-      //     setUserDetails({ 
-      //       id: user.Admin_ID, 
-      //       firstName: user.First_Name, 
-      //       lastName: user.Last_Name, 
-      //       email: user.Email, 
-      //       phoneNumber: user.Contact_No,
-      //       password: user.Password,
-      //       //nic: user.nic, 
-      //       //img: user.img 
-      //   });
-          setTimeout(() => {
-              userDetailsRef.current?.scrollIntoView({ behavior: 'smooth' }); // Scroll to user details
-          }, 100);
-      // } else {
-      //     setError('User not found');
-      // }
+        // Scroll to user details after a short delay
+        setTimeout(() => {
+          userDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        setError("User not found");
+      }
+    } catch (err) {
+      console.error(err); // Log the error for debugging
+      setError("An error occurred while fetching user details."); // Set a user-friendly error message
+    }
   };
 
   return (
-      <>
-          <Navbar/>
-          {/*<h1 className='text-4xl font-bold text-gray-900 text-center mt-3 mb-4'>Search a User</h1>*/}
-          <div className="relative mx-auto max-w-5xl text-center my-5">
-            <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
-            Search a User
-            </span>
+    <>
+      <Navbar />
+
+      <div className="relative mx-auto max-w-5xl text-center my-5">
+        <span className="bg-clip-text bg-gradient-to-r from-secondary to-gray-900 font-extrabold text-transparent text-4xl sm:text-4xl">
+          Search a User
+        </span>
+      </div>
+      <img
+        src="https://img.freepik.com/free-photo/smiling-asian-woman-posing-public-library_74855-1621.jpg"
+        className="w-full max-w-2xl mx-auto rounded-xl h-auto"
+        alt="Books"
+      />
+      <div className="min-h-screen flex justify-center bg-white">
+        <div className="w-full max-w-2xl p-6">
+          <form
+            onSubmit={handleSubmit}
+            className="flex items-center justify-between mb-5"
+          >
+            <div className="flex items-center mr-4">
+              {" "}
+              {/* User ID */}
+              <label
+                className="text-gray-700 text-lg font-semibold mr-2"
+                htmlFor="userId"
+              >
+                User ID:
+              </label>
+              <input
+                type="text"
+                id="userId"
+                placeholder="Enter user ID"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                className="shadow appearance-none border rounded w-64 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" // Increased width
+                required
+              />
             </div>
-          <img src='https://img.freepik.com/free-photo/smiling-asian-woman-posing-public-library_74855-1621.jpg' className='w-lg justify-center mx-auto rounded-xl h-[384px] w-[576px]' alt="Books" />
-          <div className='min-h-screen flex justify-center bg-white'>
-              <div className="w-full max-w-xl">
-                  <form onSubmit={handleSubmit}>
-                      <div className="my-5 inline-block">
-                          <label className="text-gray-700 text-lg font-semibold mx-2" htmlFor="userId">User ID:</label>
-                          <input
-                              type="text"
-                              id="userId"
-                              placeholder='Enter user ID'
-                              value={userId}
-                              onChange={(e) => setUserId(e.target.value)}
-                              className="shadow appearance-none border rounded py-2 px-3 mx-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                              required
-                          />
-                      </div>
-                      <button type="submit" className="w-full justify-center mx-2 flex rounded-md bg-gradient-to-r from-secondary to-secondary/90 bg-gray-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get User Details</button>
-                  </form>
+            <button
+              type="submit"
+              className="flex justify-center items-center rounded-md bg-gradient-to-r from-secondary to-secondary/90 w-64 px-4 py-2 text-sm font-semibold leading-6 text-white shadow-sm transition-transform transform hover:scale-110" // Increased width
+            >
+              Get User Details
+            </button>
+          </form>
 
-                  {error && <div className="my-5 mx-2 block text-gray-700 text-md font-semibold mb-2">{error}</div>}
+          {error && (
+            <div className="my-5 mx-2 block text-red-600 text-md font-semibold mb-2">
+              {error}
+            </div>
+          )}
 
-                  {user && (
-                      <>
-                          {/* <div className="flex justify-center mb-6 mt-10" ref={userDetailsRef}>
-                              <img
-                                  src={userDetails.img}
-                                  alt={`${userDetails.firstName} ${userDetails.lastName}`}
-                                  className="w-32 h-32 rounded-full shadow-lg"
-                              />
-                          </div> */}
-                          <div className="my-5 mx-2 text-gray-700 text-md font-semibold mb-2 grid grid-cols-1 gap-4">
-                              <div className="bg-white shadow-md rounded-lg p-4">
-                                  <p className="font-semibold text-gray-900 text-lg mb-1"><strong>First Name:</strong> {user.First_name}</p>
-                              </div>
-                              <div className="bg-white shadow-md rounded-lg p-4">
-                                  <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Last Name:</strong> {user.Last_name}</p>
-                              </div>
-                              {/* <div className="bg-white shadow-md rounded-lg p-4">
-                                  <p className="font-semibold text-gray-900 text-lg mb-1"><strong>NIC:</strong> {userDetails.nic}</p>
-                              </div> */}
-                              <div className="bg-white shadow-md rounded-lg p-4">
-                                  <p className="font-semibold text-gray-900 text-lg mb-1"><strong>Phone Number:</strong> {user.Contact_No}</p>
-                              </div>
-                              <div className="bg-white shadow-md rounded-lg p-4">
-                                  <p className="font-semibold text-gray-900 text-lg mb-1"><strong>E-mail:</strong> {user.Email}</p>
-                              </div>
-                          </div>
-                      </>
-                  )}
+          {userDetails && (
+            <>
+              {/* <div
+                className="flex justify-center mb-6 mt-10"
+                ref={userDetailsRef}
+              >
+                <img
+                  src={userDetails.img}
+                  alt={`${userDetails.First_name} ${userDetails.Last_name}`}
+                  className="w-32 h-32 rounded-full shadow-lg"
+                />
+              </div> */}
+              <div
+                className="my-5 mx-2 pt-5 text-gray-700 text-md font-semibold mb-2 grid grid-cols-1 gap-4"
+                ref={userDetailsRef}
+              >
+                {/* Data Fields with Aligned Layout */}
+                <h1 className="text-3xl text-center font-bold text-gray-900 mt-5 mb-5">
+                  {userDetails.Role === "user"
+                    ? "User Details"
+                    : "Admin Details"}
+                </h1>
+                <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 text-lg mb-1">
+                    <strong>User ID:</strong>
+                  </p>
+                  <p className="text-gray-800">{userDetails.Member_ID}</p>
+                </div>
+
+                <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 text-lg mb-1">
+                    <strong>First Name:</strong>
+                  </p>
+                  <p className="text-gray-800">{userDetails.First_name}</p>
+                </div>
+                <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 text-lg mb-1">
+                    <strong>Last Name:</strong>
+                  </p>
+                  <p className="text-gray-800">{userDetails.Last_name}</p>
+                </div>
+                {/* <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 text-lg mb-1">
+                    <strong>NIC:</strong>
+                  </p>
+                  <p className="text-gray-800">{userDetails.nic}</p>
+                </div> */}
+                <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 text-lg mb-1">
+                    <strong>Phone Number:</strong>
+                  </p>
+                  <p className="text-gray-800">{userDetails.Contact_No}</p>
+                </div>
+                <div className="flex justify-between bg-white shadow-md rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 text-lg mb-1">
+                    <strong>E-mail:</strong>
+                  </p>
+                  <p className="text-gray-800">{userDetails.Email}</p>
+                </div>
               </div>
-          </div>
-          <Footer />
-      </>
+            </>
+          )}
+        </div>
+      </div>
+
+      <Footer />
+    </>
   );
 }
 
-export default SearchUser;
-
+export default SearchUser;

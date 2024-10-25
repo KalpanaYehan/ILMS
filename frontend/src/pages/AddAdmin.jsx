@@ -78,7 +78,7 @@ const AddAdmin = () => {
   
       <div className="flex items-center justify-center min-h-screen bg-white">
         <div className="w-full max-w-md">
-          <h1 className='mt-3 mb-4 text-4xl font-bold text-center text-gray-900'>Add a admin</h1>
+          <h1 className='mt-3 mb-4 text-4xl font-bold text-center text-gray-900'>Add an Admin</h1>
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label className="block mb-2 text-sm font-semibold text-gray-700" htmlFor="fname">
