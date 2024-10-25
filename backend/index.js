@@ -24,7 +24,7 @@ export default app;
 
 app.use(
   cors({
-    origin: "",
+    origin: "https://ilms-mbf1.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT"],
   })
