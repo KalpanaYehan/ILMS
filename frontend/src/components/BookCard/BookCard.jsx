@@ -3,11 +3,13 @@ const BookCard = ({ bookDetails }) => {
   return (
     <div className="flex shadow-md rounded-lg p-6 my-4 bg-white">
       <div className="flex-shrink-0">
-        <img
-          className="h-60 w-40 object-cover rounded-lg"
-          src={bookDetails.Img_url}
-          alt={bookDetails.title}
-        />
+        {bookDetails.Img_url && (
+          <img
+            className="h-60 w-40 object-cover rounded-lg"
+            src={bookDetails.Img_url}
+            alt={bookDetails.title}
+          />
+        )}
       </div>
       <div className="ml-6">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">

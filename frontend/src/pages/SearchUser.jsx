@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import axios from "axios";
+import BackButton from "../components/BackButton";
 
 function SearchUser() {
   const location = useLocation();
@@ -37,7 +38,7 @@ function SearchUser() {
       }
     } catch (err) {
       console.error(err); // Log the error for debugging
-      setError("An error occurred while fetching user details."); // Set a user-friendly error message
+      setError("User not found"); // Set a user-friendly error message
     }
   };
 
