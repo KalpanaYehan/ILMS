@@ -37,7 +37,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    axios.post("https://ilms.vercel.app/login", { userEmail:formData.userEmail, password:formData.password })https://car-quest-ochre.vercel.app
+    axios.post("https://ilms.vercel.app/login", { userEmail:formData.userEmail, password:formData.password })
        .then(result => {
          console.log(result);
          if (result.data.message === 'success') {
