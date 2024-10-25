@@ -27,7 +27,7 @@ const AddPublisher = () => {
 
     // Make the API call to add the publisher
     axios
-      .post('http://localhost:8081/books/publishers', formData) // Assuming the POST endpoint for adding a publisher
+      .post('https://ilms.vercel.app/books/publishers', formData) // Assuming the POST endpoint for adding a publisher
       .then((res) => {
         if (res.data.message === 'Publisher added successfully') {
           console.log(res.data.message);

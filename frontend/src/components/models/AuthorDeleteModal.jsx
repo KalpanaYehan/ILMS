@@ -13,7 +13,7 @@ const AuthorDeleteModel = ({open,onclose,bookId,refreshBooks}) => {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      const res = await axios.delete(`http://localhost:8081/books/authors/${bookId}`);
+      const res = await axios.delete(`https://ilms.vercel.app/books/authors/${bookId}`);
       if (res.data.message === 'Author deleted successfully.') {
         enqueueSnackbar('Author deleted successfully', { variant: 'success' });
       }else if (res.data.message === 'Author not found.') {

@@ -14,7 +14,7 @@ const DeleteModal = ({open,onclose,bookId,refreshBooks}) => {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      const res = await axios.delete(`http://localhost:8081/books/books/${bookId}`);
+      const res = await axios.delete(`https://ilms.vercel.app/books/books/${bookId}`);
       if (res.data.message === 'Book deleted successfully.') {
         enqueueSnackbar('Book deleted successfully.', { variant: 'success' });
       }else if (res.data.message === 'Book not found.') {

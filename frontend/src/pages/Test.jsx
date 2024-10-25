@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 
 const Test = () => {
   useEffect(()=>{
-    fetch('http://localhost:8081/users')
+    fetch('https://ilms.vercel.app/users')
     .then(res => res.json())
     .then(data => console.log(data))
     .catch(err => console.log(err))

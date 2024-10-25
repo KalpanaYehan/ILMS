@@ -33,7 +33,7 @@ const Navbar = () => {
 
     const handleLogout = () => {
         axios
-            .post('http://localhost:8081/logout')
+            .post('https://ilms.vercel.app/logout')
             .then((res) => {
                 if (res.data.message === "Logged out successfully") {
                     document.cookie = 'accesstoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';

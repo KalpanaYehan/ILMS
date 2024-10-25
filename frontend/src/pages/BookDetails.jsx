@@ -335,7 +335,7 @@ function BookDetails() {
     const fetchBook = async (title_id) => {
       try {
         await axios
-          .get(`http://localhost:8081/books/books/bookdata/${id} `)
+          .get(`https://ilms.vercel.app/books/books/bookdata/${id} `)
           .then((response) => {
             setBookDetails(response.data[0]);
             setSubImages([
@@ -360,7 +360,7 @@ function BookDetails() {
   const fetchReviews = async (title_id) => {
     try {
       await axios
-        .get(`http://localhost:8081/reviews/${title_id} `)
+        .get(`https://ilms.vercel.app/reviews/${title_id} `)
         .then((response) => {
           setReviews(response.data);
         })
@@ -488,7 +488,7 @@ function BookDetails() {
                               setShowModal(true);
                               setImage([image]);
                             }}
-                            src={"http://localhost:8081/" + image}
+                            src={"https://ilms.vercel.app/" + image}
                             alt=""
                             className="object-cover transition-transform duration-300 transform cursor-pointer w-96 hover:scale-110 h-72"
                           />
@@ -567,7 +567,7 @@ function ModalDialogScrollable({ showModal, setShowModal, image }) {
                       <img
                         key={index}
                         className="my-3 shadow"
-                        src={"http://localhost:8081/" + img}
+                        src={"https://ilms.vercel.app/" + img}
                         alt={`img-${index}`}
                       />
                     ) : null;

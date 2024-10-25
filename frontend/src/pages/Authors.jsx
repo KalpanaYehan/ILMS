@@ -23,7 +23,7 @@ function Authors() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/books/authors')
+        .get('https://ilms.vercel.app/books/authors')
         .then((response)=>{
             // if(response.data.message !== "success") {
             //     // navigate('/login');
@@ -44,7 +44,7 @@ function Authors() {
 },[])
 
   const refreshAuthors = async () => {
-    const response = await axios.get("http://localhost:8081/books/authors"); // Fetch the updated list of books
+    const response = await axios.get("https://ilms.vercel.app/books/authors"); // Fetch the updated list of books
     setPost(response.data)
     setAuthor(response.data)
   };

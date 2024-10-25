@@ -21,7 +21,7 @@ function Publishers() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/books/publishers')
+        .get('https://ilms.vercel.app/books/publishers')
         .then((response)=>{
             // if(response.data.message !== "success") {
             //     // navigate('/login');
@@ -42,7 +42,7 @@ function Publishers() {
 },[])
 
   const refreshPublishers = async () => {
-    const response = await axios.get("http://localhost:8081/books/publishers"); // Fetch the updated list of publisher
+    const response = await axios.get("https://ilms.vercel.app/books/publishers"); // Fetch the updated list of publisher
     setPost(response.data)
     setPublisher(response.data)
   };

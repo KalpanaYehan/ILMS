@@ -42,7 +42,7 @@ const AddAdmin = () => {
   
       if (Object.keys(validationErrors).length === 0) {
         // No validation errors, proceed with the API request
-        axios.post("http://localhost:8081/register", formData)
+        axios.post("https://ilms.vercel.app/register", formData)
           .then(result => {
             console.log(result);
             navigate(-1);

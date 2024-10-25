@@ -19,7 +19,7 @@ const UpdatePublisher = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:8081/books/publishers/${id}`) // Assuming you have a GET endpoint for fetching a publisher by ID
+      .get(`https://ilms.vercel.app/books/publishers/${id}`) // Assuming you have a GET endpoint for fetching a publisher by ID
       .then((response) => {
         setFormData({
           publisherName: response.data.Name,
@@ -48,7 +48,7 @@ const UpdatePublisher = () => {
     
     // Make the API call to update the publisher
     axios
-      .put(`http://localhost:8081/books/publishers/${id}`, formData) // Assuming a PUT endpoint for updating a publisher
+      .put(`https://ilms.vercel.app/books/publishers/${id}`, formData) // Assuming a PUT endpoint for updating a publisher
       .then((res) => {
         if (res.data.message === 'Publisher updated successfully.') {
           setLoading(false);

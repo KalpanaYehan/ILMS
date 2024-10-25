@@ -317,7 +317,7 @@ const Profile = () => {
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/users/user/${userId}`, {
+      const response = await axios.get(`https://ilms.vercel.app/users/user/${userId}`, {
         withCredentials: true,
       });
       setUserDetails(response.data[0]);
@@ -335,7 +335,7 @@ const Profile = () => {
   const fetchUserReviews = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/reviews/review/${userId}`,
+        `https://ilms.vercel.app/reviews/review/${userId}`,
         { withCredentials: true }
       );
       setReviews(response.data);
@@ -347,7 +347,7 @@ const Profile = () => {
   const fetchBorrowedBooks = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/books/books/borrowed/${userId}`,
+        `https://ilms.vercel.app/books/books/borrowed/${userId}`,
         { withCredentials: true }
       );
       setBorrowedBooks(response.data);
@@ -358,7 +358,7 @@ const Profile = () => {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      await axios.delete(`http://localhost:8081/reviews/${reviewId}`, {
+      await axios.delete(`https://ilms.vercel.app/reviews/${reviewId}`, {
         withCredentials: true,
       });
       // setShowDeletePopup(true); // Show delete confirmation popup
@@ -399,13 +399,13 @@ const Profile = () => {
       if (currentReview) {
         // Update existing review
         await axios.put(
-          `http://localhost:8081/reviews/${currentReview.Review_ID}`,
+          `https://ilms.vercel.app/reviews/${currentReview.Review_ID}`,
           data
         );
         console.log("Review updated successfully");
       } else {
         // Add new review
-        await axios.post(`http://localhost:8081/reviews`, data);
+        await axios.post(`https://ilms.vercel.app/reviews`, data);
         console.log("Review added successfully");
       }
 

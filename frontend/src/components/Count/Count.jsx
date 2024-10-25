@@ -27,7 +27,7 @@ const Count = () => {
 
   const fetchTotalBooks = () => {
     axios
-      .get("http://localhost:8081/dashboard/total-books")
+      .get("https://ilms.vercel.app/dashboard/total-books")
       .then((response) => {
         setTotalBooks(response.data.totalBooks);
       })
@@ -38,7 +38,7 @@ const Count = () => {
 
   const fetchTotalMembers = () => {
     axios
-      .get("http://localhost:8081/dashboard/total-users")
+      .get("https://ilms.vercel.app/dashboard/total-users")
       .then((response) => {
         setTotalMembers(response.data.totalMembers);
       })

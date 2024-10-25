@@ -47,7 +47,7 @@ function GiveBook() {
 
     try {
       await axios
-        .get("http://localhost:8081/users/book/" + bookId)
+        .get("https://ilms.vercel.app/users/book/" + bookId)
         .then((res) => {
           if (res.data.length > 0) {
             // console.log(res.data);
@@ -66,7 +66,7 @@ function GiveBook() {
 
     try {
       await axios
-        .get("http://localhost:8081/users/user/" + userId)
+        .get("https://ilms.vercel.app/users/user/" + userId)
         .then((res) => {
           if (res.data.length > 0) {
             setUserDetails(res.data[0]);
@@ -92,7 +92,7 @@ function GiveBook() {
     e.preventDefault();
 
     await axios
-      .post("http://localhost:8081/users/issue", {
+      .post("https://ilms.vercel.app/users/issue", {
         Admin_ID,
         userId,
         bookId,

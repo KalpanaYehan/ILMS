@@ -48,7 +48,7 @@ function ReturnBook() {
     setError(null);
 
     await axios
-      .get("http://localhost:8081/users/user/" + userId)
+      .get("https://ilms.vercel.app/users/user/" + userId)
       .then((res) => {
         if (res.data.length > 0) {
           setUserDetails(res.data[0]);
@@ -59,7 +59,7 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     await axios
-      .get("http://localhost:8081/users/book/" + bookId)
+      .get("https://ilms.vercel.app/users/book/" + bookId)
       .then((res) => {
         if (res.data.length > 0) {
           setBookDetails(res.data[0]);
@@ -70,7 +70,7 @@ function ReturnBook() {
       .catch((err) => console.log(err));
 
     await axios
-      .get("http://localhost:8081/users/issue", {
+      .get("https://ilms.vercel.app/users/issue", {
         params: {
           userId, // Replace with the actual userId
           bookId, // Replace with the actual bookId
@@ -95,7 +95,7 @@ function ReturnBook() {
     e.preventDefault();
 
     await axios
-      .post("http://localhost:8081/users/return/", { bookId, userId })
+      .post("https://ilms.vercel.app/users/return/", { bookId, userId })
       .then((res) => {
         // window.alert(res.data.Message);
         enqueueSnackbar(res.data.Message, { variant: "success" });

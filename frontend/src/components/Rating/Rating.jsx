@@ -3,7 +3,7 @@ import React from 'react'
 
 function Rating() {
   return (
-    <Rating value={4} readonly />;
+    <Rating value={4} readonly />
   )
 }
 

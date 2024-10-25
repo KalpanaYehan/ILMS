@@ -25,7 +25,7 @@ function RemoveBook() {
   useEffect(()=>{
     // setLoading(true)
     axios
-        .get('http://localhost:8081/books/books')
+        .get('https://ilms.vercel.app/books/books')
         .then((response)=>{
             if(response.data.message !== "success") {
               enqueueSnackbar(result.data.message, { variant: 'error' })
@@ -47,7 +47,7 @@ function RemoveBook() {
 },[])
 
   const refreshBooks = async () => {
-    const response = await axios.get("http://localhost:8081/books/books"); // Fetch the updated list of books
+    const response = await axios.get("https://ilms.vercel.app/books/books"); // Fetch the updated list of books
     setPost(response.data.books)
     setBook(response.data.books)
   };

@@ -13,7 +13,7 @@ const PublisherDeleteModal = ({open,onclose,bookId,refreshBooks}) => {
       setIsDeleting(true);
 
       // Call the backend API to delete the book by ID
-      const res = await axios.delete(`http://localhost:8081/books/publishers/${bookId}`);
+      const res = await axios.delete(`https://ilms.vercel.app/books/publishers/${bookId}`);
       if (res.data.message === 'Publisher deleted successfully.') {
         enqueueSnackbar('Publisher deleted successfully.', { variant: 'success' });
       }else if (res.data.message === 'Publisher not found.') {
