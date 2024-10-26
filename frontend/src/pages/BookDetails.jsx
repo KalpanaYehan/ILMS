@@ -117,12 +117,14 @@ function BookDetails() {
         <div className="container flex px-4 py-10 mx-auto">
           <div className="grid justify-center w-full grid-cols-3 gap-4 mx-10">
             <div className="grid justify-end w-full">
-              <img
-                src={bookDetails.ImageURL}
-                alt={"book Image"}
-                style={{ maxWidth: "300px" }}
-                className="object-contain w-full"
-              />
+              {bookDetails.ImageURL && (
+                <img
+                  src={bookDetails.ImageURL}
+                  alt={"book Image"}
+                  style={{ maxWidth: "300px" }}
+                  className="object-contain w-full"
+                />
+              )}
             </div>
             <div className="flex flex-col justify-between col-span-2 mt-5 ml-10">
               <div>

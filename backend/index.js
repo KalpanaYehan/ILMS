@@ -48,13 +48,13 @@ export const pool = mysql.createPool({
   port: process.env.DB_PORT,
 });
 
-app.use('/books/books',verifyUser,booksRout)
-app.use('/books/authors',verifyUser,authorsRout)
-app.use('/books/publishers',verifyUser,publishersRout)
-app.use('/reviews',verifyUser,reviewsRout)
-app.use('/dashboard',dashboardRout)
-app.use('/popular',popularRout)
-app.use('/users',verifyUser,userRout )
+app.use("/books/books", verifyUser, booksRout);
+app.use("/books/authors", verifyUser, authorsRout);
+app.use("/books/publishers", verifyUser, publishersRout);
+app.use("/reviews", verifyUser, reviewsRout);
+app.use("/dashboard", dashboardRout);
+app.use("/popular", popularRout);
+app.use("/users", verifyUser, userRout);
 
 pool.getConnection((err, connection) => {
   if (err) {
