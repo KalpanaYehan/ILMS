@@ -16,24 +16,6 @@ export const AuthProvider = ({ children }) => {
         }
     },[]) 
 
-    // useEffect(() => {
-    //     const storedUser = localStorage.getItem('user');
-    //     const userObject = storedUser ? JSON.parse(storedUser) : null;
-        
-    //     if (userObject) {
-    //         setUser(userObject);
-    //     } else {
-    //         // If no user is stored, redirect to login page
-    //         navigate('/');
-    //     }
-    // }, [navigate]);
-    // Redirect to login if user logs out
-    // useEffect(() => {
-    //     if (!user) {
-    //         navigate('/');
-    //     }
-    // }, [user, navigate]);
-
     return (
         <AuthContext.Provider value={{ user, setUser }}>
             {children}

@@ -1,97 +1,70 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Navbar from './Navbar';
+import { AuthContext } from "../../context/AuthContext";
 import { BrowserRouter as Router } from 'react-router-dom';
-import { describe, it, expect, vi } from 'vitest';
-import { AuthContext } from '../../context/AuthContext';
+import { vi } from 'vitest';
 import axios from 'axios';
+import { describe, expect, it } from 'vitest';
 
-// Mock axios
-vi.mock('axios');
-
-// Helper function to render the component with AuthContext and Router
-const renderWithAuthContext = (contextValue) => {
-    return render(
-        <AuthContext.Provider value={contextValue}>
-            <Router>
-                <Navbar />
-            </Router>
-        </AuthContext.Provider>
-    );
-};
+// 
+vi.mock('axios');   //
 
 describe('Navbar', () => {
-    it('renders the navbar with logo and menu items', () => {
-        renderWithAuthContext({ user: null }); // No user logged in
+  const mockSetUser = vi.fn();
+  
+  const renderNavbar = (user) => {
+    render(
+      <AuthContext.Provider value={{ user, setUser: mockSetUser }}>
+        <Router>
+          <Navbar />
+        </Router>
+      </AuthContext.Provider>
+    );
+  };
 
-        // Navbar should render
-        expect(screen.getByTestId('navbar')).toBeInTheDocument();
+  it('renders the logo and main links', () => {
+    renderNavbar(null);
+    
+    const logo = screen.getByTestId('navbar-logo');
+    expect(logo).toBeInTheDocument();
+    
+    const homeLink = screen.getByText('Home');
+    const booksLink = screen.getByText('Books');
 
-        // Logo should render
-        expect(screen.getByTestId('logo')).toBeInTheDocument();
+    expect(homeLink).toBeInTheDocument();
+    expect(booksLink).toBeInTheDocument();
+  });
 
-        // Menu items should render
-        expect(screen.getByText(/home/i)).toBeInTheDocument();
-        expect(screen.getByText(/books/i)).toBeInTheDocument();
+  it('toggles dropdown menu on user icon click', () => {
+    renderNavbar({ role: 'user' });
+    
+    const userIcon = screen.getByTestId('navbar-user-icon');
+    fireEvent.click(userIcon);
+    
+    const dropdownMenu = screen.getByTestId('dropdown-menu');
+    expect(dropdownMenu).toBeInTheDocument();
+  });
+
+  it('shows additional admin links when user is admin', () => {
+    renderNavbar({ role: 'admin' });
+    
+    const usersLink = screen.getByText('Users');
+    const dashboardLink = screen.getByText('Dashboard');
+    expect(usersLink).toBeInTheDocument();
+    expect(dashboardLink).toBeInTheDocument();
+  });
+
+  it('handles logout correctly', async () => {
+    axios.post.mockResolvedValue({ data: { message: "Logged out successfully" } });
+    renderNavbar({ role: 'user' });
+    
+    fireEvent.click(screen.getByTestId('navbar-user-icon'));
+    const logoutButton = screen.getByTestId('logout-button');
+    fireEvent.click(logoutButton);
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith('http://localhost:8081/logout');
+      expect(mockSetUser).toHaveBeenCalledWith(null);
     });
-
-    it('renders the About link when user is logged in with role user', () => {
-        renderWithAuthContext({ user: { role: 'user' } });
-
-        // The 'About' link should be present
-        expect(screen.getByTestId('user-about-link')).toBeInTheDocument();
-    });
-
-    it('renders the Users and Dashboard links when user is admin', () => {
-        renderWithAuthContext({ user: { role: 'admin' } });
-
-        // The 'Users' and 'Dashboard' links should be present
-        expect(screen.getByTestId('admin-users-link')).toBeInTheDocument();
-        expect(screen.getByTestId('admin-dashboard-link')).toBeInTheDocument();
-    });
-
-    it('opens dropdown menu on clicking user avatar', () => {
-        renderWithAuthContext({ user: { role: 'user' } });
-
-        // Avatar should be present
-        const avatar = screen.getByTestId('user-avatar');
-        expect(avatar).toBeInTheDocument();
-
-        // Click the avatar
-        fireEvent.click(avatar);
-
-        // Dropdown menu should appear
-        expect(screen.getByTestId('dropdown-menu')).toBeInTheDocument();
-        expect(screen.getByTestId('profile-link')).toBeInTheDocument();
-        expect(screen.getByTestId('logout-button')).toBeInTheDocument();
-    });
-
-    it('logs out the user when Logout button is clicked', async () => {
-        axios.post.mockResolvedValueOnce({ data: { message: 'Logged out successfully' } });
-
-        renderWithAuthContext({ user: { role: 'user' } });
-
-        // Open dropdown by clicking avatar
-        fireEvent.click(screen.getByTestId('user-avatar'));
-
-        // Click the logout button
-        const logoutButton = screen.getByTestId('logout-button');
-        fireEvent.click(logoutButton);
-
-        // Ensure that axios.post was called to the logout endpoint
-        expect(axios.post).toHaveBeenCalledWith('http://localhost:8081/logout');
-    });
-
-    it('redirects to correct routes on clicking menu links', () => {
-        const { getByText } = renderWithAuthContext({ user: null });
-
-        // Click on 'Home' link
-        const homeLink = getByText(/home/i);
-        fireEvent.click(homeLink);
-        expect(window.location.pathname).toBe('/home');
-
-        // Click on 'Books' link
-        const booksLink = getByText(/books/i);
-        fireEvent.click(booksLink);
-        expect(window.location.pathname).toBe('/books');
-    });
+  });
 });

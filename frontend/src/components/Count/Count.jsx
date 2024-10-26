@@ -48,7 +48,9 @@ const Count = () => {
   };
 
   return (
-    <div className="flex justify-center mt-10 space-x-8">
+    <div 
+     data-testid="count"
+    className="flex justify-center mt-10 space-x-8">
       {stats.map((stat) => (
         <div key={stat.id} className="relative flex flex-col items-center p-4 rounded-lg shadow-md bg-primary/20">
           <CountUp 

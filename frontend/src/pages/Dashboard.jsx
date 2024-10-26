@@ -40,7 +40,7 @@ const COLORS = [
   "#FF69B4",
   "#8A2BE2",
 ];
-
+// dashboard component
 const Dashboard = () => {
   const [bookCategoriesData, setBookCategoriesData] = useState([]);
   const [overdueBooksData, setOverdueBooksData] = useState([]);
@@ -434,7 +434,7 @@ const Dashboard = () => {
               />
               <YAxis />
               <Tooltip />
-              <Legend contentStyle={CustomLegend} />
+              {/* <Legend contentStyle={CustomLegend} /> */}
               <Bar dataKey="IssuedBooks" fill="#8884d8">
                 {popularAuthorsData.map((entry, index) => (
                   <Cell
@@ -448,7 +448,7 @@ const Dashboard = () => {
                   offset={10}
                 />
               </Bar>
-              <Bar dataKey="ReservedBooks" fill="#82ca9d">
+              {/* <Bar dataKey="ReservedBooks" fill="#82ca9d">
                 {popularAuthorsData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
@@ -460,7 +460,7 @@ const Dashboard = () => {
                   position="insideBottom"
                   offset={10}
                 />
-              </Bar>
+              </Bar> */}
             </BarChart>
           </div>
         </div>

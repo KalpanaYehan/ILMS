@@ -2,7 +2,9 @@ import React from 'react';
 
 const Vision = () => {
   return (
-    <div className="flex flex-col justify-center px-8 py-12 mt-12 bg-gray-100">
+    <div 
+     data-testid='vision'
+    className="flex flex-col justify-center px-8 py-12 mt-12 bg-gray-100" >
       <style jsx>{`
         @keyframes fadeIn {
           from {

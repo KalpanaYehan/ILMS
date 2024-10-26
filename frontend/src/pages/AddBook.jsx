@@ -29,21 +29,6 @@ const AddBook = () => {
     });
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   // Handle form submission
-  //   console.log(formData);
-  //   window.alert("Book Added");
-  //   setFormData({
-  //     name: '',
-  //     author: '',
-  //     category:'',
-  //     ISBN:'',
-  //     publisher: '',
-  //     pages: '',
-  //     copies: '',
-  //   });
-  // };
 
   const handleSubmit = (e) => {
     e.preventDefault();

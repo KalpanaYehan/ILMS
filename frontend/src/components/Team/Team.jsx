@@ -4,7 +4,7 @@ import TeamMember from "./TeamMember";
 const Team = () => {
   const teamMembers = [
     {
-      name: "John Doe",
+      name: "John Martin",
       image: "../../../public/peopleImage1.jpeg",
       
       
@@ -30,7 +30,9 @@ const Team = () => {
   ];
 
   return (
-    <div className="mt-12">
+    <div 
+     data-testid="team"
+    className="mt-12">
       <h1 className="mb-10 text-3xl font-semibold text-center text-black">Meet Our Team</h1>
 
       <div className="flex justify-center my-5 space-x-10">
